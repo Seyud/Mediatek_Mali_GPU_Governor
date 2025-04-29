@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-MODULE_PATH="$(dirname $(readlink -f "$0"))"
-MODULE_PATH="${MODULE_PATH%\/script}"
+CURRENT_PATH="$(dirname $(readlink -f "${BASH_SOURCE:-$0}"))"
+MODULE_PATH="${CURRENT_PATH%\/script}"
 SCRIPT_PATH="$MODULE_PATH/script"
 BIN_PATH="$MODULE_PATH/bin"
 FLAG_PATH="$MODULE_PATH/flag"
@@ -41,3 +41,4 @@ clear_log() {
     true >"$LOG_FILE"
     sync
 }
+
