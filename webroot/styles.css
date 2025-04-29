@@ -91,6 +91,7 @@ body {
 .header-content h1 {
     font-size: 20px;
     font-weight: 500;
+    color: #0d84ff; /* 蓝色标题 */
 }
 
 .theme-toggle {
