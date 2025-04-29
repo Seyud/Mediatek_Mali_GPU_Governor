@@ -22,30 +22,36 @@ gpugov_stop() {
 }
 gpugov_start() {
     gpugov_stop
-    log "Starting gpu governor"
-    #lock_val "99" /sys/kernel/ged/hal/custom_boost_gpu_freq
-    #lock_val "0" /sys/kernel/ged/hal/custom_upbound_gpu_freq
-    # 确保日志目录存在并有适当权限
-    mkdir -p "$LOG_PATH"
-    chmod 0777 "$LOG_PATH"
+    sleep 1
+    if pgrep -f "Mediatek_Mali_GPU_Governor" >/dev/null; then
+        log "Error: Failed to stop old process"
+        return 1
+    }
 
-    # 备份旧日志文件
-    if [ -f "$GPUGOV_LOGPATH" ]; then
-        mv "$GPUGOV_LOGPATH" "$GPUGOV_LOGPATH".bak
+    # 直接使用 BIN_PATH
+    if [ ! -x "$BIN_PATH/Mediatek_Mali_GPU_Governor" ]; then
+        log "Error: Binary not executable, trying to fix permissions"
+        chmod 0755 "$BIN_PATH/Mediatek_Mali_GPU_Governor"
+        if [ ! -x "$BIN_PATH/Mediatek_Mali_GPU_Governor" ]; then
+            log "Error: Failed to set executable permission"
+            return 1
+        fi
     fi
 
-    # 创建空日志文件并设置权限
-    touch "$GPUGOV_LOGPATH"
-    chmod 0666 "$GPUGOV_LOGPATH"
-
+    log "Starting gpu governor"
     sync
-    nohup "$BIN_PATH"/Mediatek_Mali_GPU_Governor 2>&1 &
+    nohup "$BIN_PATH/Mediatek_Mali_GPU_Governor" 2>&1 &
     sync
-    # waiting for initialization
+    
     sleep 2
-    # it shouldn't preempt foreground tasks
+    if ! pgrep -f "Mediatek_Mali_GPU_Governor" >/dev/null; then
+        log "Error: Process failed to start"
+        return 1
+    fi
+
     rebuild_process_scan_cache
     change_task_cgroup "Mediatek_Mali_GPU_Governor" "background" "cpuset"
+    log "GPU Governor started successfully"
 }
 gpugov_testconf() {
     log "Starting gpu governor"
@@ -78,4 +84,6 @@ gpugov_testconf() {
     log "Using config $GPUGOV_CONFPATH"
     gpugov_start
 }
+
+
 
