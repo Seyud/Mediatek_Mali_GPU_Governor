@@ -4,747 +4,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>天玑GPU调速器</title>
-    <style>
-        /* Miuix 风格变量 */
-        :root {
-            /* 亮色模式 */
-            --miuix-color-primary: #3482FF;
-            --miuix-color-primary-container: #5D9BFF;
-            --miuix-color-on-primary: #FFFFFF;
-            --miuix-color-secondary: #E6E6E6;
-            --miuix-color-on-secondary: #FFFFFF;
-            --miuix-color-background: #F5F5F5;
-            --miuix-color-on-background: #333333;
-            --miuix-color-surface: #FFFFFF;
-            --miuix-color-on-surface: #333333;
-            --miuix-color-outline: #D9D9D9;
-            --miuix-color-divider-line: #E0E0E0;
-            --miuix-color-success: #4CAF50;
-            --miuix-color-error: #F44336;
-            --miuix-color-warning: #FF9800;
-            --miuix-elevation-level1: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --miuix-elevation-level2: 0 2px 4px rgba(0, 0, 0, 0.08);
-            --miuix-elevation-level3: 0 4px 8px rgba(0, 0, 0, 0.1);
-            --miuix-radius-small: 8px;
-            --miuix-radius-medium: 12px;
-            --miuix-radius-large: 16px;
-            --miuix-spacing-xs: 4px;
-            --miuix-spacing-sm: 8px;
-            --miuix-spacing-md: 16px;
-            --miuix-spacing-lg: 24px;
-            --miuix-spacing-xl: 32px;
-        }
-
-        /* 深色模式支持 */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --miuix-color-primary: #277AF7;
-                --miuix-color-primary-container: #338FE4;
-                --miuix-color-on-primary: #FFFFFF;
-                --miuix-color-secondary: #505050;
-                --miuix-color-on-secondary: #FFFFFF;
-                --miuix-color-background: #121212;
-                --miuix-color-on-background: #E0E0E0;
-                --miuix-color-surface: #1E1E1E;
-                --miuix-color-on-surface: #E0E0E0;
-                --miuix-color-outline: #434343;
-                --miuix-color-divider-line: #2A2A2A;
-            }
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'MiSans VF', 'Roboto', 'Noto Sans SC', sans-serif;
-            background-color: var(--miuix-color-background);
-            color: var(--miuix-color-on-background);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: var(--miuix-spacing-lg);
-        }
-
-        /* 顶部应用栏 */
-        header {
-            background-color: var(--miuix-color-surface);
-            padding: var(--miuix-spacing-lg) var(--miuix-spacing-lg) var(--miuix-spacing-md);
-            border-radius: var(--miuix-radius-medium) var(--miuix-radius-medium) 0 0;
-            box-shadow: var(--miuix-elevation-level1);
-            margin-bottom: var(--miuix-spacing-md);
-        }
-
-        header h1 {
-            color: var(--miuix-color-primary);
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: var(--miuix-spacing-xs);
-        }
-
-        .version {
-            color: var(--miuix-color-on-background);
-            opacity: 0.6;
-            font-size: 14px;
-        }
-
-        /* 卡片组件 */
-        .card {
-            background-color: var(--miuix-color-surface);
-            border-radius: var(--miuix-radius-medium);
-            box-shadow: var(--miuix-elevation-level1);
-            padding: var(--miuix-spacing-lg);
-            margin-bottom: var(--miuix-spacing-md);
-            overflow: hidden;
-        }
-
-        .card h2 {
-            color: var(--miuix-color-on-surface);
-            margin-bottom: var(--miuix-spacing-md);
-            font-size: 18px;
-            font-weight: 600;
-            border-bottom: 1px solid var(--miuix-color-divider-line);
-            padding-bottom: var(--miuix-spacing-sm);
-        }
-
-        /* 状态容器 */
-        .status-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            margin: var(--miuix-spacing-sm) 0;
-            padding: var(--miuix-spacing-sm) 0;
-        }
-
-        .status {
-            margin-left: var(--miuix-spacing-sm);
-            font-weight: 500;
-        }
-
-        .status.running {
-            color: var(--miuix-color-success);
-        }
-
-        .status.stopped {
-            color: var(--miuix-color-error);
-        }
-
-        /* Miuix 风格开关 */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 51px;
-            height: 31px;
-            margin-left: var(--miuix-spacing-sm);
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--miuix-color-secondary);
-            transition: .3s;
-            border-radius: 31px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 27px;
-            width: 27px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        input:checked + .slider {
-            background-color: var(--miuix-color-primary);
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px var(--miuix-color-primary);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        /* 表格样式 */
-        .table-container {
-            overflow-x: auto;
-            margin-top: var(--miuix-spacing-sm);
-            border-radius: var(--miuix-radius-small);
-            border: 1px solid var(--miuix-color-divider-line);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table th, table td {
-            padding: var(--miuix-spacing-md);
-            text-align: left;
-            border-bottom: 1px solid var(--miuix-color-divider-line);
-        }
-
-        table th {
-            background-color: rgba(0, 0, 0, 0.02);
-            font-weight: 500;
-        }
-
-        /* 游戏列表样式 */
-        .game-list-container {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: var(--miuix-spacing-sm);
-            border-radius: var(--miuix-radius-small);
-            border: 1px solid var(--miuix-color-divider-line);
-            padding: var(--miuix-spacing-xs);
-        }
-
-        #game-list {
-            list-style: none;
-        }
-
-        #game-list li {
-            padding: var(--miuix-spacing-md);
-            border-bottom: 1px solid var(--miuix-color-divider-line);
-        }
-
-        #game-list li:last-child {
-            border-bottom: none;
-        }
-
-        /* 日志样式 */
-        .log-container {
-            position: relative;
-        }
-
-        #log-content {
-            background-color: rgba(0, 0, 0, 0.02);
-            padding: var(--miuix-spacing-md);
-            border-radius: var(--miuix-radius-small);
-            font-family: monospace;
-            white-space: pre-wrap;
-            max-height: 300px;
-            overflow-y: auto;
-            font-size: 14px;
-            border: 1px solid var(--miuix-color-divider-line);
-            margin-bottom: var(--miuix-spacing-sm);
-        }
-
-        /* Miuix 风格按钮 */
-        .btn {
-            background-color: var(--miuix-color-primary);
-            color: var(--miuix-color-on-primary);
-            border: none;
-            padding: var(--miuix-spacing-sm) var(--miuix-spacing-lg);
-            border-radius: var(--miuix-radius-small);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s, transform 0.1s;
-            box-shadow: var(--miuix-elevation-level1);
-        }
-
-        .btn:hover {
-            background-color: var(--miuix-color-primary-container);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .loading {
-            color: var(--miuix-color-on-background);
-            opacity: 0.5;
-            font-style: italic;
-        }
-
-        /* 底部栏 */
-        footer {
-            text-align: center;
-            margin-top: var(--miuix-spacing-xl);
-            padding: var(--miuix-spacing-lg);
-            color: var(--miuix-color-on-background);
-            opacity: 0.6;
-            font-size: 14px;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 600px) {
-            .container {
-                padding: var(--miuix-spacing-md);
-            }
-
-            .status-container {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .status-item {
-                margin: var(--miuix-spacing-xs) 0;
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .card {
-                padding: var(--miuix-spacing-md);
-            }
-
-            table th, table td {
-                padding: var(--miuix-spacing-sm);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 使用本地字体或系统字体，避免网络请求 -->
 </head>
 <body>
-    <div class="container">
-        <!-- Miuix风格顶部应用栏 -->
-        <header>
-            <h1>天玑GPU调速器</h1>
-            <p class="version">版本: <span id="module-version">加载中...</span></p>
+    <div id="loading">加载中</div>
+    <div id="app" style="display: none;">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>天玑GPU调速器</h1>
+                <div class="theme-toggle" id="themeToggle">
+                    <span class="light-icon">☀️</span>
+                    <span class="dark-icon">🌙</span>
+                </div>
+            </div>
         </header>
 
-        <!-- 模块状态卡片 -->
-        <section class="card">
-            <h2>模块状态</h2>
-            <div class="status-container">
-                <div class="status-item">
-                    <span>运行状态</span>
-                    <span id="running-status" class="status">加载中...</span>
+        <main class="container">
+            <!-- 页面容器 -->
+            <div class="page-container">
+                <!-- 页面1: 状态 -->
+                <div class="page" id="page-status">
+                    <!-- 模块状态卡片 -->
+                    <section class="card" id="statusCard">
+                        <h2 class="card-title">模块状态</h2>
+                        <div class="card-content">
+                            <div class="status-item">
+                                <span>运行状态:</span>
+                                <span id="runningStatus" class="status-badge">检查中...</span>
+                            </div>
+                            <div class="status-item">
+                                <span>游戏模式:</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="gameModeToggle">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </section>
                 </div>
-                <div class="status-item">
-                    <span>游戏模式</span>
-                    <label class="switch">
-                        <input type="checkbox" id="game-mode-toggle">
-                        <span class="slider"></span>
-                    </label>
+
+                <!-- 页面2: 配置 -->
+                <div class="page" id="page-config">
+                    <!-- GPU配置表卡片 -->
+                    <section class="card" id="gpuConfigCard">
+                        <h2 class="card-title">GPU配置表</h2>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table id="gpuFreqTable">
+                                    <thead>
+                                        <tr>
+                                            <th>频率 (MHz)</th>
+                                            <th>电压 (uV)</th>
+                                            <th>内存档位</th>
+                                            <th>编辑</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4" class="loading-text">加载中...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="config-actions">
+                                <button id="addConfigBtn" class="btn">添加配置</button>
+                                <button id="saveConfigBtn" class="btn">保存配置</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 游戏列表卡片 -->
+                    <section class="card" id="gamesCard">
+                        <h2 class="card-title">游戏列表</h2>
+                        <div class="card-content">
+                            <ul id="gamesList" class="games-list">
+                                <li class="loading-text">加载中...</li>
+                            </ul>
+                            <div class="games-actions">
+                                <button id="addGameBtn" class="btn">添加游戏</button>
+                                <button id="saveGamesBtn" class="btn">保存列表</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 页面3: 日志 -->
+                <div class="page" id="page-log">
+                    <!-- 日志卡片 -->
+                    <section class="card" id="logCard">
+                        <h2 class="card-title">运行日志</h2>
+                        <div class="card-content">
+                            <div class="log-actions">
+                                <button id="refreshLogBtn" class="btn">刷新</button>
+                                <select id="logFileSelect" class="select">
+                                    <option value="gpu_gov.log">主日志</option>
+                                    <option value="initsvc.log">初始化日志</option>
+                                </select>
+                            </div>
+                            <pre id="logContent" class="log-content">加载中...</pre>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 页面4: 设置 -->
+                <div class="page" id="page-settings">
+                    <!-- 设置卡片 -->
+                    <section class="card" id="settingsCard">
+                        <h2 class="card-title">设置</h2>
+                        <div class="card-content">
+                            <div class="status-item">
+                                <span>深色模式跟随系统:</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="followSystemThemeToggle">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
-        </section>
 
-        <!-- GPU频率配置卡片 -->
-        <section class="card">
-            <h2>GPU频率配置</h2>
-            <div id="gpu-freq-table" class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>频率 (KHz)</th>
-                            <th>电压 (μV)</th>
-                            <th>DDR_OPP</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gpu-freq-tbody">
-                        <tr>
-                            <td colspan="3" class="loading">加载中...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- 编辑配置对话框 -->
+            <div id="editConfigModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h3>编辑GPU配置</h3>
+                    <div class="form-group">
+                        <label for="freqInput">频率 (KHz):</label>
+                        <input type="number" id="freqInput" min="100000" max="1000000" step="1000" placeholder="例如: 350000">
+                    </div>
+                    <div class="form-group">
+                        <label for="voltSelect">电压 (uV):</label>
+                        <select id="voltSelect" class="select">
+                            <!-- 电压选项将通过JavaScript动态添加 -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ddrSelect">内存档位:</label>
+                        <select id="ddrSelect" class="select">
+                            <option value="999">999 (不调整)</option>
+                            <option value="0">0 (最高)</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3 (最低)</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="saveItemBtn" class="btn">保存</button>
+                        <button id="cancelEditBtn" class="btn btn-secondary">取消</button>
+                        <button id="deleteItemBtn" class="btn btn-danger">删除</button>
+                    </div>
+                </div>
             </div>
-        </section>
 
-        <!-- 游戏列表卡片 -->
-        <section class="card">
-            <h2>游戏列表</h2>
-            <div class="game-list-container">
-                <ul id="game-list">
-                    <li class="loading">加载中...</li>
-                </ul>
+            <!-- 编辑游戏对话框 -->
+            <div id="editGameModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-game-modal">&times;</span>
+                    <h3>编辑游戏列表</h3>
+                    <div class="form-group">
+                        <label for="packageNameInput">应用包名:</label>
+                        <input type="text" id="packageNameInput" placeholder="例如: com.tencent.tmgp.sgame">
+                    </div>
+                    <div class="form-actions">
+                        <button id="saveGameBtn" class="btn">保存</button>
+                        <button id="cancelGameBtn" class="btn btn-secondary">取消</button>
+                    </div>
+                </div>
             </div>
-        </section>
+        </main>
 
-        <!-- 日志卡片 -->
-        <section class="card">
-            <h2>日志</h2>
-            <div class="log-container">
-                <pre id="log-content" class="loading">加载中...</pre>
-                <button id="refresh-log" class="btn">刷新日志</button>
-            </div>
-        </section>
+        <!-- 底部导航栏 -->
+        <nav class="nav-bar">
+            <button class="nav-item active" data-page="page-status">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">状态</span>
+            </button>
+            <button class="nav-item" data-page="page-config">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">配置</span>
+            </button>
+            <button class="nav-item" data-page="page-log">
+                <span class="nav-icon">📝</span>
+                <span class="nav-text">日志</span>
+            </button>
+            <button class="nav-item" data-page="page-settings">
+                <span class="nav-icon">🔧</span>
+                <span class="nav-text">设置</span>
+            </button>
+        </nav>
+
+        <footer class="app-footer">
+            <p>天玑GPU调速器 © 2025 酷安@瓦力喀</p>
+        </footer>
     </div>
 
-    <!-- Miuix风格底部栏 -->
-    <footer>
-        <p>© 2025 酷安@瓦力喀 - 天玑GPU调速器</p>
-    </footer>
-
-    <script type="module">
-        import { exec, toast, fullScreen } from 'kernelsu';
-
-        // 全局变量
-        let isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        let isRefreshing = false;
-        let refreshInterval = null;
-
-        // 页面加载完成后执行
-        document.addEventListener('DOMContentLoaded', function() {
-            // 初始化数据
-            initializeApp();
-
-            // 绑定事件
-            document.getElementById('game-mode-toggle').addEventListener('change', toggleGameMode);
-            document.getElementById('refresh-log').addEventListener('click', fetchLog);
-
-            // 添加深色模式监听
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                isDarkMode = e.matches;
-                toast(`已切换到${isDarkMode ? '深色' : '浅色'}模式`);
-            });
-
-            // 设置自动刷新
-            setupAutoRefresh();
-        });
-
-        // 初始化应用
-        async function initializeApp() {
-            try {
-                // 显示加载动画
-                showLoadingState(true);
-
-                // 并行获取所有数据
-                await Promise.all([
-                    fetchModuleInfo(),
-                    fetchRunningStatus(),
-                    fetchGameModeStatus(),
-                    fetchGpuFreqTable(),
-                    fetchGameList(),
-                    fetchLog()
-                ]);
-
-                // 隐藏加载动画
-                showLoadingState(false);
-
-                // 显示欢迎消息
-                toast('天玑GPU调速器 WebUI 已加载完成');
-            } catch (error) {
-                console.error('初始化失败:', error);
-                toast('初始化失败，请检查模块是否正常安装');
-            }
-        }
-
-        // 显示/隐藏加载状态
-        function showLoadingState(isLoading) {
-            const loadingElements = document.querySelectorAll('.loading');
-            loadingElements.forEach(el => {
-                if (isLoading) {
-                    el.style.display = 'block';
-                } else {
-                    el.style.display = 'none';
-                }
-            });
-        }
-
-        // 设置自动刷新
-        function setupAutoRefresh() {
-            // 每30秒刷新一次状态
-            refreshInterval = setInterval(async () => {
-                if (!isRefreshing) {
-                    isRefreshing = true;
-                    await fetchRunningStatus();
-                    await fetchGameModeStatus();
-                    isRefreshing = false;
-                }
-            }, 30000);
-        }
-
-        // 获取模块信息
-        async function fetchModuleInfo() {
-            try {
-                const { errno, stdout } = await exec("grep version= /data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2");
-                if (errno === 0) {
-                    document.getElementById('module-version').textContent = stdout.trim();
-                } else {
-                    document.getElementById('module-version').textContent = '获取失败';
-                }
-            } catch (error) {
-                console.error('获取模块信息失败:', error);
-                document.getElementById('module-version').textContent = '获取失败';
-            }
-        }
-
-        // 获取运行状态
-        async function fetchRunningStatus() {
-            try {
-                const { errno, stdout } = await exec("pgrep -f Mediatek_Mali_GPU_Governor > /dev/null && echo 'running' || echo 'stopped'");
-                const statusElement = document.getElementById('running-status');
-
-                if (errno === 0) {
-                    if (stdout.trim() === 'running') {
-                        statusElement.textContent = '运行中';
-                        statusElement.className = 'status running';
-                    } else {
-                        statusElement.textContent = '已停止';
-                        statusElement.className = 'status stopped';
-                    }
-                } else {
-                    statusElement.textContent = '获取失败';
-                    statusElement.className = 'status';
-                }
-            } catch (error) {
-                console.error('获取运行状态失败:', error);
-                document.getElementById('running-status').textContent = '获取失败';
-                document.getElementById('running-status').className = 'status';
-            }
-        }
-
-        // 获取游戏模式状态
-        async function fetchGameModeStatus() {
-            try {
-                const gameModePath = "/data/adb/gpu_governor/game_mode";
-                const { errno, stdout } = await exec(`cat ${gameModePath} 2>/dev/null || echo 0`);
-
-                if (errno === 0) {
-                    document.getElementById('game-mode-toggle').checked = stdout.trim() === '1';
-                }
-            } catch (error) {
-                console.error('获取游戏模式状态失败:', error);
-            }
-        }
-
-        // 切换游戏模式
-        async function toggleGameMode() {
-            const enabled = document.getElementById('game-mode-toggle').checked;
-            const gameModePath = "/data/adb/gpu_governor/game_mode";
-
-            try {
-                // 显示加载状态
-                document.getElementById('game-mode-toggle').disabled = true;
-
-                // 确保目录存在
-                await exec("mkdir -p /data/adb/gpu_governor");
-
-                // 写入游戏模式状态
-                const { errno } = await exec(`echo ${enabled ? '1' : '0'} > ${gameModePath}`);
-
-                if (errno === 0) {
-                    // 添加震动反馈
-                    if ('vibrate' in navigator) {
-                        navigator.vibrate(50);
-                    }
-
-                    toast(`游戏模式已${enabled ? '开启' : '关闭'}`);
-                } else {
-                    // 切换失败，恢复开关状态
-                    document.getElementById('game-mode-toggle').checked = !enabled;
-                    toast('切换游戏模式失败');
-                }
-            } catch (error) {
-                console.error('切换游戏模式请求失败:', error);
-                // 恢复开关状态
-                document.getElementById('game-mode-toggle').checked = !enabled;
-                toast('切换游戏模式请求失败');
-            } finally {
-                // 恢复按钮状态
-                document.getElementById('game-mode-toggle').disabled = false;
-            }
-        }
-
-        // 获取GPU频率表
-        async function fetchGpuFreqTable() {
-            try {
-                const gpuFreqTablePath = "/data/gpu_freq_table.conf";
-                const { errno, stdout } = await exec(`cat ${gpuFreqTablePath} 2>/dev/null`);
-
-                const tbody = document.getElementById('gpu-freq-tbody');
-                tbody.innerHTML = '';
-
-                if (errno === 0 && stdout.trim()) {
-                    const lines = stdout.trim().split('\n');
-                    let hasData = false;
-
-                    for (const line of lines) {
-                        // 跳过注释行和空行
-                        if (line.trim().startsWith('#') || !line.trim()) {
-                            continue;
-                        }
-
-                        const parts = line.trim().split(/\s+/);
-                        if (parts.length >= 3) {
-                            hasData = true;
-                            const tr = document.createElement('tr');
-
-                            // 添加频率单元格
-                            const freqCell = document.createElement('td');
-                            freqCell.textContent = formatFrequency(parts[0]);
-                            tr.appendChild(freqCell);
-
-                            // 添加电压单元格
-                            const voltCell = document.createElement('td');
-                            voltCell.textContent = formatVoltage(parts[1]);
-                            tr.appendChild(voltCell);
-
-                            // 添加DDR_OPP单元格
-                            const ddrCell = document.createElement('td');
-                            ddrCell.textContent = parts[2];
-                            tr.appendChild(ddrCell);
-
-                            tbody.appendChild(tr);
-                        }
-                    }
-
-                    if (!hasData) {
-                        tbody.innerHTML = '<tr><td colspan="3">无有效数据</td></tr>';
-                    }
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="3">无数据或文件不存在</td></tr>';
-                }
-            } catch (error) {
-                console.error('获取GPU频率表失败:', error);
-                document.getElementById('gpu-freq-tbody').innerHTML = '<tr><td colspan="3">获取失败</td></tr>';
-            }
-        }
-
-        // 格式化频率显示
-        function formatFrequency(freq) {
-            const freqNum = parseInt(freq);
-            if (freqNum >= 1000000) {
-                return (freqNum / 1000000).toFixed(2) + ' GHz';
-            } else if (freqNum >= 1000) {
-                return (freqNum / 1000).toFixed(0) + ' MHz';
-            } else {
-                return freqNum + ' KHz';
-            }
-        }
-
-        // 格式化电压显示
-        function formatVoltage(volt) {
-            const voltNum = parseInt(volt);
-            if (voltNum >= 1000000) {
-                return (voltNum / 1000000).toFixed(2) + ' V';
-            } else if (voltNum >= 1000) {
-                return (voltNum / 1000).toFixed(0) + ' mV';
-            } else {
-                return voltNum + ' μV';
-            }
-        }
-
-        // 获取游戏列表
-        async function fetchGameList() {
-            try {
-                const gamesConfigPath = "/data/adb/gpu_governor/games.conf";
-                const { errno, stdout } = await exec(`cat ${gamesConfigPath} 2>/dev/null`);
-
-                const gameList = document.getElementById('game-list');
-                gameList.innerHTML = '';
-
-                if (errno === 0 && stdout.trim()) {
-                    const lines = stdout.trim().split('\n');
-                    let hasGames = false;
-
-                    for (const line of lines) {
-                        // 跳过注释行和空行
-                        if (line.trim().startsWith('#') || !line.trim()) {
-                            continue;
-                        }
-
-                        hasGames = true;
-                        const li = document.createElement('li');
-                        li.textContent = line.trim();
-
-                        // 添加点击事件，显示应用信息
-                        li.addEventListener('click', () => showAppInfo(line.trim()));
-
-                        gameList.appendChild(li);
-                    }
-
-                    if (!hasGames) {
-                        gameList.innerHTML = '<li>无游戏</li>';
-                    }
-                } else {
-                    gameList.innerHTML = '<li>无游戏或文件不存在</li>';
-                }
-            } catch (error) {
-                console.error('获取游戏列表失败:', error);
-                document.getElementById('game-list').innerHTML = '<li>获取失败</li>';
-            }
-        }
-
-        // 显示应用信息
-        async function showAppInfo(packageName) {
-            try {
-                const { errno, stdout } = await exec(`pm list packages -f ${packageName}`);
-                if (errno === 0 && stdout.trim()) {
-                    toast(`应用包名: ${packageName}`);
-                } else {
-                    toast(`未找到应用: ${packageName}`);
-                }
-            } catch (error) {
-                console.error('获取应用信息失败:', error);
-                toast('获取应用信息失败');
-            }
-        }
-
-        // 获取日志
-        async function fetchLog() {
-            try {
-                const logContent = document.getElementById('log-content');
-                const refreshBtn = document.getElementById('refresh-log');
-
-                // 显示加载状态
-                logContent.textContent = '加载中...';
-                refreshBtn.disabled = true;
-                refreshBtn.textContent = '正在刷新...';
-
-                const logPath = "/data/adb/gpu_governor/log/gpu_gov.log.txt";
-                const { errno, stdout } = await exec(`tail -n 100 ${logPath} 2>/dev/null || echo "日志文件不存在"`);
-
-                if (errno === 0) {
-                    logContent.textContent = stdout || '无日志数据';
-
-                    // 如果日志内容过长，提供全屏查看选项
-                    if (stdout.length > 500) {
-                        const fullscreenBtn = document.createElement('button');
-                        fullscreenBtn.textContent = '全屏查看';
-                        fullscreenBtn.className = 'btn btn-small';
-                        fullscreenBtn.style.marginLeft = '10px';
-                        fullscreenBtn.addEventListener('click', () => {
-                            fullScreen(true);
-                            toast('按返回键退出全屏');
-                        });
-
-                        refreshBtn.parentNode.insertBefore(fullscreenBtn, refreshBtn.nextSibling);
-                    }
-                } else {
-                    logContent.textContent = '获取日志失败';
-                }
-            } catch (error) {
-                console.error('获取日志失败:', error);
-                document.getElementById('log-content').textContent = '获取日志失败';
-            } finally {
-                // 恢复按钮状态
-                const refreshBtn = document.getElementById('refresh-log');
-                refreshBtn.disabled = false;
-                refreshBtn.textContent = '刷新日志';
-            }
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
