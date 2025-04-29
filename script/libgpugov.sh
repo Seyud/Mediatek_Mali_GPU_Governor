@@ -25,7 +25,19 @@ gpugov_start() {
     log "Starting gpu governor"
     #lock_val "99" /sys/kernel/ged/hal/custom_boost_gpu_freq
     #lock_val "0" /sys/kernel/ged/hal/custom_upbound_gpu_freq
-    mv "$GPUGOV_LOGPATH" "$GPUGOV_LOGPATH".bak
+    # 确保日志目录存在并有适当权限
+    mkdir -p "$LOG_PATH"
+    chmod 0777 "$LOG_PATH"
+
+    # 备份旧日志文件
+    if [ -f "$GPUGOV_LOGPATH" ]; then
+        mv "$GPUGOV_LOGPATH" "$GPUGOV_LOGPATH".bak
+    fi
+
+    # 创建空日志文件并设置权限
+    touch "$GPUGOV_LOGPATH"
+    chmod 0666 "$GPUGOV_LOGPATH"
+
     sync
     nohup "$BIN_PATH"/Mediatek_Mali_GPU_Governor 2>&1 &
     sync

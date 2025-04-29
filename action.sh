@@ -7,9 +7,12 @@ GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
 GAME_MODE_FILE="$GPU_GOVERNOR_DIR/game_mode"
 
-# 确保目录存在
+# 确保目录存在并设置适当权限
 mkdir -p "$GPU_GOVERNOR_DIR"
 mkdir -p "$GPU_GOVERNOR_LOG_DIR"
+# 设置目录权限为777，确保任何进程都可以写入
+chmod 0777 "$GPU_GOVERNOR_DIR"
+chmod 0777 "$GPU_GOVERNOR_LOG_DIR"
 
 # 确保文件存在
 if [ ! -f "$GAME_MODE_FILE" ]; then

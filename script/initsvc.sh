@@ -23,8 +23,10 @@ BASEDIR="$(dirname $(readlink -f "$0"))"
 
 wait_until_login
 
-# 确保日志目录存在
+# 确保日志目录存在并设置适当权限
 mkdir -p $LOG_PATH
+# 设置日志目录权限为777，确保任何进程都可以写入
+chmod 0777 $LOG_PATH
 
 if [ -f "$LOG_FILE" ]; then
     cp -r $LOG_FILE $LOG_FILE.bak
