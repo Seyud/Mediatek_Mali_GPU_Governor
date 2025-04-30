@@ -19,7 +19,6 @@ BASEDIR="$(dirname $(readlink -f "$0"))"
 . $BASEDIR/pathinfo.sh
 . $BASEDIR/libcommon.sh
 . $BASEDIR/libgpugov.sh
-. $BASEDIR/libcorp.sh
 
 wait_until_login
 
