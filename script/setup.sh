@@ -189,6 +189,11 @@ install_gov() {
     fi
     echo "- Logs will be stored in $LOG_PATH"
 
+    # 创建游戏模式文件，初始值为0（关闭）
+    echo "0" > "$GAME_MODE_FILE"
+    chmod 0666 "$GAME_MODE_FILE"
+    echo "- Game mode file created at $GAME_MODE_FILE"
+
     # 生成游戏列表配置文件
     generate_gamelist
 }
