@@ -199,6 +199,11 @@ install_gov() {
     chmod 0666 "$LOG_LEVEL_FILE"
     echo "- Log level file created at $LOG_LEVEL_FILE"
 
+    # 创建调试模式文件，默认为关闭状态
+    echo "0" > "$DEBUG_MODE_FILE"
+    chmod 0666 "$DEBUG_MODE_FILE"
+    echo "- Debug mode file created at $DEBUG_MODE_FILE (default: disabled)"
+
     # 生成游戏列表配置文件
     generate_gamelist
 }

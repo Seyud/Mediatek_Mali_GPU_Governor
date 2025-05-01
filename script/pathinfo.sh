@@ -28,6 +28,7 @@ GAMES_PATH="/data/adb/gpu_governor"
 GAMES_FILE="$GAMES_PATH/games.conf"
 GAME_MODE_FILE="$GAMES_PATH/game_mode"
 LOG_LEVEL_FILE="$GAMES_PATH/log_level"
+DEBUG_MODE_FILE="$GAMES_PATH/debug_mode"
 
 ###############################
 # Log
