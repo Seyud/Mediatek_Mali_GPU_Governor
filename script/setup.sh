@@ -52,7 +52,6 @@ set_perm_recursive() {
 set_permissions() {
     set_perm_recursive $BIN_PATH 0 0 0755 0755 u:object_r:system_file:s0
     set_perm_recursive "$MODULE_PATH"/system/vendor/etc 0 0 0755 0644 u:object_r:vendor_configs_file:s0
-    set_perm_recursive "$MODULE_PATH"/zygisk 0 0 0755 0644 u:object_r:system_file:s0
 }
 
 # 生成游戏列表配置文件
