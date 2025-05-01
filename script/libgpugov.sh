@@ -41,12 +41,12 @@ gpugov_start() {
     # 检查是否启用调试模式
     if [ -f "$DEBUG_MODE_FILE" ] && [ "$(cat "$DEBUG_MODE_FILE")" = "1" ]; then
         log "Debug mode enabled, console output will be shown"
-        # 启动进程并设置环境变量，同时重定向输出到日志文件
-        nohup env GPU_GOV_DEBUG=1 "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
+        # 启动进程并设置环境变量，不重定向输出（程序内部已有日志记录）
+        nohup env GPU_GOV_DEBUG=1 "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
     else
         log "Debug mode disabled, console output will not be shown"
-        # 启动进程并重定向输出到日志文件，不启用控制台输出
-        nohup "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
+        # 启动进程，不重定向输出（程序内部已有日志记录）
+        nohup "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
     fi
     sync
 
