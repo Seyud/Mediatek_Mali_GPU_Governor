@@ -29,13 +29,28 @@ const loading = document.getElementById('loading');
 const themeToggle = document.getElementById('themeToggle');
 const runningStatus = document.getElementById('runningStatus');
 const gameModeToggle = document.getElementById('gameModeToggle');
+const moduleVersion = document.getElementById('moduleVersion');
 const followSystemThemeToggle = document.getElementById('followSystemThemeToggle');
 const logLevelSelect = document.getElementById('logLevelSelect');
+const logLevelContainer = document.getElementById('logLevelContainer');
+const selectedLogLevel = document.getElementById('selectedLogLevel');
+const logLevelOptions = document.getElementById('logLevelOptions');
+const logFileSelect = document.getElementById('logFileSelect');
+const logFileContainer = document.getElementById('logFileContainer');
+const selectedLogFile = document.getElementById('selectedLogFile');
+const logFileOptions = document.getElementById('logFileOptions');
 const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
 const gamesList = document.getElementById('gamesList');
 const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
-const logFileSelect = document.getElementById('logFileSelect');
+
+// 自定义电压和内存档位选择器DOM元素
+const selectedVolt = document.getElementById('selectedVolt');
+const voltDecreaseBtn = document.getElementById('voltDecreaseBtn');
+const voltIncreaseBtn = document.getElementById('voltIncreaseBtn');
+const ddrContainer = document.getElementById('ddrContainer');
+const selectedDdr = document.getElementById('selectedDdr');
+const ddrOptions = document.getElementById('ddrOptions');
 
 // 配置编辑相关DOM元素
 const addConfigBtn = document.getElementById('addConfigBtn');
@@ -72,7 +87,7 @@ const MAX_LOG_SIZE_MB = 5; // 日志文件最大大小，单位MB
 
 // 电压列表
 const VOLT_LIST = [
-    65000, 64375, 63750, 63125, 62500, 61875, 61875, 61250, 60625, 60000,
+    65000, 64375, 63750, 63125, 62500, 61875, 61250, 60625, 60000,
     59375, 58750, 58125, 57500, 56875, 56250, 55625, 55000, 54375, 53750,
     53125, 52500, 51875, 51250, 50625, 50000, 49375, 48750, 48125, 47500,
     46875, 46250, 45625, 45000, 44375, 43750, 43125, 42500, 41875
@@ -82,6 +97,18 @@ const VOLT_LIST = [
 let gpuConfigs = []; // 存储当前的GPU配置
 let editingIndex = -1; // 当前正在编辑的配置索引，-1表示新增
 let gamesList_data = []; // 存储当前的游戏列表
+let currentVoltIndex = 0; // 当前电压选择器的索引
+
+// 电压调整相关全局变量
+const VOLT_STEP = 625; // 电压调整步长
+const MAX_VOLT = 65000; // 电压最大值
+const MIN_VOLT = 41875; // 电压最小值
+let currentVoltValue = 65000; // 当前电压值
+let isLongPress = false; // 是否是长按
+let decreaseTimer = null; // 减小电压的定时器
+let increaseTimer = null; // 增加电压的定时器
+const pressDelay = 500; // 长按多久后开始连续触发（毫秒）
+const pressInterval = 150; // 连续触发的间隔（毫秒）
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
@@ -113,11 +140,16 @@ async function initializeApp() {
 
         // 逐个加载数据，每个函数都有自己的错误处理
         await safeExecute(checkModuleStatus, '检查模块状态失败');
+        await safeExecute(loadModuleVersion, '加载模块版本失败');
         await safeExecute(loadGameModeStatus, '加载游戏模式状态失败');
         await safeExecute(loadGpuConfig, '加载GPU配置失败');
         await safeExecute(loadGamesList, '加载游戏列表失败');
+        await safeExecute(initLogFileSelect, '初始化日志文件选择器失败');
         await safeExecute(loadLog, '加载日志失败');
         await safeExecute(loadLogLevel, '加载日志等级设置失败');
+
+        // 确保电压选择器已初始化
+        await safeExecute(initVoltSelect, '初始化电压选择器失败');
 
         // 初始化页面显示
         switchPage('page-status'); // 默认显示状态页面
@@ -217,9 +249,76 @@ function initTheme() {
         }
     });
 
-    // 日志等级选择事件
-    logLevelSelect.addEventListener('change', () => {
-        saveLogLevel();
+    // 自定义日志等级选择事件
+    logLevelContainer.addEventListener('click', () => {
+        logLevelContainer.classList.toggle('open');
+    });
+
+    // 点击日志等级选项时
+    const logLevelOptionElements = document.querySelectorAll('#logLevelOptions .option');
+    logLevelOptionElements.forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止事件冒泡到container
+
+            // 移除所有选项的选中状态
+            logLevelOptionElements.forEach(opt => opt.classList.remove('selected'));
+
+            // 为当前选项添加选中状态
+            option.classList.add('selected');
+
+            // 更新显示的文本
+            selectedLogLevel.textContent = option.textContent;
+
+            // 更新隐藏的select元素的值
+            logLevelSelect.value = option.getAttribute('data-value');
+
+            // 关闭下拉菜单
+            logLevelContainer.classList.remove('open');
+
+            // 保存设置
+            saveLogLevel();
+        });
+    });
+
+    // 点击页面其他地方关闭下拉菜单
+    document.addEventListener('click', (e) => {
+        if (!logLevelContainer.contains(e.target)) {
+            logLevelContainer.classList.remove('open');
+        }
+        if (!logFileContainer.contains(e.target)) {
+            logFileContainer.classList.remove('open');
+        }
+        if (!ddrContainer.contains(e.target)) {
+            ddrContainer.classList.remove('open');
+        }
+    });
+
+    // 自定义内存档位选择事件
+    ddrContainer.addEventListener('click', () => {
+        ddrContainer.classList.toggle('open');
+    });
+
+    // 点击内存档位选项时
+    const ddrOptionElements = document.querySelectorAll('#ddrOptions .option');
+    ddrOptionElements.forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止事件冒泡到container
+
+            // 移除所有选项的选中状态
+            ddrOptionElements.forEach(opt => opt.classList.remove('selected'));
+
+            // 为当前选项添加选中状态
+            option.classList.add('selected');
+
+            // 更新显示的文本
+            selectedDdr.textContent = option.textContent;
+
+            // 更新隐藏的select元素的值
+            ddrSelect.value = option.getAttribute('data-value');
+
+            // 关闭下拉菜单
+            ddrContainer.classList.remove('open');
+        });
     });
 }
 
@@ -268,14 +367,41 @@ function setupEventListeners() {
         loadLog();
     });
 
-    // 日志文件选择
-    logFileSelect.addEventListener('change', () => {
-        loadLog();
+    // 自定义日志文件选择事件
+    logFileContainer.addEventListener('click', () => {
+        logFileContainer.classList.toggle('open');
+    });
+
+    // 点击日志文件选项时
+    const logFileOptionElements = document.querySelectorAll('#logFileOptions .option');
+    logFileOptionElements.forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止事件冒泡到container
+
+            // 移除所有选项的选中状态
+            logFileOptionElements.forEach(opt => opt.classList.remove('selected'));
+
+            // 为当前选项添加选中状态
+            option.classList.add('selected');
+
+            // 更新显示的文本
+            selectedLogFile.textContent = option.textContent;
+
+            // 更新隐藏的select元素的值
+            logFileSelect.value = option.getAttribute('data-value');
+
+            // 关闭下拉菜单
+            logFileContainer.classList.remove('open');
+
+            // 加载选中的日志
+            loadLog();
+        });
     });
 
     // GPU配置相关事件
     // 添加配置按钮
     addConfigBtn.addEventListener('click', () => {
+        console.log('添加配置按钮被点击');
         openEditModal();
     });
 
@@ -396,6 +522,30 @@ async function checkModuleStatus() {
     }
 }
 
+// 加载模块版本
+async function loadModuleVersion() {
+    try {
+        // 从module.prop文件中获取版本信息
+        const { errno, stdout } = await exec('grep -i "^version=" /data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2');
+
+        if (errno === 0 && stdout.trim()) {
+            moduleVersion.textContent = stdout.trim();
+        } else {
+            // 尝试从KSU模块路径获取
+            const { errno: errno2, stdout: stdout2 } = await exec('grep -i "^version=" /data/adb/ksu/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2');
+
+            if (errno2 === 0 && stdout2.trim()) {
+                moduleVersion.textContent = stdout2.trim();
+            } else {
+                moduleVersion.textContent = '未知';
+            }
+        }
+    } catch (error) {
+        console.error('加载模块版本失败:', error);
+        moduleVersion.textContent = '未知';
+    }
+}
+
 // 加载游戏模式状态
 async function loadGameModeStatus() {
     try {
@@ -472,20 +622,282 @@ async function loadGpuConfig() {
     }
 }
 
-// 初始化电压选择下拉框
+// 减小电压函数（减小电压值）
+function decreaseVolt() {
+    // 直接减625单位
+    let newVolt = currentVoltValue - VOLT_STEP;
+
+    // 确保不低于最小值
+    if (newVolt >= MIN_VOLT) {
+        currentVoltValue = newVolt;
+        updateVoltDisplay();
+        return true; // 返回true表示操作成功
+    }
+    return false; // 返回false表示已达到极限
+}
+
+// 增加电压函数（增加电压值）
+function increaseVolt() {
+    // 直接加625单位
+    let newVolt = currentVoltValue + VOLT_STEP;
+
+    // 确保不超过最大值
+    if (newVolt <= MAX_VOLT) {
+        currentVoltValue = newVolt;
+        updateVoltDisplay();
+        return true; // 返回true表示操作成功
+    }
+    return false; // 返回false表示已达到极限
+}
+
+// 更新电压显示
+function updateVoltDisplay() {
+    // 使用当前电压值
+    selectedVolt.textContent = currentVoltValue;
+
+    // 尝试在select中找到匹配的选项
+    const voltOption = Array.from(voltSelect.options).find(option => parseInt(option.value) === currentVoltValue);
+
+    if (voltOption) {
+        // 如果找到匹配的选项，直接设置
+        voltSelect.value = voltOption.value;
+    } else {
+        // 如果没有找到匹配的选项，添加一个新选项
+        const option = document.createElement('option');
+        option.value = currentVoltValue;
+        option.textContent = currentVoltValue;
+        voltSelect.appendChild(option);
+        voltSelect.value = currentVoltValue;
+    }
+
+    // 禁用或启用按钮
+    voltDecreaseBtn.disabled = currentVoltValue <= MIN_VOLT;
+    voltIncreaseBtn.disabled = currentVoltValue >= MAX_VOLT;
+}
+
+// 初始化电压选择器
 function initVoltSelect() {
+    console.log('初始化电压选择器');
+
+    // 检查元素是否存在
+    if (!voltSelect || !selectedVolt || !voltDecreaseBtn || !voltIncreaseBtn) {
+        console.error('电压选择器元素不存在');
+        return;
+    }
+
+    // 清空现有选项
     voltSelect.innerHTML = '';
 
+    // 添加电压选项到隐藏的select元素
     VOLT_LIST.forEach(volt => {
-        const option = document.createElement('option');
-        option.value = volt;
-        option.textContent = volt;
-        voltSelect.appendChild(option);
+        const selectOption = document.createElement('option');
+        selectOption.value = volt;
+        selectOption.textContent = volt;
+        voltSelect.appendChild(selectOption);
     });
+
+    console.log(`已添加 ${VOLT_LIST.length} 个电压选项`);
+
+    // 设置默认值
+    currentVoltIndex = 0;
+    currentVoltValue = VOLT_LIST[currentVoltIndex];
+    selectedVolt.textContent = currentVoltValue;
+    voltSelect.value = currentVoltValue;
+
+    // 初始化按钮状态
+    updateVoltDisplay();
+
+    // 设置事件监听器（只在第一次初始化时添加）
+    setupVoltageEvents();
+}
+
+// 设置电压选择器的事件监听器（只调用一次）
+let voltageEventsInitialized = false;
+function setupVoltageEvents() {
+    if (voltageEventsInitialized) {
+        return; // 如果已经初始化过，则不再重复添加事件监听器
+    }
+
+    // 减小电压按钮事件 - 只处理单击
+    voltDecreaseBtn.addEventListener('click', () => {
+        // 如果是长按结束，不执行单击操作
+        if (isLongPress) {
+            isLongPress = false;
+            return;
+        }
+        decreaseVolt();
+    });
+
+    // 减小电压按钮长按事件
+    voltDecreaseBtn.addEventListener('mousedown', () => {
+        // 重置长按标记
+        isLongPress = false;
+
+        // 设置定时器，延迟后才开始连续操作
+        decreaseTimer = setTimeout(() => {
+            // 标记为长按
+            isLongPress = true;
+
+            // 执行第一次操作
+            const canContinue = decreaseVolt();
+
+            // 如果可以继续减小，设置定时器
+            if (canContinue) {
+                decreaseTimer = setInterval(() => {
+                    // 如果不能继续减小，清除定时器
+                    if (!decreaseVolt()) {
+                        clearInterval(decreaseTimer);
+                        decreaseTimer = null;
+                    }
+                }, pressInterval);
+            }
+        }, pressDelay);
+    });
+
+    // 增加电压按钮事件 - 只处理单击
+    voltIncreaseBtn.addEventListener('click', () => {
+        // 如果是长按结束，不执行单击操作
+        if (isLongPress) {
+            isLongPress = false;
+            return;
+        }
+        increaseVolt();
+    });
+
+    // 增加电压按钮长按事件
+    voltIncreaseBtn.addEventListener('mousedown', () => {
+        // 重置长按标记
+        isLongPress = false;
+
+        // 设置定时器，延迟后才开始连续操作
+        increaseTimer = setTimeout(() => {
+            // 标记为长按
+            isLongPress = true;
+
+            // 执行第一次操作
+            const canContinue = increaseVolt();
+
+            // 如果可以继续增加，设置定时器
+            if (canContinue) {
+                increaseTimer = setInterval(() => {
+                    // 如果不能继续增加，清除定时器
+                    if (!increaseVolt()) {
+                        clearInterval(increaseTimer);
+                        increaseTimer = null;
+                    }
+                }, pressInterval);
+            }
+        }, pressDelay);
+    });
+
+    // 鼠标松开和离开时清除定时器
+    document.addEventListener('mouseup', () => {
+        if (decreaseTimer) {
+            clearTimeout(decreaseTimer);
+            clearInterval(decreaseTimer);
+            decreaseTimer = null;
+        }
+        if (increaseTimer) {
+            clearTimeout(increaseTimer);
+            clearInterval(increaseTimer);
+            increaseTimer = null;
+        }
+    });
+
+    document.addEventListener('mouseleave', () => {
+        if (decreaseTimer) {
+            clearTimeout(decreaseTimer);
+            clearInterval(decreaseTimer);
+            decreaseTimer = null;
+        }
+        if (increaseTimer) {
+            clearTimeout(increaseTimer);
+            clearInterval(increaseTimer);
+            increaseTimer = null;
+        }
+    });
+
+    // 触摸事件支持
+    voltDecreaseBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // 防止触发click事件
+
+        // 重置长按标记
+        isLongPress = false;
+
+        // 执行一次点击操作
+        decreaseVolt();
+
+        // 设置定时器，延迟后才开始连续操作
+        decreaseTimer = setTimeout(() => {
+            // 标记为长按
+            isLongPress = true;
+
+            decreaseTimer = setInterval(() => {
+                // 如果不能继续减小，清除定时器
+                if (!decreaseVolt()) {
+                    clearInterval(decreaseTimer);
+                    decreaseTimer = null;
+                }
+            }, pressInterval);
+        }, pressDelay);
+    }, { passive: false });
+
+    voltIncreaseBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // 防止触发click事件
+
+        // 重置长按标记
+        isLongPress = false;
+
+        // 执行一次点击操作
+        increaseVolt();
+
+        // 设置定时器，延迟后才开始连续操作
+        increaseTimer = setTimeout(() => {
+            // 标记为长按
+            isLongPress = true;
+
+            increaseTimer = setInterval(() => {
+                // 如果不能继续增加，清除定时器
+                if (!increaseVolt()) {
+                    clearInterval(increaseTimer);
+                    increaseTimer = null;
+                }
+            }, pressInterval);
+        }, pressDelay);
+    }, { passive: false });
+
+    document.addEventListener('touchend', () => {
+        if (decreaseTimer) {
+            clearTimeout(decreaseTimer);
+            clearInterval(decreaseTimer);
+            decreaseTimer = null;
+        }
+        if (increaseTimer) {
+            clearTimeout(increaseTimer);
+            clearInterval(increaseTimer);
+            increaseTimer = null;
+        }
+    });
+
+    // 标记事件已初始化
+    voltageEventsInitialized = true;
 }
 
 // 打开编辑模态框
 function openEditModal(index = -1) {
+    console.log('打开编辑模态框，索引:', index);
+
+    // 检查模态框元素是否存在
+    if (!editConfigModal) {
+        console.error('模态框元素不存在');
+        return;
+    }
+
+    // 确保电压选择器已初始化
+    if (!voltageEventsInitialized) {
+        setupVoltageEvents();
+    }
+
     editingIndex = index;
 
     if (index >= 0 && index < gpuConfigs.length) {
@@ -494,22 +906,45 @@ function openEditModal(index = -1) {
         freqInput.value = config.freq;
 
         // 设置电压选择
-        const voltOption = Array.from(voltSelect.options).find(option => parseInt(option.value) === config.volt);
+        const voltValue = config.volt;
+        selectedVolt.textContent = voltValue;
+
+        // 设置当前电压值
+        currentVoltValue = voltValue;
+
+        // 尝试在select中找到匹配的选项
+        const voltOption = Array.from(voltSelect.options).find(option => parseInt(option.value) === voltValue);
         if (voltOption) {
+            // 如果找到匹配的选项，直接设置
             voltSelect.value = voltOption.value;
         } else {
             // 如果没有找到匹配的电压选项，添加一个新选项
             const option = document.createElement('option');
-            option.value = config.volt;
-            option.textContent = config.volt;
+            option.value = voltValue;
+            option.textContent = voltValue;
             voltSelect.appendChild(option);
-            voltSelect.value = config.volt;
+            voltSelect.value = voltValue;
         }
+
+        // 更新按钮状态
+        voltDecreaseBtn.disabled = voltValue <= MIN_VOLT;
+        voltIncreaseBtn.disabled = voltValue >= MAX_VOLT;
 
         // 设置内存档位选择
         const ddrOption = Array.from(ddrSelect.options).find(option => parseInt(option.value) === config.ddr);
         if (ddrOption) {
             ddrSelect.value = ddrOption.value;
+
+            // 更新自定义下拉菜单的显示文本和选中状态
+            const ddrOptionElements = document.querySelectorAll('#ddrOptions .option');
+            ddrOptionElements.forEach(option => {
+                if (parseInt(option.getAttribute('data-value')) === config.ddr) {
+                    selectedDdr.textContent = option.textContent;
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
         }
 
         // 显示删除按钮
@@ -520,12 +955,31 @@ function openEditModal(index = -1) {
         voltSelect.selectedIndex = 0;
         ddrSelect.selectedIndex = 0;
 
+        // 重置电压选择器
+        currentVoltValue = MAX_VOLT; // 设置为最大值
+        selectedVolt.textContent = currentVoltValue;
+        voltSelect.value = currentVoltValue;
+
+        // 更新按钮状态
+        voltDecreaseBtn.disabled = currentVoltValue <= MIN_VOLT;
+        voltIncreaseBtn.disabled = currentVoltValue >= MAX_VOLT;
+
+        // 重置内存档位选择器
+        selectedDdr.textContent = '999 (不调整)';
+
+        // 更新内存档位选中状态
+        document.querySelectorAll('#ddrOptions .option').forEach(opt => {
+            opt.classList.toggle('selected', opt.getAttribute('data-value') === '999');
+        });
+
         // 隐藏删除按钮
         deleteItemBtn.style.display = 'none';
     }
 
     // 显示模态框
+    console.log('设置模态框显示');
     editConfigModal.style.display = 'block';
+    console.log('模态框当前display值:', editConfigModal.style.display);
 }
 
 // 关闭编辑模态框
@@ -821,27 +1275,39 @@ async function loadLogLevel() {
         // 检查日志等级文件是否存在
         const { errno, stdout } = await exec(`cat ${LOG_LEVEL_PATH} 2>/dev/null || echo "info"`);
 
-        if (errno === 0) {
-            const logLevel = stdout.trim().toLowerCase();
+        let logLevel = 'info'; // 默认值
 
-            // 设置下拉框选中值
-            if (logLevel === 'debug' || logLevel === 'info' || logLevel === 'warn' || logLevel === 'error') {
-                logLevelSelect.value = logLevel;
-            } else {
-                // 如果值无效，默认设为info
-                logLevelSelect.value = 'info';
+        if (errno === 0) {
+            const level = stdout.trim().toLowerCase();
+
+            // 验证日志等级是否有效
+            if (level === 'debug' || level === 'info' || level === 'warn' || level === 'error') {
+                logLevel = level;
             }
 
             console.log(`当前日志等级: ${logLevel}`);
         } else {
-            // 如果文件不存在或读取失败，默认设为info
-            logLevelSelect.value = 'info';
             console.log('无法读取日志等级设置，使用默认值: info');
         }
+
+        // 设置隐藏的select元素值
+        logLevelSelect.value = logLevel;
+
+        // 更新自定义下拉菜单显示的文本
+        const options = document.querySelectorAll('.option');
+        options.forEach(option => {
+            if (option.getAttribute('data-value') === logLevel) {
+                selectedLogLevel.textContent = option.textContent;
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
     } catch (error) {
         console.error('加载日志等级设置失败:', error);
         // 出错时使用默认值
         logLevelSelect.value = 'info';
+        selectedLogLevel.textContent = 'Info (信息)';
     }
 }
 
@@ -864,6 +1330,23 @@ async function saveLogLevel() {
         console.error('保存日志等级失败:', error);
         toast('保存日志等级失败: ' + error.message);
     }
+}
+
+// 初始化日志文件选择器
+function initLogFileSelect() {
+    // 获取当前选中的日志文件
+    const currentLogFile = logFileSelect.value;
+
+    // 更新自定义下拉菜单显示的文本和选中状态
+    const options = document.querySelectorAll('#logFileOptions .option');
+    options.forEach(option => {
+        if (option.getAttribute('data-value') === currentLogFile) {
+            selectedLogFile.textContent = option.textContent;
+            option.classList.add('selected');
+        } else {
+            option.classList.remove('selected');
+        }
+    });
 }
 
 // 加载日志

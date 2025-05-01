@@ -40,6 +40,17 @@
                                     <span class="slider round"></span>
                                 </label>
                             </div>
+                            <div class="status-item">
+                                <span>模块版本:</span>
+                                <span id="moduleVersion" class="version-badge">加载中...</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 版权信息卡片 -->
+                    <section class="card" id="copyrightCard">
+                        <div class="card-content copyright-content">
+                            <p>天玑GPU调速器 © 2025 酷安@瓦力喀</p>
                         </div>
                     </section>
                 </div>
@@ -97,10 +108,19 @@
                         <div class="card-content">
                             <div class="log-actions">
                                 <button id="refreshLogBtn" class="btn">刷新</button>
-                                <select id="logFileSelect" class="select">
-                                    <option value="gpu_gov.log">主日志</option>
-                                    <option value="initsvc.log">初始化日志</option>
-                                </select>
+                                <div class="select-container">
+                                    <div class="custom-select" id="logFileContainer">
+                                        <div class="selected-option" id="selectedLogFile">主日志</div>
+                                        <div class="options-container" id="logFileOptions">
+                                            <div class="option" data-value="gpu_gov.log">主日志</div>
+                                            <div class="option" data-value="initsvc.log">初始化日志</div>
+                                        </div>
+                                    </div>
+                                    <select id="logFileSelect" class="select" style="display: none;">
+                                        <option value="gpu_gov.log">主日志</option>
+                                        <option value="initsvc.log">初始化日志</option>
+                                    </select>
+                                </div>
                             </div>
                             <pre id="logContent" class="log-content">加载中...</pre>
                         </div>
@@ -124,7 +144,16 @@
                             <div class="status-item">
                                 <span>主日志等级:</span>
                                 <div class="select-container">
-                                    <select id="logLevelSelect" class="select">
+                                    <div class="custom-select" id="logLevelContainer">
+                                        <div class="selected-option" id="selectedLogLevel">Info (信息)</div>
+                                        <div class="options-container" id="logLevelOptions">
+                                            <div class="option" data-value="debug">Debug (详细)</div>
+                                            <div class="option" data-value="info">Info (信息)</div>
+                                            <div class="option" data-value="warn">Warn (警告)</div>
+                                            <div class="option" data-value="error">Error (错误)</div>
+                                        </div>
+                                    </div>
+                                    <select id="logLevelSelect" class="select" style="display: none;">
                                         <option value="debug">Debug (详细)</option>
                                         <option value="info">Info (信息)</option>
                                         <option value="warn">Warn (警告)</option>
@@ -151,19 +180,36 @@
                     </div>
                     <div class="form-group">
                         <label for="voltSelect">电压 (uV):</label>
-                        <select id="voltSelect" class="select">
-                            <!-- 电压选项将通过JavaScript动态添加 -->
-                        </select>
+                        <div class="number-spinner">
+                            <button class="spinner-btn" id="voltDecreaseBtn">-</button>
+                            <div class="spinner-value" id="selectedVolt">65000</div>
+                            <button class="spinner-btn" id="voltIncreaseBtn">+</button>
+                            <select id="voltSelect" class="select" style="display: none;">
+                                <!-- 电压选项将通过JavaScript动态添加 -->
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="ddrSelect">内存档位:</label>
-                        <select id="ddrSelect" class="select">
-                            <option value="999">999 (不调整)</option>
-                            <option value="0">0 (最高)</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3 (最低)</option>
-                        </select>
+                        <div class="select-container">
+                            <div class="custom-select" id="ddrContainer">
+                                <div class="selected-option" id="selectedDdr">999 (不调整)</div>
+                                <div class="options-container" id="ddrOptions">
+                                    <div class="option" data-value="999">999 (不调整)</div>
+                                    <div class="option" data-value="0">0 (最高)</div>
+                                    <div class="option" data-value="1">1</div>
+                                    <div class="option" data-value="2">2</div>
+                                    <div class="option" data-value="3">3 (最低)</div>
+                                </div>
+                            </div>
+                            <select id="ddrSelect" class="select" style="display: none;">
+                                <option value="999">999 (不调整)</option>
+                                <option value="0">0 (最高)</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3 (最低)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button id="saveItemBtn" class="btn">保存</button>
@@ -210,9 +256,7 @@
             </button>
         </nav>
 
-        <footer class="app-footer">
-            <p>天玑GPU调速器 © 2025 酷安@瓦力喀</p>
-        </footer>
+        <!-- 移除页脚，版权信息已移至状态页面 -->
     </div>
 
     <script src="app.js"></script>
