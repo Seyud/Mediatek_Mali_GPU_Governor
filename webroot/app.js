@@ -371,7 +371,7 @@ function switchPage(pageId) {
 async function checkModuleStatus() {
     try {
         // 使用简单命令检查服务是否运行
-        const { errno, stdout } = await exec('pgrep -f Mediatek_Mali_GPU_Governor || echo ""');
+        const { errno, stdout } = await exec('pgrep -f gpugovernor || echo ""');
 
         if (errno === 0 && stdout.trim()) {
             runningStatus.textContent = '运行中';

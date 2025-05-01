@@ -14,10 +14,10 @@ GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log.txt"
 
 gpugov_start() {
     # 直接使用 BIN_PATH
-    if [ ! -x "$BIN_PATH/Mediatek_Mali_GPU_Governor" ]; then
+    if [ ! -x "$BIN_PATH/gpugovernor" ]; then
         log "Error: Binary not executable, trying to fix permissions"
-        chmod 0755 "$BIN_PATH/Mediatek_Mali_GPU_Governor"
-        if [ ! -x "$BIN_PATH/Mediatek_Mali_GPU_Governor" ]; then
+        chmod 0755 "$BIN_PATH/gpugovernor"
+        if [ ! -x "$BIN_PATH/gpugovernor" ]; then
             log "Error: Failed to set executable permission"
             return 1
         fi
@@ -25,17 +25,17 @@ gpugov_start() {
 
     log "Starting gpu governor"
     sync
-    nohup "$BIN_PATH/Mediatek_Mali_GPU_Governor" 2>&1 &
+    nohup "$BIN_PATH/gpugovernor" 2>&1 &
     sync
 
     sleep 2
-    if ! pgrep -f "Mediatek_Mali_GPU_Governor" >/dev/null; then
+    if ! pgrep -f "gpugovernor" >/dev/null; then
         log "Error: Process failed to start"
         return 1
     fi
 
     rebuild_process_scan_cache
-    change_task_cgroup "Mediatek_Mali_GPU_Governor" "background" "cpuset"
+    change_task_cgroup "gpugovernor" "background" "cpuset"
     log "GPU Governor started successfully"
 }
 gpugov_testconf() {
