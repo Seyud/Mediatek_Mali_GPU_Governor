@@ -1,0 +1,22 @@
+# 忽略src文件夹中的所有内容
+/src/
+
+# 忽略编译生成的文件
+/target/
+/build/
+
+# 忽略日志文件
+*.log
+*.log.txt
+
+# 忽略临时文件
+*.tmp
+*.temp
+*.swp
+*~
+
+# 忽略IDE和编辑器相关文件
+.idea/
+.vscode/
+*.iml
+.DS_Store
