@@ -99,8 +99,65 @@ read_cfg_value() {
     echo "$value"
 }
 
-# $1:content
+###############################
+# Log Functions
+###############################
 
+# 统一的日志轮转函数
+# $1:log_file - 日志文件路径
+# $2:max_size_mb - 最大日志大小(MB)，默认为5MB
+rotate_log() {
+    local log_file="$1"
+    local max_size_mb="${2:-5}"
+    local max_size_bytes=$((max_size_mb * 1024 * 1024))
+
+    # 确保日志文件存在
+    if [ ! -f "$log_file" ]; then
+        touch "$log_file"
+        chmod 0666 "$log_file"
+        return 0
+    fi
+
+    # 获取文件大小（以字节为单位）
+    local file_size=$(stat -c %s "$log_file" 2>/dev/null || stat -f %z "$log_file" 2>/dev/null)
+
+    # 如果文件大小超过限制，进行轮转
+    if [ "$file_size" -gt "$max_size_bytes" ]; then
+        echo "日志文件 $log_file 大小($file_size 字节)超过限制($max_size_bytes 字节)，进行轮转"
+
+        # 创建备份文件（如果已存在则覆盖）
+        cp "$log_file" "${log_file}.bak"
+
+        # 清空原日志文件
+        true > "$log_file"
+
+        # 记录轮转信息
+        echo "$(date) - 日志已轮转，原日志已备份到 ${log_file}.bak" >> "$log_file"
+        sync
+        return 1
+    fi
+
+    return 0
+}
+
+# 安全地将命令输出重定向到日志文件，并检查日志大小
+# $1:log_file - 日志文件路径
+# $2:command - 要执行的命令
+log_command() {
+    local log_file="$1"
+    local command="$2"
+
+    # 先检查并轮转日志
+    rotate_log "$log_file"
+
+    # 执行命令并将输出重定向到日志
+    eval "$command" >> "$log_file" 2>&1
+
+    # 执行后再次检查日志大小
+    rotate_log "$log_file"
+}
+
+# $1:content
 wait_until_login() {
     # in case of /data encryption is disabled
     while [ "$(getprop sys.boot_completed)" != "1" ]; do

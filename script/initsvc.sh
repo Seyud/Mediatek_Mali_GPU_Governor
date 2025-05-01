@@ -31,31 +31,19 @@ mkdir -p $LOG_PATH
 # 设置日志目录权限为777，确保任何进程都可以写入
 chmod 0777 $LOG_PATH
 
-# 检查初始化日志文件大小
-if [ -f "$LOG_FILE" ]; then
-    # 获取文件大小（以字节为单位）
-    file_size=$(stat -c %s "$LOG_FILE" 2>/dev/null || stat -f %z "$LOG_FILE" 2>/dev/null)
-    max_size_bytes=$((MAX_LOG_SIZE_MB * 1024 * 1024))
+# 使用统一的日志轮转函数处理初始化日志
+rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
 
-    # 如果文件大小超过限制，进行备份
-    if [ "$file_size" -gt "$max_size_bytes" ]; then
-        cp -r $LOG_FILE $LOG_FILE.bak
-        clear_log
-        echo "$(date) - 日志已轮转，原日志已备份到 ${LOG_FILE}.bak" >> "$LOG_FILE"
-    else
-        cp -r $LOG_FILE $LOG_FILE.bak
-        clear_log
-    fi
-else
-    clear_log
-fi
-exec 1>>$LOG_FILE
-exec 2>&1
-date
-echo "PATH=$PATH"
-echo "sh=$(which sh)"
-echo "Bootstraping MTK_GPU_GOVERNOR"
-#All Logged
+# 记录基本信息到日志
 {
-    gpugov_testconf
-} >>$LOG_FILE 2>&1
+    echo "$(date)"
+    echo "PATH=$PATH"
+    echo "sh=$(which sh)"
+    echo "Bootstraping MTK_GPU_GOVERNOR"
+} >> "$LOG_FILE"
+
+# 使用log_command函数执行gpugov_testconf，确保日志大小受控
+log_command "$LOG_FILE" "gpugov_testconf"
+
+# 检查并轮转GPU调速器主日志
+rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
