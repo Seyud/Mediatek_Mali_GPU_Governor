@@ -18,6 +18,10 @@
 BASEDIR="$(dirname $(readlink -f "$0"))"
 . $BASEDIR/pathinfo.sh
 . $BASEDIR/libcommon.sh
+
+# 设置日志文件最大大小（单位MB）
+MAX_LOG_SIZE_MB=5
+
 . $BASEDIR/libgpugov.sh
 
 wait_until_login
@@ -27,10 +31,24 @@ mkdir -p $LOG_PATH
 # 设置日志目录权限为777，确保任何进程都可以写入
 chmod 0777 $LOG_PATH
 
+# 检查初始化日志文件大小
 if [ -f "$LOG_FILE" ]; then
-    cp -r $LOG_FILE $LOG_FILE.bak
+    # 获取文件大小（以字节为单位）
+    file_size=$(stat -c %s "$LOG_FILE" 2>/dev/null || stat -f %z "$LOG_FILE" 2>/dev/null)
+    max_size_bytes=$((MAX_LOG_SIZE_MB * 1024 * 1024))
+
+    # 如果文件大小超过限制，进行备份
+    if [ "$file_size" -gt "$max_size_bytes" ]; then
+        cp -r $LOG_FILE $LOG_FILE.bak
+        clear_log
+        echo "$(date) - 日志已轮转，原日志已备份到 ${LOG_FILE}.bak" >> "$LOG_FILE"
+    else
+        cp -r $LOG_FILE $LOG_FILE.bak
+        clear_log
+    fi
+else
+    clear_log
 fi
-clear_log
 exec 1>>$LOG_FILE
 exec 2>&1
 date

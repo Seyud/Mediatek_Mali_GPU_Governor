@@ -11,6 +11,38 @@ BASEDIR="$(dirname "$0")"
 
 GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
 GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log.txt"
+MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
+
+# 检查日志文件大小并在必要时进行轮转
+check_and_rotate_log() {
+    local log_file="$1"
+    local max_size_bytes=$((MAX_LOG_SIZE_MB * 1024 * 1024))
+
+    # 确保日志文件存在
+    if [ ! -f "$log_file" ]; then
+        touch "$log_file"
+        chmod 0666 "$log_file"
+        return
+    fi
+
+    # 获取文件大小（以字节为单位）
+    local file_size=$(stat -c %s "$log_file" 2>/dev/null || stat -f %z "$log_file" 2>/dev/null)
+
+    # 如果文件大小超过限制，进行轮转
+    if [ "$file_size" -gt "$max_size_bytes" ]; then
+        log "日志文件大小($file_size 字节)超过限制($max_size_bytes 字节)，进行轮转"
+
+        # 创建备份文件（如果已存在则覆盖）
+        cp "$log_file" "${log_file}.bak"
+
+        # 清空原日志文件
+        true > "$log_file"
+
+        # 记录轮转信息
+        echo "$(date) - 日志已轮转，原日志已备份到 ${log_file}.bak" >> "$log_file"
+        sync
+    fi
+}
 
 gpugov_start() {
     # 直接使用 BIN_PATH
@@ -22,6 +54,9 @@ gpugov_start() {
             return 1
         fi
     fi
+
+    # 检查并轮转主日志文件
+    check_and_rotate_log "$GPUGOV_LOGPATH"
 
     log "Starting gpu governor"
     sync
@@ -40,6 +75,9 @@ gpugov_start() {
 }
 gpugov_testconf() {
     log "Starting gpu governor"
+
+    # 检查并轮转主日志文件
+    check_and_rotate_log "$GPUGOV_LOGPATH"
 
     # 检查用户配置文件
     if [ -f "$USER_PATH/gpu_freq_table.conf" ]; then

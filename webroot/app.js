@@ -66,6 +66,7 @@ const LOG_PATH = '/data/adb/gpu_governor/log';
 const CONFIG_PATH = '/data/gpu_freq_table.conf';
 const GAMES_PATH = '/data/adb/gpu_governor/games.conf';
 const GAME_MODE_PATH = '/data/adb/gpu_governor/game_mode';
+const MAX_LOG_SIZE_MB = 5; // 日志文件最大大小，单位MB
 
 // 电压列表
 const VOLT_LIST = [
@@ -812,6 +813,25 @@ async function loadLog() {
         const selectedLog = logFileSelect.value;
         logContent.textContent = '加载中...';
 
+        // 检查日志文件大小
+        const { errno: statErrno, stdout: statOutput } = await exec(`stat -c %s ${LOG_PATH}/${selectedLog} 2>/dev/null || echo "0"`);
+
+        if (statErrno === 0 && statOutput.trim() !== "0" && statOutput.trim() !== "日志文件不存在") {
+            const fileSize = parseInt(statOutput.trim());
+            const maxSizeBytes = MAX_LOG_SIZE_MB * 1024 * 1024;
+
+            // 如果文件大小接近限制，显示提示
+            if (fileSize > maxSizeBytes * 0.8) {
+                const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
+                console.log(`日志文件大小: ${fileSizeMB}MB，接近${MAX_LOG_SIZE_MB}MB的限制`);
+
+                // 如果超过限制，显示警告
+                if (fileSize > maxSizeBytes) {
+                    logContent.textContent = `警告: 日志文件大小(${fileSizeMB}MB)已超过${MAX_LOG_SIZE_MB}MB的限制，将自动轮转。\n\n加载中...`;
+                }
+            }
+        }
+
         // 使用cat而不是tail，某些设备可能没有tail命令
         const { errno, stdout } = await exec(`cat ${LOG_PATH}/${selectedLog} 2>/dev/null || echo "日志文件不存在"`);
 
@@ -820,7 +840,27 @@ async function loadLog() {
             const lines = stdout.trim().split('\n');
             const lastLines = lines.slice(-100).join('\n');
 
-            logContent.textContent = lastLines || '日志为空';
+            // 如果日志文件大小接近限制，添加提示信息
+            if (statErrno === 0 && statOutput.trim() !== "0" && statOutput.trim() !== "日志文件不存在") {
+                const fileSize = parseInt(statOutput.trim());
+                const maxSizeBytes = MAX_LOG_SIZE_MB * 1024 * 1024;
+
+                if (fileSize > maxSizeBytes * 0.8) {
+                    const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
+                    const sizeInfo = `[日志文件大小: ${fileSizeMB}MB / ${MAX_LOG_SIZE_MB}MB]\n`;
+
+                    if (fileSize > maxSizeBytes) {
+                        logContent.textContent = `警告: 日志文件大小已超过限制，将自动轮转。\n${sizeInfo}\n${lastLines || '日志为空'}`;
+                    } else {
+                        logContent.textContent = `${sizeInfo}\n${lastLines || '日志为空'}`;
+                    }
+                } else {
+                    logContent.textContent = lastLines || '日志为空';
+                }
+            } else {
+                logContent.textContent = lastLines || '日志为空';
+            }
+
             // 滚动到底部
             logContent.scrollTop = logContent.scrollHeight;
         } else {
