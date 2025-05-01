@@ -9,25 +9,10 @@ BASEDIR="$(dirname "$0")"
 . $BASEDIR/libcgroup.sh
 . $BASEDIR/libsysinfo.sh
 
-
 GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
 GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log.txt"
 
-
-
-gpugov_stop() {
-    pkill Mediatek_Mali_GPU_Governor
-    killall -9 Mediatek_Mali_GPU_Governor
-    killall -15 Mediatek_Mali_GPU_Governor
-}
 gpugov_start() {
-    gpugov_stop
-    sleep 1
-    if pgrep -f "Mediatek_Mali_GPU_Governor" >/dev/null; then
-        log "Error: Failed to stop old process"
-        return 1
-    }
-
     # 直接使用 BIN_PATH
     if [ ! -x "$BIN_PATH/Mediatek_Mali_GPU_Governor" ]; then
         log "Error: Binary not executable, trying to fix permissions"
@@ -42,7 +27,7 @@ gpugov_start() {
     sync
     nohup "$BIN_PATH/Mediatek_Mali_GPU_Governor" 2>&1 &
     sync
-    
+
     sleep 2
     if ! pgrep -f "Mediatek_Mali_GPU_Governor" >/dev/null; then
         log "Error: Process failed to start"
@@ -55,7 +40,7 @@ gpugov_start() {
 }
 gpugov_testconf() {
     log "Starting gpu governor"
-    
+
     # 检查用户配置文件
     if [ -f "$USER_PATH/gpu_freq_table.conf" ]; then
         log "Found user config at $USER_PATH/gpu_freq_table.conf"
@@ -64,12 +49,12 @@ gpugov_testconf() {
         # 获取设备平台信息
         target="$(getprop ro.board.platform)"
         cfgname="$(get_config_name $target)"
-        
+
         if [ "$cfgname" = "unsupported" ]; then
             target="$(getprop ro.product.board)"
             cfgname="$(get_config_name "$target")"
         fi
-        
+
         # 如果平台支持，使用平台特定配置，否则使用默认配置
         if [ "$cfgname" != "unsupported" ] && [ -f "$MODULE_PATH/config/$cfgname.conf" ]; then
             cp -f "$MODULE_PATH/config/$cfgname.conf" "$USER_PATH/gpu_freq_table.conf"
@@ -80,7 +65,7 @@ gpugov_testconf() {
         fi
         GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
     fi
-    
+
     log "Using config $GPUGOV_CONFPATH"
     gpugov_start
 }
