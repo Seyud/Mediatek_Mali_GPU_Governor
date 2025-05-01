@@ -110,6 +110,8 @@ rotate_log() {
     local log_file="$1"
     local max_size_mb="${2:-5}"
     local max_size_bytes=$((max_size_mb * 1024 * 1024))
+    # 设置轮转阈值为最大大小的80%，提前进行轮转
+    local threshold_bytes=$(( (max_size_bytes * 8) / 10 ))
 
     # 确保日志文件存在
     if [ ! -f "$log_file" ]; then
@@ -121,15 +123,22 @@ rotate_log() {
     # 获取文件大小（以字节为单位）
     local file_size=$(stat -c %s "$log_file" 2>/dev/null || stat -f %z "$log_file" 2>/dev/null)
 
-    # 如果文件大小超过限制，进行轮转
-    if [ "$file_size" -gt "$max_size_bytes" ]; then
-        echo "日志文件 $log_file 大小($file_size 字节)超过限制($max_size_bytes 字节)，进行轮转"
+    # 如果获取文件大小失败，假设需要轮转
+    if [ -z "$file_size" ] || [ "$file_size" -eq 0 ]; then
+        file_size=0
+        return 0
+    fi
+
+    # 如果文件大小超过阈值（80%的限制），进行轮转
+    if [ "$file_size" -gt "$threshold_bytes" ]; then
+        echo "日志文件 $log_file 大小($file_size 字节)超过阈值($threshold_bytes 字节)，进行轮转"
 
         # 创建备份文件（如果已存在则覆盖）
-        cp "$log_file" "${log_file}.bak"
+        cp "$log_file" "${log_file}.bak" 2>/dev/null
 
         # 清空原日志文件
         true > "$log_file"
+        chmod 0666 "$log_file"
 
         # 记录轮转信息
         echo "$(date) - 日志已轮转，原日志已备份到 ${log_file}.bak" >> "$log_file"

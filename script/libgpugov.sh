@@ -10,7 +10,7 @@ BASEDIR="$(dirname "$0")"
 . $BASEDIR/libsysinfo.sh
 
 GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
-GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log.txt"
+GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log"
 MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
 
 # 使用libcommon.sh中的统一日志轮转函数

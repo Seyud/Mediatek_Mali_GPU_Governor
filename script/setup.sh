@@ -194,6 +194,11 @@ install_gov() {
     chmod 0666 "$GAME_MODE_FILE"
     echo "- Game mode file created at $GAME_MODE_FILE"
 
+    # 创建日志等级文件，默认为info级别
+    echo "info" > "$LOG_LEVEL_FILE"
+    chmod 0666 "$LOG_LEVEL_FILE"
+    echo "- Log level file created at $LOG_LEVEL_FILE"
+
     # 生成游戏列表配置文件
     generate_gamelist
 }

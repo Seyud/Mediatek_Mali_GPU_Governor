@@ -98,7 +98,7 @@
                             <div class="log-actions">
                                 <button id="refreshLogBtn" class="btn">刷新</button>
                                 <select id="logFileSelect" class="select">
-                                    <option value="gpu_gov.log.txt">主日志</option>
+                                    <option value="gpu_gov.log">主日志</option>
                                     <option value="initsvc.log">初始化日志</option>
                                 </select>
                             </div>
@@ -119,6 +119,21 @@
                                     <input type="checkbox" id="followSystemThemeToggle">
                                     <span class="slider round"></span>
                                 </label>
+                            </div>
+
+                            <div class="status-item">
+                                <span>主日志等级:</span>
+                                <div class="select-container">
+                                    <select id="logLevelSelect" class="select">
+                                        <option value="debug">Debug (详细)</option>
+                                        <option value="info">Info (信息)</option>
+                                        <option value="warn">Warn (警告)</option>
+                                        <option value="error">Error (错误)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="setting-description">
+                                <small>修改日志等级后需要重启模块或设备才能生效</small>
                             </div>
                         </div>
                     </section>

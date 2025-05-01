@@ -4,13 +4,16 @@
 # 忽略log文件夹中的所有内容
 /log/
 
+# 忽略miuix-main文件夹中的所有内容，避免与miuix-main项目冲突
+/miuix-main/
+/js/
+
 # 忽略编译生成的文件
 /target/
 /build/
 
 # 忽略日志文件
 *.log
-*.log.txt
 
 # 忽略临时文件
 *.tmp

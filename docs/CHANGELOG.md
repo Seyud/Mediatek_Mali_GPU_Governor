@@ -44,7 +44,7 @@
 - 🌐 修复WebUI在某些浏览器中显示异常的问题
 
 ### 📖 使用说明
-- 📂 主日志文件位置: `/data/adb/gpu_governor/log/gpu_gov.log.txt`
+- 📂 主日志文件位置: `/data/adb/gpu_governor/log/gpu_gov.log`
 - 🎮 启动控制面板: `sh /data/adb/modules/Mediatek_Mali_GPU_Governor/action.sh`
 - 🔄 切换游戏模式: `sh /data/adb/modules/Mediatek_Mali_GPU_Governor/action.sh [on|off]`
 - 🌐 访问WebUI界面: 通过KsuWebUI或MMRL应用访问

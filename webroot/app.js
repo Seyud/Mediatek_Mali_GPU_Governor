@@ -30,6 +30,7 @@ const themeToggle = document.getElementById('themeToggle');
 const runningStatus = document.getElementById('runningStatus');
 const gameModeToggle = document.getElementById('gameModeToggle');
 const followSystemThemeToggle = document.getElementById('followSystemThemeToggle');
+const logLevelSelect = document.getElementById('logLevelSelect');
 const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
 const gamesList = document.getElementById('gamesList');
 const logContent = document.getElementById('logContent');
@@ -66,6 +67,7 @@ const LOG_PATH = '/data/adb/gpu_governor/log';
 const CONFIG_PATH = '/data/gpu_freq_table.conf';
 const GAMES_PATH = '/data/adb/gpu_governor/games.conf';
 const GAME_MODE_PATH = '/data/adb/gpu_governor/game_mode';
+const LOG_LEVEL_PATH = '/data/adb/gpu_governor/log_level';
 const MAX_LOG_SIZE_MB = 5; // 日志文件最大大小，单位MB
 
 // 电压列表
@@ -115,6 +117,7 @@ async function initializeApp() {
         await safeExecute(loadGpuConfig, '加载GPU配置失败');
         await safeExecute(loadGamesList, '加载游戏列表失败');
         await safeExecute(loadLog, '加载日志失败');
+        await safeExecute(loadLogLevel, '加载日志等级设置失败');
 
         // 初始化页面显示
         switchPage('page-status'); // 默认显示状态页面
@@ -212,6 +215,11 @@ function initTheme() {
         } else {
             toast('已关闭跟随系统主题，将保持当前主题');
         }
+    });
+
+    // 日志等级选择事件
+    logLevelSelect.addEventListener('change', () => {
+        saveLogLevel();
     });
 }
 
@@ -804,6 +812,57 @@ async function saveGamesToFile() {
     } catch (error) {
         console.error('保存游戏列表失败:', error);
         toast('保存游戏列表失败: ' + error.message);
+    }
+}
+
+// 加载日志等级设置
+async function loadLogLevel() {
+    try {
+        // 检查日志等级文件是否存在
+        const { errno, stdout } = await exec(`cat ${LOG_LEVEL_PATH} 2>/dev/null || echo "info"`);
+
+        if (errno === 0) {
+            const logLevel = stdout.trim().toLowerCase();
+
+            // 设置下拉框选中值
+            if (logLevel === 'debug' || logLevel === 'info' || logLevel === 'warn' || logLevel === 'error') {
+                logLevelSelect.value = logLevel;
+            } else {
+                // 如果值无效，默认设为info
+                logLevelSelect.value = 'info';
+            }
+
+            console.log(`当前日志等级: ${logLevel}`);
+        } else {
+            // 如果文件不存在或读取失败，默认设为info
+            logLevelSelect.value = 'info';
+            console.log('无法读取日志等级设置，使用默认值: info');
+        }
+    } catch (error) {
+        console.error('加载日志等级设置失败:', error);
+        // 出错时使用默认值
+        logLevelSelect.value = 'info';
+    }
+}
+
+// 保存日志等级设置
+async function saveLogLevel() {
+    try {
+        const selectedLevel = logLevelSelect.value;
+
+        // 保存到文件
+        const { errno } = await exec(`echo "${selectedLevel}" > ${LOG_LEVEL_PATH}`);
+
+        if (errno === 0) {
+            toast(`日志等级已设置为: ${selectedLevel}，重启模块后生效`);
+            console.log(`日志等级已保存: ${selectedLevel}`);
+        } else {
+            toast('保存日志等级失败，请检查权限');
+            console.error('保存日志等级失败');
+        }
+    } catch (error) {
+        console.error('保存日志等级失败:', error);
+        toast('保存日志等级失败: ' + error.message);
     }
 }
 

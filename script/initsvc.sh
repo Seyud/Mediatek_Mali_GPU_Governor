@@ -31,6 +31,17 @@ mkdir -p $LOG_PATH
 # 设置日志目录权限为777，确保任何进程都可以写入
 chmod 0777 $LOG_PATH
 
+# 检查并轮转所有日志文件
+# 先处理主日志文件
+if [ -f "$GPUGOV_LOGPATH" ]; then
+    # 强制轮转主日志文件，确保启动时日志文件不会太大
+    cp "$GPUGOV_LOGPATH" "${GPUGOV_LOGPATH}.bak" 2>/dev/null
+    true > "$GPUGOV_LOGPATH"
+    chmod 0666 "$GPUGOV_LOGPATH"
+    echo "$(date) - 系统启动时强制轮转日志，原日志已备份到 ${GPUGOV_LOGPATH}.bak" >> "$GPUGOV_LOGPATH"
+    sync
+fi
+
 # 使用统一的日志轮转函数处理初始化日志
 rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
 

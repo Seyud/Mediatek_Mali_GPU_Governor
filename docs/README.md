@@ -128,7 +128,7 @@ WebUI 提供了直观的界面，包括以下几个主要部分：
 ## 常见问题 ❓
 
 **Q: 如何确认模块正常工作？**
-A: 查看 `/data/adb/gpu_governor/log/gpu_gov.log.txt` 日志文件，确认有正常的频率调节记录。或者通过 WebUI 界面查看模块状态和日志。
+A: 查看 `/data/adb/gpu_governor/log/gpu_gov.log` 日志文件，确认有正常的频率调节记录。或者通过 WebUI 界面查看模块状态和日志。
 
 **Q: 游戏模式如何工作？**
 A: 当检测到 `games.conf` 中列出的应用运行时，会自动应用优化的 GPU 频率设置。
