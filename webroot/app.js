@@ -1320,7 +1320,11 @@ async function saveLogLevel() {
         const { errno } = await exec(`echo "${selectedLevel}" > ${LOG_LEVEL_PATH}`);
 
         if (errno === 0) {
-            toast(`日志等级已设置为: ${selectedLevel}，重启模块后生效`);
+            if (selectedLevel === 'debug') {
+                toast(`日志等级已设置为: ${selectedLevel}，重启模块后将启用详细日志记录`);
+            } else {
+                toast(`日志等级已设置为: ${selectedLevel}，重启模块后生效`);
+            }
             console.log(`日志等级已保存: ${selectedLevel}`);
         } else {
             toast('保存日志等级失败，请检查权限');

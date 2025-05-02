@@ -196,12 +196,7 @@ install_gov() {
     # 创建日志等级文件，默认为info级别
     echo "info" > "$LOG_LEVEL_FILE"
     chmod 0666 "$LOG_LEVEL_FILE"
-    echo "- Log level file created at $LOG_LEVEL_FILE"
-
-    # 创建调试模式文件，默认为关闭状态
-    echo "0" > "$DEBUG_MODE_FILE"
-    chmod 0666 "$DEBUG_MODE_FILE"
-    echo "- Debug mode file created at $DEBUG_MODE_FILE (default: disabled)"
+    echo "- Log level file created at $LOG_LEVEL_FILE (default: info)"
 
     # 生成游戏列表配置文件
     generate_gamelist

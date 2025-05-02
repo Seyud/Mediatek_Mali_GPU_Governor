@@ -11,7 +11,7 @@ BASEDIR="$(dirname "$0")"
 
 GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
 GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log"
-DEBUG_MODE_FILE="$GAMES_PATH/debug_mode"
+LOG_LEVEL_FILE="$GAMES_PATH/log_level"
 MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
 
 # 使用libcommon.sh中的统一日志轮转函数
@@ -38,15 +38,28 @@ gpugov_start() {
     log "Starting gpu governor"
     sync
 
-    # 检查是否启用调试模式
-    if [ -f "$DEBUG_MODE_FILE" ] && [ "$(cat "$DEBUG_MODE_FILE")" = "1" ]; then
-        log "Debug mode enabled, console output will be shown"
-        # 启动进程并设置环境变量，不重定向输出（程序内部已有日志记录）
-        nohup env GPU_GOV_DEBUG=1 "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
+    # 读取日志等级设置
+    log_level="info"
+    if [ -f "$LOG_LEVEL_FILE" ]; then
+        log_level=$(cat "$LOG_LEVEL_FILE")
+        # 验证日志等级是否有效
+        if [ "$log_level" != "debug" ] && [ "$log_level" != "info" ] && [ "$log_level" != "warn" ] && [ "$log_level" != "error" ]; then
+            log_level="info" # 默认为info级别
+        fi
+        log "Log level set to: $log_level"
     else
-        log "Debug mode disabled, console output will not be shown"
+        log "Log level file not found, using default: info"
+    fi
+
+    # 根据日志等级决定是否启用调试输出
+    if [ "$log_level" = "debug" ]; then
+        log "Debug level enabled, console output will be shown"
+        # 启动进程并设置环境变量，不重定向输出（程序内部已有日志记录）
+        nohup env GPU_GOV_DEBUG=1 GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
+    else
+        log "Using log level: $log_level"
         # 启动进程，不重定向输出（程序内部已有日志记录）
-        nohup "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
+        nohup env GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
     fi
     sync
 

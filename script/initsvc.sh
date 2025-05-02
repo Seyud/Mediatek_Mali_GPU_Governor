@@ -28,8 +28,17 @@ wait_until_login
 
 # 确保日志目录存在并设置适当权限
 mkdir -p $LOG_PATH
+mkdir -p $GAMES_PATH
 # 设置日志目录权限为777，确保任何进程都可以写入
 chmod 0777 $LOG_PATH
+chmod 0777 $GAMES_PATH
+
+# 确保日志等级文件存在，默认为info级别
+if [ ! -f "$LOG_LEVEL_FILE" ]; then
+    echo "info" > "$LOG_LEVEL_FILE"
+    chmod 0666 "$LOG_LEVEL_FILE"
+    log "Created log level file with default level: info"
+fi
 
 # 检查并轮转所有日志文件
 # 先处理主日志文件
@@ -51,6 +60,14 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
     echo "PATH=$PATH"
     echo "sh=$(which sh)"
     echo "Bootstraping MTK_GPU_GOVERNOR"
+
+    # 记录当前日志等级
+    if [ -f "$LOG_LEVEL_FILE" ]; then
+        current_log_level=$(cat "$LOG_LEVEL_FILE")
+        echo "Current log level: $current_log_level"
+    else
+        echo "Log level file not found, using default: info"
+    fi
 } >> "$LOG_FILE"
 
 # 使用log_command函数执行gpugov_testconf，确保日志大小受控

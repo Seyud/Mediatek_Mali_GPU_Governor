@@ -3,7 +3,6 @@
 # 用法: ./toggle_game_mode.sh [on|off]
 # 如果不提供参数，则切换当前状态
 # 日志等级设置: ./action.sh log_level [debug|info|warn|error]
-# 调试模式设置: ./action.sh debug [on|off]
 
 # 获取脚本所在目录
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
@@ -14,7 +13,6 @@ GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
 GAME_MODE_FILE="$GPU_GOVERNOR_DIR/game_mode"
 LOG_LEVEL_FILE="$GPU_GOVERNOR_DIR/log_level"
-DEBUG_MODE_FILE="$GPU_GOVERNOR_DIR/debug_mode"
 GPU_GOV_LOG_FILE="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log"
 MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
 
@@ -59,12 +57,6 @@ if [ ! -f "$LOG_LEVEL_FILE" ]; then
     chmod 666 "$LOG_LEVEL_FILE"
 fi
 
-# 确保调试模式文件存在，默认为关闭状态
-if [ ! -f "$DEBUG_MODE_FILE" ]; then
-    echo "0" > "$DEBUG_MODE_FILE"
-    chmod 666 "$DEBUG_MODE_FILE"
-fi
-
 # 处理日志等级设置
 if [ "$1" = "log_level" ]; then
     if [ "$2" = "debug" ] || [ "$2" = "info" ] || [ "$2" = "warn" ] || [ "$2" = "error" ]; then
@@ -83,30 +75,11 @@ if [ "$1" = "log_level" ]; then
     fi
 fi
 
-# 处理调试模式设置
+# 提示用户使用日志等级设置
 if [ "$1" = "debug" ]; then
-    if [ "$2" = "on" ]; then
-        echo "1" > "$DEBUG_MODE_FILE"
-        echo "调试模式已开启"
-        echo "请重启模块或设备以应用调试模式设置"
-        exit 0
-    elif [ "$2" = "off" ]; then
-        echo "0" > "$DEBUG_MODE_FILE"
-        echo "调试模式已关闭"
-        echo "请重启模块或设备以应用调试模式设置"
-        exit 0
-    else
-        # 显示当前调试模式状态和可用选项
-        current_debug=$(cat "$DEBUG_MODE_FILE")
-        if [ "$current_debug" = "1" ]; then
-            echo "当前调试模式: 开启"
-        else
-            echo "当前调试模式: 关闭"
-        fi
-        echo "可用的调试模式选项: on, off"
-        echo "用法: ./action.sh debug [on|off]"
-        exit 0
-    fi
+    echo "调试模式已被移除，请使用日志等级设置代替"
+    echo "用法: ./action.sh log_level debug"
+    exit 0
 fi
 
 # 获取当前游戏模式状态
