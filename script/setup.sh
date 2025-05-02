@@ -1,20 +1,4 @@
 #!/system/bin/sh
-#
-# Copyright (C) 2021-2022 Matt Yang
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 # Runonce after boot, to speed up the transition of power modes in powercfg
 
 BASEDIR="$(dirname $(readlink -f "$0"))"
@@ -188,15 +172,23 @@ install_gov() {
     fi
     echo "- Logs will be stored in $LOG_PATH"
 
-    # 创建游戏模式文件，初始值为0（关闭）
-    echo "0" > "$GAME_MODE_FILE"
-    chmod 0666 "$GAME_MODE_FILE"
-    echo "- Game mode file created at $GAME_MODE_FILE"
+    # 创建游戏模式文件，初始值为0（关闭），如果已存在则不创建
+    if [ ! -f "$GAME_MODE_FILE" ]; then
+        echo "0" > "$GAME_MODE_FILE"
+        chmod 0666 "$GAME_MODE_FILE"
+        echo "- Game mode file created at $GAME_MODE_FILE"
+    else
+        echo "- Game mode file already exists at $GAME_MODE_FILE"
+    fi
 
-    # 创建日志等级文件，默认为info级别
-    echo "info" > "$LOG_LEVEL_FILE"
-    chmod 0666 "$LOG_LEVEL_FILE"
-    echo "- Log level file created at $LOG_LEVEL_FILE (default: info)"
+    # 创建日志等级文件，默认为info级别，如果已存在则不创建
+    if [ ! -f "$LOG_LEVEL_FILE" ]; then
+        echo "info" > "$LOG_LEVEL_FILE"
+        chmod 0666 "$LOG_LEVEL_FILE"
+        echo "- Log level file created at $LOG_LEVEL_FILE (default: info)"
+    else
+        echo "- Log level file already exists at $LOG_LEVEL_FILE"
+    fi
 
     # 生成游戏列表配置文件
     generate_gamelist

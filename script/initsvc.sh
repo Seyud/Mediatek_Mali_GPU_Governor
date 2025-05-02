@@ -1,19 +1,4 @@
-#!/vendor/bin/sh
-#
-# Copyright (C) 2021-2022 Matt Yang
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+#!/system/bin/sh
 
 BASEDIR="$(dirname $(readlink -f "$0"))"
 . $BASEDIR/pathinfo.sh
@@ -70,8 +55,98 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
     fi
 } >> "$LOG_FILE"
 
-# 使用log_command函数执行gpugov_testconf，确保日志大小受控
-log_command "$LOG_FILE" "gpugov_testconf"
+# 内联gpugov_testconf函数的内容，避免函数调用问题
+{
+    # 使用统一的日志轮转函数
+    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
+
+    echo "Starting gpu governor"
+
+    # 检查用户配置文件
+    if [ -f "$USER_PATH/gpu_freq_table.conf" ]; then
+        echo "Found user config at $USER_PATH/gpu_freq_table.conf"
+        GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
+    else
+        # 获取设备平台信息
+        target="$(getprop ro.board.platform)"
+        cfgname="$(get_config_name $target)"
+
+        if [ "$cfgname" = "unsupported" ]; then
+            target="$(getprop ro.product.board)"
+            cfgname="$(get_config_name "$target")"
+        fi
+
+        # 如果平台支持，使用平台特定配置，否则使用默认配置
+        if [ "$cfgname" != "unsupported" ] && [ -f "$MODULE_PATH/config/$cfgname.conf" ]; then
+            cp -f "$MODULE_PATH/config/$cfgname.conf" "$USER_PATH/gpu_freq_table.conf"
+            echo "Created platform-specific config from $cfgname.conf"
+        else
+            cp -f "$MODULE_PATH/gpu_freq_table.conf" "$USER_PATH/gpu_freq_table.conf"
+            echo "Created default config from gpu_freq_table.conf"
+        fi
+        GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
+    fi
+
+    echo "Using config $GPUGOV_CONFPATH"
+
+    # 再次检查日志大小
+    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
+
+    # 启动GPU调速器
+    # 直接使用 BIN_PATH
+    if [ ! -x "$BIN_PATH/gpugovernor" ]; then
+        echo "Error: Binary not executable, trying to fix permissions"
+        chmod 0755 "$BIN_PATH/gpugovernor"
+        if [ ! -x "$BIN_PATH/gpugovernor" ]; then
+            echo "Error: Failed to set executable permission"
+            exit 1
+        fi
+    fi
+
+    # 使用统一的日志轮转函数
+    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
+
+    echo "Starting gpu governor"
+    sync
+
+    # 读取日志等级设置
+    log_level="info"
+    if [ -f "$LOG_LEVEL_FILE" ]; then
+        log_level=$(cat "$LOG_LEVEL_FILE")
+        # 验证日志等级是否有效
+        if [ "$log_level" != "debug" ] && [ "$log_level" != "info" ] && [ "$log_level" != "warn" ] && [ "$log_level" != "error" ]; then
+            log_level="info" # 默认为info级别
+        fi
+        echo "Log level set to: $log_level"
+    else
+        echo "Log level file not found, using default: info"
+    fi
+
+    # 根据日志等级决定是否启用调试输出
+    if [ "$log_level" = "debug" ]; then
+        echo "Debug level enabled, console output will be shown"
+        # 启动进程并设置环境变量，不重定向输出（程序内部已有日志记录）
+        nohup env GPU_GOV_DEBUG=1 GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
+    else
+        echo "Using log level: $log_level"
+        # 启动进程，不重定向输出（程序内部已有日志记录）
+        nohup env GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
+    fi
+    sync
+
+    sleep 2
+    if ! pgrep -f "gpugovernor" >/dev/null; then
+        echo "Error: Process failed to start"
+        exit 1
+    fi
+
+    rebuild_process_scan_cache
+    change_task_cgroup "gpugovernor" "background" "cpuset"
+    echo "GPU Governor started successfully"
+
+    # 再次检查日志大小
+    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
+} >> "$LOG_FILE" 2>&1
 
 # 检查并轮转GPU调速器主日志
 rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"

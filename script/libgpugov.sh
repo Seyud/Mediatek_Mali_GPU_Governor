@@ -1,11 +1,8 @@
 #!/vendor/bin/sh
-# GPU Governor
-# Author: HamJin @CoolApk
 
 BASEDIR="$(dirname "$0")"
 . $BASEDIR/pathinfo.sh
 . $BASEDIR/libcommon.sh
-. $BASEDIR/libpowercfg.sh
 . $BASEDIR/libcgroup.sh
 . $BASEDIR/libsysinfo.sh
 
