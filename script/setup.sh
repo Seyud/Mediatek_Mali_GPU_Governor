@@ -152,7 +152,9 @@ install_gov() {
         cfgname="$(get_config_name "$target")"
     fi
     if [ "$cfgname" = "unsupported" ] || [ ! -f "$MODULE_PATH"/config/"$cfgname".conf ]; then
-        abort "! Target [$target] not supported."
+        echo "! Target [$target] not supported. Using default configuration."
+        # 使用模块目录下的默认配置文件
+        cfgname="default"
     fi
     if [ "$cfgname" == "mt6983" ] || [ "$cfgname" == "mt6895" ];then
         touch "$MODULE_PATH"/USE_DEBUGFS
@@ -165,7 +167,12 @@ install_gov() {
     chmod 0777 "$GAMES_PATH"
     if [ ! -f "$USER_PATH"/gpu_freq_table.conf ]; then
         #mv -f "$USER_PATH"/gpu_freq_table.conf "$USER_PATH"/gpu_freq_table.conf.bak
-        cp -f "$MODULE_PATH"/config/"$cfgname".conf "$USER_PATH"/gpu_freq_table.conf
+        if [ "$cfgname" = "default" ]; then
+            # 使用模块目录下的默认配置文件
+            cp -f "$MODULE_PATH"/gpu_freq_table.conf "$USER_PATH"/gpu_freq_table.conf
+        else
+            cp -f "$MODULE_PATH"/config/"$cfgname".conf "$USER_PATH"/gpu_freq_table.conf
+        fi
         echo "- GPU Freq Table config is located at $USER_PATH/gpu_freq_table.conf"
     fi
     echo "- Logs will be stored in $LOG_PATH"

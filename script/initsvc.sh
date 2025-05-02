@@ -194,15 +194,16 @@ sync
     # 根据日志等级决定是否启用调试输出
     if [ "$log_level" = "debug" ]; then
         echo "Debug level enabled, console output will be shown"
-        # 启动进程并设置环境变量，确保日志记录正常工作
+        # 启动进程，确保日志记录正常工作
         echo "Starting gpugovernor with debug level"
         # 确保日志目录和文件权限正确
         chmod -R 0777 "$LOG_PATH" 2>/dev/null
-        nohup env GPU_GOV_DEBUG=1 GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
+        nohup  "$BIN_PATH/"gpugovernor  2>&1 &
+
     else
         echo "Using log level: $log_level"
-        # 启动进程，不重定向输出（程序内部已有日志记录）
-        nohup env GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
+        # 启动进程
+        nohup "$BIN_PATH"/gpugovernor 2>&1 &
     fi
     sync
 
