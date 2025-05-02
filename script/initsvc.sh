@@ -3,11 +3,11 @@
 BASEDIR="$(dirname $(readlink -f "$0"))"
 . $BASEDIR/pathinfo.sh
 . $BASEDIR/libcommon.sh
+. $BASEDIR/libgpugov.sh
 
 # 设置日志文件最大大小（单位MB）
 MAX_LOG_SIZE_MB=5
 
-. $BASEDIR/libgpugov.sh
 
 wait_until_login
 
@@ -50,10 +50,19 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
     if [ -f "$LOG_LEVEL_FILE" ]; then
         current_log_level=$(cat "$LOG_LEVEL_FILE")
         echo "Current log level: $current_log_level"
+
+        # 确保在debug模式下也创建初始化日志
+        if [ "$current_log_level" = "debug" ]; then
+            echo "Debug mode enabled, ensuring initialization log is created"
+        fi
     else
         echo "Log level file not found, using default: info"
     fi
+
+    # 确保日志文件权限正确
+    chmod 0666 "$LOG_FILE" 2>/dev/null
 } >> "$LOG_FILE"
+sync
 
 # 内联gpugov_testconf函数的内容，避免函数调用问题
 {
@@ -125,7 +134,10 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
     # 根据日志等级决定是否启用调试输出
     if [ "$log_level" = "debug" ]; then
         echo "Debug level enabled, console output will be shown"
-        # 启动进程并设置环境变量，不重定向输出（程序内部已有日志记录）
+        # 启动进程并设置环境变量，确保日志记录正常工作
+        echo "Starting gpugovernor with debug level"
+        # 确保日志目录和文件权限正确
+        chmod -R 0777 "$LOG_PATH" 2>/dev/null
         nohup env GPU_GOV_DEBUG=1 GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >/dev/null 2>&1 &
     else
         echo "Using log level: $log_level"

@@ -123,9 +123,11 @@ rotate_log() {
     # 获取文件大小（以字节为单位）
     local file_size=$(stat -c %s "$log_file" 2>/dev/null || stat -f %z "$log_file" 2>/dev/null)
 
-    # 如果获取文件大小失败，假设需要轮转
+    # 如果获取文件大小失败或文件大小为0，确保文件存在并可写
     if [ -z "$file_size" ] || [ "$file_size" -eq 0 ]; then
         file_size=0
+        # 确保文件权限正确
+        chmod 0666 "$log_file" 2>/dev/null
         return 0
     fi
 

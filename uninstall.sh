@@ -7,3 +7,5 @@ rm -rf /data/adb/gpu_governor/log
 rm -f /data/adb/gpu_governor/games.conf
 # 删除游戏模式文件
 rm -f /data/adb/gpu_governor/game_mode
+# 删除日志等级文件
+rm -f /data/adb/gpu_governor/log_level
