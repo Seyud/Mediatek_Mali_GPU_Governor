@@ -35,7 +35,6 @@ set_perm_recursive() {
 
 set_permissions() {
     set_perm_recursive $BIN_PATH 0 0 0755 0755 u:object_r:system_file:s0
-    set_perm_recursive "$MODULE_PATH"/system/vendor/etc 0 0 0755 0644 u:object_r:vendor_configs_file:s0
 }
 
 # 生成游戏列表配置文件
@@ -158,7 +157,6 @@ install_gov() {
     if [ "$cfgname" == "mt6983" ] || [ "$cfgname" == "mt6895" ];then
         touch "$MODULE_PATH"/USE_DEBUGFS
     fi
-    mkdir -p "$USER_PATH"
     mkdir -p "$LOG_PATH"
     mkdir -p "$GAMES_PATH"
 

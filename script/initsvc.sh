@@ -1,22 +1,82 @@
 #!/system/bin/sh
 
-BASEDIR="$(dirname $(readlink -f "$0"))"
-. $BASEDIR/pathinfo.sh
-. $BASEDIR/libcommon.sh
-. $BASEDIR/libgpugov.sh
+# 使用更可靠的方式获取脚本目录
+MODDIR=${0%/*}
+if [ "$MODDIR" = "$0" ]; then
+    MODDIR=$(pwd)
+fi
+
+# 确定脚本所在目录
+SCRIPT_DIR="$MODDIR"
+# 如果当前脚本在script目录下，则模块目录是其父目录
+if [ "$(basename "$SCRIPT_DIR")" = "script" ]; then
+    MODULE_DIR="$(dirname "$SCRIPT_DIR")"
+else
+    # 否则假设模块目录就是当前目录，script是其子目录
+    MODULE_DIR="$SCRIPT_DIR"
+    SCRIPT_DIR="$MODULE_DIR/script"
+fi
+
+# 创建初始化日志目录
+mkdir -p /data/adb/gpu_governor/log 2>/dev/null
+INIT_LOG="/data/adb/gpu_governor/log/initsvc.log"
+
+# 记录目录信息到初始化日志
+echo "$(date) - 初始化开始" >> "$INIT_LOG"
+echo "SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
+echo "MODULE_DIR=$MODULE_DIR" >> "$INIT_LOG"
+
+# 确保路径信息正确加载
+if [ -f "$SCRIPT_DIR/pathinfo.sh" ]; then
+    . "$SCRIPT_DIR/pathinfo.sh"
+    echo "已成功加载 pathinfo.sh" >> "$INIT_LOG"
+else
+    # 尝试其他可能的位置
+    if [ -f "$MODULE_DIR/script/pathinfo.sh" ]; then
+        . "$MODULE_DIR/script/pathinfo.sh"
+        echo "已从 module/script 成功加载 pathinfo.sh" >> "$INIT_LOG"
+    else
+        # 由于pathinfo.sh未加载，log函数不可用，直接写入初始化日志
+        echo "错误: pathinfo.sh 未在 $SCRIPT_DIR 或 $MODULE_DIR/script 中找到" >> "$INIT_LOG"
+        exit 1
+    fi
+fi
+
+# 现在可以使用log函数了
+log "初始化服务开始运行"
+log "SCRIPT_DIR=$SCRIPT_DIR"
+log "MODULE_DIR=$MODULE_DIR"
+
+# 加载其他库
+if [ -f "$SCRIPT_DIR/libcommon.sh" ]; then
+    . "$SCRIPT_DIR/libcommon.sh"
+    log "已加载 libcommon.sh"
+else
+    log "错误: libcommon.sh 未找到，路径: $SCRIPT_DIR"
+    exit 1
+fi
+
+if [ -f "$SCRIPT_DIR/libgpugov.sh" ]; then
+    . "$SCRIPT_DIR/libgpugov.sh"
+    log "已加载 libgpugov.sh"
+else
+    log "错误: libgpugov.sh 未找到，路径: $SCRIPT_DIR"
+    exit 1
+fi
 
 # 设置日志文件最大大小（单位MB）
 MAX_LOG_SIZE_MB=5
 
-
+# 等待系统启动完成
 wait_until_login
 
 # 确保日志目录存在并设置适当权限
-mkdir -p $LOG_PATH
-mkdir -p $GAMES_PATH
+mkdir -p "$LOG_PATH" 2>/dev/null
+mkdir -p "$GAMES_PATH" 2>/dev/null
+
 # 设置日志目录权限为777，确保任何进程都可以写入
-chmod 0777 $LOG_PATH
-chmod 0777 $GAMES_PATH
+chmod 0777 "$LOG_PATH" 2>/dev/null
+chmod 0777 "$GAMES_PATH" 2>/dev/null
 
 # 确保日志等级文件存在，默认为info级别
 if [ ! -f "$LOG_LEVEL_FILE" ]; then
