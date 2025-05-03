@@ -52,10 +52,5 @@ else
         fi
     fi
 
-    # 检查日志文件
-    GPU_LOG="/data/adb/gpu_governor/log/gpu_gov.log"
-    if [ -f "$GPU_LOG" ]; then
-        echo "$(date) - 最后10行日志:" >> "$LOG_FILE"
-        tail -n 10 "$GPU_LOG" >> "$LOG_FILE"
-    fi
+    
 fi

@@ -58,9 +58,9 @@ fi
 
 if [ -f "$SCRIPT_DIR/libgpugov.sh" ]; then
     . "$SCRIPT_DIR/libgpugov.sh"
-    log "已加载 libgpugov.sh"
+    echo "已加载 libgpugov.sh" >> "$INIT_LOG"
 else
-    log "错误: libgpugov.sh 未找到，路径: $SCRIPT_DIR"
+    echo "错误: libgpugov.sh 未找到，路径: $SCRIPT_DIR" >> "$INIT_LOG"
     exit 1
 fi
 
@@ -104,25 +104,48 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
     echo "$(date)"
     echo "PATH=$PATH"
     echo "sh=$(which sh)"
-    echo "Bootstraping MTK_GPU_GOVERNOR"
+    echo "Bootstraping MTK_GPU_GOVERNOR" 
 
     # 记录当前日志等级
     if [ -f "$LOG_LEVEL_FILE" ]; then
         current_log_level=$(cat "$LOG_LEVEL_FILE")
-        echo "Current log level: $current_log_level"
+        echo "Current log level: $current_log_level" 
 
         # 确保在debug模式下也创建初始化日志
         if [ "$current_log_level" = "debug" ]; then
-            echo "Debug mode enabled, ensuring initialization log is created"
+            echo "Debug mode enabled, ensuring initialization log is created" 
         fi
     else
-        echo "Log level file not found, using default: info"
+        echo "Log level file not found, using default: info" 
     fi
 
     # 确保日志文件权限正确
     chmod 0666 "$LOG_FILE" 2>/dev/null
-} >> "$LOG_FILE"
+} >> "$INIT_LOG"
 sync
+
+
+# 读取当前DVFS状态
+dvfs_status=$(cat $DVFS | cut -f2 -d ' ')
+
+# 检查DVFS状态
+if [[ "$dvfs_status" != "0" ]]; then
+  # 显示警告信息
+  echo "警告：DVFS当前已启用(状态=$dvfs_status)，正在关闭..."
+  
+  # 关闭DVFS
+  echo 0 > $DVFS
+  
+  # 确认DVFS已关闭
+  new_status=$(cat $DVFS | cut -f2 -d ' ')
+  if [[ "$new_status" == "0" ]]; then
+    echo "DVFS已成功关闭"
+  else
+    echo "错误：无法关闭DVFS，当前状态仍为$new_status"
+  fi
+else
+  echo "DVFS已经处于关闭状态"
+fi
 
 # 内联gpugov_testconf函数的内容，避免函数调用问题
 {
@@ -178,11 +201,11 @@ sync
     # 确保gpu_gov.log文件存在并设置正确权限
     if [ ! -f "$GPUGOV_LOGPATH" ]; then
         touch "$GPUGOV_LOGPATH"
-        echo "$(date) - GPU Governor日志文件已创建" > "$GPUGOV_LOGPATH"
+        echo "$(date) - GPU Governor日志文件已创建" >> "$INIT_LOG"
     fi
     chmod 0666 "$GPUGOV_LOGPATH"
 
-    echo "Starting gpu governor"
+    echo "Starting gpu governor" >> "$INIT_LOG"
     sync
 
     # 读取日志等级设置
@@ -193,9 +216,9 @@ sync
         if [ "$log_level" != "debug" ] && [ "$log_level" != "info" ] && [ "$log_level" != "warn" ] && [ "$log_level" != "error" ]; then
             log_level="info" # 默认为info级别
         fi
-        echo "Log level set to: $log_level"
+        echo "Log level set to: $log_level" >> "$INIT_LOG"
     else
-        echo "Log level file not found, using default: info"
+        echo "Log level file not found, using default: info" >> "$INIT_LOG"
     fi
 
     # 根据日志等级决定是否启用调试输出
@@ -235,7 +258,7 @@ sync
 
     # 再次检查日志大小
     rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
-} >> "$LOG_FILE" 2>&1
+} >> "$INIT_LOG" 2>&1
 
 # 检查并轮转GPU调速器主日志
 rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"

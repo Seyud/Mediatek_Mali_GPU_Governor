@@ -41,6 +41,7 @@ GAMES_PATH="/data/adb/gpu_governor"
 GAMES_FILE="$GAMES_PATH/games.conf"
 GAME_MODE_FILE="$GAMES_PATH/game_mode"
 LOG_LEVEL_FILE="$GAMES_PATH/log_level"
+DVFS=/proc/mali/dvfs_enable
 
 ###############################
 # Log
@@ -49,7 +50,7 @@ LOG_LEVEL_FILE="$GAMES_PATH/log_level"
 # $1:content
 log() {
     # 写入日志文件
-    echo "$1" >>"$LOG_FILE"
+    echo "$1" >> "$LOG_FILE"
     sync
 }
 

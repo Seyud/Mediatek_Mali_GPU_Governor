@@ -64,9 +64,6 @@ GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
 LOG_LEVEL_FILE="$GAMES_PATH/log_level"
 MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
 
-# 使用libcommon.sh中的统一日志轮转函数
-# 此函数保留用于向后兼容，实际调用统一的rotate_log函数
-
 gpugov_start() {
     # 检查二进制文件是否存在
     if [ ! -f "$BIN_PATH/gpugovernor" ]; then
