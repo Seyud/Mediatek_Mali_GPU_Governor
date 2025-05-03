@@ -2,6 +2,17 @@
 
 # 获取模块目录
 MODDIR=${0%/*}
+
+DIR=/data/adb/gpu_governor/log
+LOG=$DIR/gpu_gov.log
+
+until [ -d $DIR ]; do
+	sleep 1
+done
+
+killall gpugovernor
+RUST_BACKTRACE=1 nohup $MODDIR/bin/gpugovernor >$LOG 2>&1 &
+
 if [ "$MODDIR" = "$0" ]; then
     MODDIR=$(dirname "$0")
 fi

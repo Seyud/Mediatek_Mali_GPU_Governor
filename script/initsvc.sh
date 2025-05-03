@@ -175,6 +175,13 @@ sync
     # 使用统一的日志轮转函数
     rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
 
+    # 确保gpu_gov.log文件存在并设置正确权限
+    if [ ! -f "$GPUGOV_LOGPATH" ]; then
+        touch "$GPUGOV_LOGPATH"
+        echo "$(date) - GPU Governor日志文件已创建" > "$GPUGOV_LOGPATH"
+    fi
+    chmod 0666 "$GPUGOV_LOGPATH"
+
     echo "Starting gpu governor"
     sync
 
@@ -198,12 +205,21 @@ sync
         echo "Starting gpugovernor with debug level"
         # 确保日志目录和文件权限正确
         chmod -R 0777 "$LOG_PATH" 2>/dev/null
-        nohup  "$BIN_PATH/"gpugovernor  2>&1 &
+
+        # 记录启动信息到主日志文件
+        echo "$(date) - 正在以debug级别启动GPU Governor"
+
+        # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
+        nohup "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
 
     else
         echo "Using log level: $log_level"
-        # 启动进程
-        nohup "$BIN_PATH"/gpugovernor 2>&1 &
+
+        # 记录启动信息到主日志文件
+        echo "$(date) - 正在以$log_level级别启动GPU Governor"
+
+        # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
+        nohup "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
     fi
     sync
 

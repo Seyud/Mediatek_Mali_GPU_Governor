@@ -1,5 +1,4 @@
 #!/system/bin/sh
-
 # 使用更可靠的方式获取脚本目录
 if [ -z "$SCRIPT_PATH" ]; then
     # 如果SCRIPT_PATH未定义，尝试确定脚本目录
@@ -62,16 +61,11 @@ else
 fi
 
 GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
-GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log"
 LOG_LEVEL_FILE="$GAMES_PATH/log_level"
 MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
 
 # 使用libcommon.sh中的统一日志轮转函数
 # 此函数保留用于向后兼容，实际调用统一的rotate_log函数
-check_and_rotate_log() {
-    local log_file="$1"
-    rotate_log "$log_file" "$MAX_LOG_SIZE_MB"
-}
 
 gpugov_start() {
     # 检查二进制文件是否存在
@@ -126,12 +120,12 @@ gpugov_start() {
     # 根据日志等级决定是否启用调试输出
     if [ "$log_level" = "debug" ]; then
         log "已启用调试级别，将显示控制台输出"
-        # 启动进程并设置环境变量，启用调试输出
-        cd "$BIN_PATH" && nohup env GPU_GOV_DEBUG=1 GPU_GOV_LOG_LEVEL="$log_level" "./gpugovernor" > "$GPUGOV_LOGPATH" 2>&1 &
+        # 启动进程并设置环境变量，使用绝对路径启用调试输出，输出重定向到主日志文件
+        nohup env GPU_GOV_DEBUG=1 GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
     else
         log "使用日志等级: $log_level"
-        # 启动进程，不启用调试输出
-        cd "$BIN_PATH" && nohup env GPU_GOV_LOG_LEVEL="$log_level" "./gpugovernor" > "$GPUGOV_LOGPATH" 2>&1 &
+        # 启动进程，使用绝对路径不启用调试输出，输出重定向到主日志文件
+        nohup env GPU_GOV_LOG_LEVEL="$log_level" "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
     fi
     sync
 
