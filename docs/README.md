@@ -112,6 +112,7 @@
 
 - **作者**: 瓦力喀 @CoolApk
 - **特别感谢**: HamJin @CoolApk, asto18089 @CoolApk, helloklf @Github
+- **测试反馈**: yq122 @CoolApk, 此砖弟非彼猫弟 @CoolApk 
 - **配置协助**: Fiagelia @CoolApk, 忘渐 @CoolApk
 
 ## 注意事项 ⚠️
