@@ -487,7 +487,7 @@ th {
     font-family: monospace;
     font-size: 12px;
     white-space: pre-wrap;
-    max-height: 300px;
+    max-height: 500px;
     overflow-y: auto;
 }
 
