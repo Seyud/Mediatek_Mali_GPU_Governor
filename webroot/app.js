@@ -43,6 +43,9 @@ const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbod
 const gamesList = document.getElementById('gamesList');
 const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
+const marginValue_elem = document.getElementById('marginValue');
+const marginDecreaseBtn = document.getElementById('marginDecreaseBtn');
+const marginIncreaseBtn = document.getElementById('marginIncreaseBtn');
 
 // 自定义电压和内存档位选择器DOM元素
 const selectedVolt = document.getElementById('selectedVolt');
@@ -98,6 +101,7 @@ let gpuConfigs = []; // 存储当前的GPU配置
 let editingIndex = -1; // 当前正在编辑的配置索引，-1表示新增
 let gamesList_data = []; // 存储当前的游戏列表
 let currentVoltIndex = 0; // 当前电压选择器的索引
+let marginValue = 20; // 默认余量值
 
 // 电压调整相关全局变量
 const VOLT_STEP = 625; // 电压调整步长
@@ -120,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 加载数据
     initializeApp();
+
+    // 初始化margin设置
+    initMarginSetting();
 });
 
 // 初始化应用
@@ -319,6 +326,28 @@ function initTheme() {
             // 关闭下拉菜单
             ddrContainer.classList.remove('open');
         });
+    });
+}
+
+// 初始化margin设置
+function initMarginSetting() {
+    // 显示当前margin值
+    marginValue_elem.textContent = marginValue;
+
+    // 减小margin按钮事件
+    marginDecreaseBtn.addEventListener('click', () => {
+        if (marginValue > 0) {
+            marginValue--;
+            marginValue_elem.textContent = marginValue;
+        }
+    });
+
+    // 增加margin按钮事件
+    marginIncreaseBtn.addEventListener('click', () => {
+        if (marginValue < 100) {
+            marginValue++;
+            marginValue_elem.textContent = marginValue;
+        }
     });
 }
 
@@ -583,16 +612,33 @@ async function loadGpuConfig() {
         const { errno, stdout } = await exec(`cat ${CONFIG_PATH}`);
 
         if (errno === 0 && stdout.trim()) {
-            const lines = stdout.trim().split('\n').filter(line => !line.startsWith('#') && line.trim());
+            const lines = stdout.trim().split('\n');
 
             // 清空当前配置
             gpuConfigs = [];
 
-            if (lines.length > 0) {
+            // 先检查是否有Margin配置
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                // 确保不是注释行
+                if (trimmedLine.startsWith('Margin=') && !trimmedLine.startsWith('#')) {
+                    const marginStr = trimmedLine.substring(7).trim();
+                    const parsedMargin = parseInt(marginStr);
+                    if (!isNaN(parsedMargin)) {
+                        marginValue = parsedMargin;
+                        console.log(`从配置文件读取到Margin值: ${marginValue}%`);
+                    }
+                }
+            }
+
+            // 过滤出频率配置行
+            const configLines = lines.filter(line => !line.startsWith('#') && !line.startsWith('Margin=') && line.trim());
+
+            if (configLines.length > 0) {
                 gpuFreqTable.innerHTML = '';
 
-                // 先解析所有配置
-                lines.forEach(line => {
+                // 解析所有配置
+                configLines.forEach(line => {
                     const [freq, volt, ddr] = line.trim().split(/\s+/);
 
                     if (freq && volt && ddr) {
@@ -1113,6 +1159,11 @@ async function saveConfigToFile() {
 
         // 生成配置文件内容
         let configContent = '# Freq Volt DDR_OPP\n';
+        configContent += '# example(Does not include the # symbol)\n';
+        configContent += '#852000 61250 3\n';
+        configContent += '# Margin: 调整GPU频率计算的余量百分比，默认值为20（非游戏模式）和30（游戏模式）\n';
+        configContent += `Margin=${marginValue}\n`;
+
         gpuConfigs.forEach(config => {
             configContent += `${config.freq} ${config.volt} ${config.ddr}\n`;
         });
