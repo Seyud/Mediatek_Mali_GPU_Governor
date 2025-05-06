@@ -610,7 +610,7 @@ th {
 }
 
 /* 配置编辑相关样式 */
-.config-actions {
+.config-actions, .margin-actions {
     display: flex;
     justify-content: space-between;
     margin-top: 16px;

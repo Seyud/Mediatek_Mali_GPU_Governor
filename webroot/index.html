@@ -85,6 +85,28 @@
                         </div>
                     </section>
 
+                    <!-- GPU余量配置卡片 -->
+                    <section class="card" id="marginCard">
+                        <h2 class="card-title">GPU频率计算余量</h2>
+                        <div class="card-content">
+                            <div class="status-item margin-setting">
+                                <span>余量百分比 (%):</span>
+                                <div class="number-spinner">
+                                    <button class="spinner-btn" id="marginDecreaseBtn">-</button>
+                                    <div class="spinner-value" id="marginValue">20</div>
+                                    <button class="spinner-btn" id="marginIncreaseBtn">+</button>
+                                </div>
+                            </div>
+                            <div class="setting-description">
+                                <small>余量越大，GPU升频越积极，性能越充裕</small>
+                                <small>游戏模式下会自动增加10%的余量</small>
+                            </div>
+                            <div class="margin-actions">
+                                <button id="saveMarginBtn" class="btn">保存余量设置</button>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- 游戏列表卡片 -->
                     <section class="card" id="gamesCard">
                         <h2 class="card-title">游戏列表</h2>
@@ -164,19 +186,6 @@
                             <div class="setting-description">
                                 <small>修改日志等级后需要重启模块或设备才能生效</small>
                                 <small>设置为Debug级别将启用详细日志记录</small>
-                            </div>
-
-                            <div class="status-item margin-setting">
-                                <span>GPU频率计算余量 (%):</span>
-                                <div class="number-spinner">
-                                    <button class="spinner-btn" id="marginDecreaseBtn">-</button>
-                                    <div class="spinner-value" id="marginValue">20</div>
-                                    <button class="spinner-btn" id="marginIncreaseBtn">+</button>
-                                </div>
-                            </div>
-                            <div class="setting-description">
-                                <small>余量越大，GPU升频越积极，性能越充裕</small>
-                                <small>游戏模式下会自动增加10%的余量</small>
                             </div>
                         </div>
                     </section>

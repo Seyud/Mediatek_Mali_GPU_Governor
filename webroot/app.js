@@ -125,8 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 加载数据
     initializeApp();
 
-    // 初始化margin设置
-    initMarginSetting();
+    // 注意：initMarginSetting()会在loadGpuConfig()完成后自动调用
 });
 
 // 初始化应用
@@ -360,6 +359,14 @@ function setupEventListeners() {
             switchPage(targetPageId);
         });
     });
+
+    // 保存余量按钮事件
+    const saveMarginBtn = document.getElementById('saveMarginBtn');
+    if (saveMarginBtn) {
+        saveMarginBtn.addEventListener('click', () => {
+            saveMarginToFile();
+        });
+    }
 
     // 游戏模式开关
     gameModeToggle.addEventListener('change', async () => {
@@ -627,6 +634,10 @@ async function loadGpuConfig() {
                     if (!isNaN(parsedMargin)) {
                         marginValue = parsedMargin;
                         console.log(`从配置文件读取到Margin值: ${marginValue}%`);
+                        // 更新UI显示
+                        if (marginValue_elem) {
+                            marginValue_elem.textContent = marginValue;
+                        }
                     }
                 }
             }
@@ -662,9 +673,15 @@ async function loadGpuConfig() {
         } else {
             gpuFreqTable.innerHTML = '<tr><td colspan="4" class="loading-text">未找到配置</td></tr>';
         }
+
+        // 初始化margin设置（确保在读取配置后调用）
+        initMarginSetting();
     } catch (error) {
         console.error('加载GPU配置失败:', error);
         gpuFreqTable.innerHTML = '<tr><td colspan="4" class="loading-text">加载失败</td></tr>';
+
+        // 即使加载失败，也要初始化margin设置
+        initMarginSetting();
     }
 }
 
@@ -1317,6 +1334,54 @@ async function saveGamesToFile() {
     } catch (error) {
         console.error('保存游戏列表失败:', error);
         toast('保存游戏列表失败: ' + error.message);
+    }
+}
+
+// 保存余量设置到文件
+async function saveMarginToFile() {
+    try {
+        // 读取当前配置文件内容
+        const { errno: readErrno, stdout } = await exec(`cat ${CONFIG_PATH}`);
+
+        if (readErrno !== 0) {
+            toast('读取配置文件失败，请检查权限');
+            return;
+        }
+
+        // 解析配置文件内容
+        const lines = stdout.trim().split('\n');
+        let newContent = '';
+        let marginUpdated = false;
+
+        // 更新Margin行或保留原始内容
+        for (const line of lines) {
+            if (line.trim().startsWith('Margin=') && !line.trim().startsWith('#')) {
+                // 替换Margin行
+                newContent += `Margin=${marginValue}\n`;
+                marginUpdated = true;
+            } else {
+                // 保留原始行
+                newContent += line + '\n';
+            }
+        }
+
+        // 如果没有找到Margin行，添加一个
+        if (!marginUpdated) {
+            newContent += `# Margin: 调整GPU频率计算的余量百分比，默认值为20（非游戏模式）和30（游戏模式）\n`;
+            newContent += `Margin=${marginValue}\n`;
+        }
+
+        // 保存到文件
+        const { errno: writeErrno } = await exec(`echo '${newContent}' > ${CONFIG_PATH}`);
+
+        if (writeErrno === 0) {
+            toast('余量设置已成功保存');
+        } else {
+            toast('保存余量设置失败，请检查权限');
+        }
+    } catch (error) {
+        console.error('保存余量设置失败:', error);
+        toast('保存余量设置失败: ' + error.message);
     }
 }
 
