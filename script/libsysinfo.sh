@@ -94,6 +94,16 @@ _get_taro_type() {
     fi
 }
 
+# 区分mt6891和mt6893
+_get_mt689x_type() {
+    # 如果是mt6893但CPU7最大频率小于2700000，则实际是mt6891
+    if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
+        echo "mtd1100" # mt6891
+    else
+        echo "mtd1200" # mt6893
+    fi
+}
+
 # $1:board_name
 get_config_name() {
     case "$1" in
@@ -147,7 +157,7 @@ get_config_name() {
     "mt6885") echo "mtd1000" ;;
     "mt6889") echo "mtd1000" ;;
     "mt6891") echo "mtd1100" ;;
-    "mt6893") echo "mtd1200" ;;
+    "mt6893") echo "$(_get_mt689x_type)" ;; # 使用CPU7频率区分mt6891和mt6893
     "mt6895") echo "mtd8100" ;;
     "mt6983") echo "mtd9000" ;;
     "gs101") echo "gs101" ;;
