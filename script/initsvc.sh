@@ -56,14 +56,6 @@ else
     exit 1
 fi
 
-if [ -f "$SCRIPT_DIR/libgpugov.sh" ]; then
-    . "$SCRIPT_DIR/libgpugov.sh"
-    echo "已加载 libgpugov.sh" >> "$INIT_LOG"
-else
-    echo "错误: libgpugov.sh 未找到，路径: $SCRIPT_DIR" >> "$INIT_LOG"
-    exit 1
-fi
-
 # 设置日志文件最大大小（单位MB）
 MAX_LOG_SIZE_MB=5
 
@@ -104,19 +96,19 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
     echo "$(date)"
     echo "PATH=$PATH"
     echo "sh=$(which sh)"
-    echo "Bootstraping MTK_GPU_GOVERNOR" 
+    echo "Bootstraping MTK_GPU_GOVERNOR"
 
     # 记录当前日志等级
     if [ -f "$LOG_LEVEL_FILE" ]; then
         current_log_level=$(cat "$LOG_LEVEL_FILE")
-        echo "Current log level: $current_log_level" 
+        echo "Current log level: $current_log_level"
 
         # 确保在debug模式下也创建初始化日志
         if [ "$current_log_level" = "debug" ]; then
-            echo "Debug mode enabled, ensuring initialization log is created" 
+            echo "Debug mode enabled, ensuring initialization log is created"
         fi
     else
-        echo "Log level file not found, using default: info" 
+        echo "Log level file not found, using default: info"
     fi
 
     # 确保日志文件权限正确
@@ -132,10 +124,10 @@ dvfs_status=$(cat $DVFS | cut -f2 -d ' ')
 if [[ "$dvfs_status" != "0" ]]; then
   # 显示警告信息
   echo "警告：DVFS当前已启用(状态=$dvfs_status)，正在关闭..."
-  
+
   # 关闭DVFS
   echo 0 > $DVFS
-  
+
   # 确认DVFS已关闭
   new_status=$(cat $DVFS | cut -f2 -d ' ')
   if [[ "$new_status" == "0" ]]; then
