@@ -96,9 +96,9 @@ else
     # 切换当前状态
     if [ "$current_mode" = "1" ]; then
         echo "0" > "$GAME_MODE_FILE"
-        ui_print "游戏模式已关闭"
+        echo "游戏模式已关闭"
     else
         echo "1" > "$GAME_MODE_FILE"
-        ui_print "游戏模式已开启"
+        echo "游戏模式已开启"
     fi
 fi
