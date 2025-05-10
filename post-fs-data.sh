@@ -2,8 +2,6 @@
 
 MODDIR=${0%/*}
 
-
-
 do_others() {
     if [ -f $MODDIR/USE_DEBUGFS ];then
         mount -t debugfs none /sys/kernel/debug

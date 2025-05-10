@@ -54,7 +54,7 @@ Margin=10
 
 ### 游戏列表配置
 
-游戏列表配置文件位于 `/data/adb/gpu_governor/games.conf`，包含需要应用游戏模式的应用包名。模块会在安装时自动扫描设备上已安装的游戏并生成此配置文件。
+游戏列表配置文件位于 `/data/adb/gpu_governor/game/games.conf`，包含需要应用游戏模式的应用包名。模块会在安装时自动扫描设备上已安装的游戏并生成此配置文件。
 
 ### 游戏模式切换
 
@@ -69,7 +69,7 @@ Margin=10
 - **关闭游戏模式**: `./action.sh off`
 - **切换当前状态**: `./action.sh`
 
-游戏模式状态保存在 `/data/adb/gpu_governor/game_mode` 文件中，值为 `1` 表示开启，`0` 表示关闭。
+游戏模式状态保存在 `/data/adb/gpu_governor/game/game_mode` 文件中，值为 `1` 表示开启，`0` 表示关闭。
 
 ### 日志等级设置
 
@@ -178,7 +178,7 @@ A: 查看 `/data/adb/gpu_governor/log/gpu_gov.log` 日志文件，确认有正�
 A: 当检测到 `games.conf` 中列出的应用运行时，会自动应用优化的 GPU 频率设置。游戏模式下会使用更积极的升频策略，提供更好的游戏体验。
 
 **Q: 如何添加自定义游戏到列表？**
-A: 编辑 `/data/adb/gpu_governor/games.conf` 文件，添加游戏的包名即可。或者通过 WebUI 界面的游戏列表页面进行添加。
+A: 编辑 `/data/adb/gpu_governor/game/games.conf` 文件，添加游戏的包名即可。或者通过 WebUI 界面的游戏列表页面进行添加。
 
 **Q: 如何调整日志等级？**
 A: 使用命令 `./action.sh log_level [debug|info|warn|error]` 或通过 WebUI 界面的设置页面进行调整。调整后会立即生效，无需重启模块。
