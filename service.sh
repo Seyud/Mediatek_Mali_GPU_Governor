@@ -27,8 +27,10 @@ echo "$(date) - GPU Governor: 从 $MODDIR 启动服务" >> "$LOG_FILE"
 
 # 创建必要的目录
 mkdir -p /data/adb/gpu_governor/log 2>/dev/null
+mkdir -p /data/adb/gpu_governor/game 2>/dev/null
 chmod 0777 /data/adb/gpu_governor 2>/dev/null
 chmod 0777 /data/adb/gpu_governor/log 2>/dev/null
+chmod 0777 /data/adb/gpu_governor/game 2>/dev/null
 
 # 启动服务
 sh "$MODDIR"/script/initsvc.sh
@@ -52,5 +54,5 @@ else
         fi
     fi
 
-    
+
 fi

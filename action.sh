@@ -11,7 +11,8 @@
 # 定义常量
 GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
-GAME_MODE_FILE="$GPU_GOVERNOR_DIR/game_mode"
+GPU_GOVERNOR_GAME_DIR="$GPU_GOVERNOR_DIR/game"
+GAME_MODE_FILE="$GPU_GOVERNOR_GAME_DIR/game_mode"
 LOG_LEVEL_FILE="$GPU_GOVERNOR_LOG_DIR/log_level"
 GPU_GOV_LOG_FILE="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log"
 MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
@@ -74,9 +75,11 @@ rotate_log() {
 # 确保目录存在并设置适当权限
 mkdir -p "$GPU_GOVERNOR_DIR"
 mkdir -p "$GPU_GOVERNOR_LOG_DIR"
+mkdir -p "$GPU_GOVERNOR_GAME_DIR"
 # 设置目录权限为777，确保任何进程都可以写入
 chmod 0777 "$GPU_GOVERNOR_DIR"
 chmod 0777 "$GPU_GOVERNOR_LOG_DIR"
+chmod 0777 "$GPU_GOVERNOR_GAME_DIR"
 
 # 检查并轮转主日志文件
 rotate_log "$GPU_GOV_LOG_FILE" "$MAX_LOG_SIZE_MB"

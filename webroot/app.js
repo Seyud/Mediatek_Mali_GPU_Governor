@@ -83,8 +83,8 @@ const navItems = document.querySelectorAll('.nav-item');
 // 路径常量
 const LOG_PATH = '/data/adb/gpu_governor/log';
 const CONFIG_PATH = '/data/gpu_freq_table.conf';
-const GAMES_PATH = '/data/adb/gpu_governor/games.conf';
-const GAME_MODE_PATH = '/data/adb/gpu_governor/game_mode';
+const GAMES_PATH = '/data/adb/gpu_governor/game/games.conf';
+const GAME_MODE_PATH = '/data/adb/gpu_governor/game/game_mode';
 const LOG_LEVEL_PATH = '/data/adb/gpu_governor/log/log_level';
 const MAX_LOG_SIZE_MB = 5; // 日志文件最大大小，单位MB
 

@@ -62,11 +62,11 @@ MAX_LOG_SIZE_MB=5
 # 等待系统启动完成
 wait_until_login
 
-# 确保日志目录存在并设置适当权限
+# 确保日志目录和游戏目录存在并设置适当权限
 mkdir -p "$LOG_PATH" 2>/dev/null
 mkdir -p "$GAMES_PATH" 2>/dev/null
 
-# 设置日志目录权限为777，确保任何进程都可以写入
+# 设置日志目录和游戏目录权限为777，确保任何进程都可以写入
 chmod 0777 "$LOG_PATH" 2>/dev/null
 chmod 0777 "$GAMES_PATH" 2>/dev/null
 

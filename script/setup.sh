@@ -175,7 +175,7 @@ install_gov() {
     mkdir -p "$LOG_PATH"
     mkdir -p "$GAMES_PATH"
 
-    # 设置日志目录权限为777，确保任何进程都可以写入
+    # 设置日志目录和游戏目录权限为777，确保任何进程都可以写入
     chmod 0777 "$LOG_PATH"
     chmod 0777 "$GAMES_PATH"
     if [ ! -f "$USER_PATH"/gpu_freq_table.conf ]; then
