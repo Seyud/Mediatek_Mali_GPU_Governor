@@ -85,7 +85,7 @@ Margin=10
 - **设置为警告级别**: `./action.sh log_level warn`
 - **设置为错误级别**: `./action.sh log_level error`
 
-日志等级设置保存在 `/data/adb/gpu_governor/log_level` 文件中，默认为 `info` 级别。
+日志等级设置保存在 `/data/adb/gpu_governor/log/log_level` 文件中，默认为 `info` 级别。
 
 ### 负载阈值设置
 

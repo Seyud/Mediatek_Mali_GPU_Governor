@@ -85,7 +85,7 @@ const LOG_PATH = '/data/adb/gpu_governor/log';
 const CONFIG_PATH = '/data/gpu_freq_table.conf';
 const GAMES_PATH = '/data/adb/gpu_governor/games.conf';
 const GAME_MODE_PATH = '/data/adb/gpu_governor/game_mode';
-const LOG_LEVEL_PATH = '/data/adb/gpu_governor/log_level';
+const LOG_LEVEL_PATH = '/data/adb/gpu_governor/log/log_level';
 const MAX_LOG_SIZE_MB = 5; // 日志文件最大大小，单位MB
 
 // 电压列表

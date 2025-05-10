@@ -212,7 +212,6 @@ install_gov() {
     generate_gamelist
 }
 
-#grep_prop comes from https://github.com/topjohnwu/Magisk/blob/master/scripts/util_functions.sh#L30
 grep_prop() {
     REGEX="s/^$1=//p"
     shift
