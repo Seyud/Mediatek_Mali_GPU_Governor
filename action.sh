@@ -1,20 +1,75 @@
-#!/bin/sh
-# 游戏模式切换脚本
-# 用法: ./toggle_game_mode.sh [on|off]
-# 如果不提供参数，则切换当前状态
-# 日志等级设置: ./action.sh log_level [debug|info|warn|error]
+#!/system/bin/sh
+# 天玑GPU调速器控制脚本
+# 功能：
+# 1. 切换游戏模式（开启/关闭）
+# 2. 控制调速器服务（启动/停止）
+# 3. 设置日志等级
+# 4. 使用音量键进行选择
+#
+# 注意：此脚本会被直接执行而不带参数
 
-# 获取脚本所在目录
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-# 加载公共库
-. "$SCRIPT_DIR/script/libcommon.sh"
-
+# 定义常量
 GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
 GAME_MODE_FILE="$GPU_GOVERNOR_DIR/game_mode"
 LOG_LEVEL_FILE="$GPU_GOVERNOR_DIR/log_level"
 GPU_GOV_LOG_FILE="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log"
 MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
+BIN_PATH="$SCRIPT_DIR/bin"
+GPUGOVERNOR_BIN="$BIN_PATH/gpugovernor"
+
+# 日志前缀函数
+log_prefix() {
+    echo "[$(date "+%Y-%m-%d %H:%M:%S")]"
+}
+
+# 日志轮转函数
+# $1:log_file - 日志文件路径
+# $2:max_size_mb - 最大日志大小(MB)，默认为5MB
+rotate_log() {
+    local log_file="$1"
+    local max_size_mb="${2:-5}"
+    local max_size_bytes=$((max_size_mb * 1024 * 1024))
+    # 设置轮转阈值为最大大小的80%，提前进行轮转
+    local threshold_bytes=$(( (max_size_bytes * 8) / 10 ))
+
+    # 确保日志文件存在
+    if [ ! -f "$log_file" ]; then
+        touch "$log_file"
+        chmod 0666 "$log_file"
+        return 0
+    fi
+
+    # 获取文件大小（以字节为单位）
+    local file_size=$(stat -c %s "$log_file" 2>/dev/null || stat -f %z "$log_file" 2>/dev/null)
+
+    # 如果获取文件大小失败或文件大小为0，确保文件存在并可写
+    if [ -z "$file_size" ] || [ "$file_size" -eq 0 ]; then
+        file_size=0
+        # 确保文件权限正确
+        chmod 0666 "$log_file" 2>/dev/null
+        return 0
+    fi
+
+    # 如果文件大小超过阈值（80%的限制），进行轮转
+    if [ "$file_size" -gt "$threshold_bytes" ]; then
+        echo "$(log_prefix) 日志文件 $log_file 大小($file_size 字节)超过阈值($threshold_bytes 字节)，进行轮转"
+
+        # 创建备份文件（如果已存在则覆盖）
+        cp "$log_file" "${log_file}.bak" 2>/dev/null
+
+        # 清空原日志文件
+        true > "$log_file"
+        chmod 0666 "$log_file"
+
+        # 记录轮转信息
+        echo "$(date) - 日志已轮转，原日志已备份到 ${log_file}.bak" >> "$log_file"
+        sync
+        return 1
+    fi
+
+    return 0
+}
 
 # 确保目录存在并设置适当权限
 mkdir -p "$GPU_GOVERNOR_DIR"
@@ -23,26 +78,7 @@ mkdir -p "$GPU_GOVERNOR_LOG_DIR"
 chmod 0777 "$GPU_GOVERNOR_DIR"
 chmod 0777 "$GPU_GOVERNOR_LOG_DIR"
 
-# 检查主日志文件大小并进行轮转
-# 使用更积极的轮转策略，确保日志文件不会过大
-if [ -f "$GPU_GOV_LOG_FILE" ]; then
-    # 获取文件大小（以字节为单位）
-    file_size=$(stat -c %s "$GPU_GOV_LOG_FILE" 2>/dev/null || stat -f %z "$GPU_GOV_LOG_FILE" 2>/dev/null)
-    max_size_bytes=$((MAX_LOG_SIZE_MB * 1024 * 1024))
-    threshold_bytes=$(( (max_size_bytes * 7) / 10 )) # 设置为70%的阈值，更积极地轮转
-
-    # 如果文件大小超过阈值，强制轮转
-    if [ -z "$file_size" ] || [ "$file_size" -gt "$threshold_bytes" ]; then
-        echo "日志文件大小($file_size 字节)接近或超过阈值($threshold_bytes 字节)，进行轮转"
-        cp "$GPU_GOV_LOG_FILE" "${GPU_GOV_LOG_FILE}.bak" 2>/dev/null
-        true > "$GPU_GOV_LOG_FILE"
-        chmod 0666 "$GPU_GOV_LOG_FILE"
-        echo "$(date) - 由action.sh触发的日志轮转，原日志已备份到 ${GPU_GOV_LOG_FILE}.bak" >> "$GPU_GOV_LOG_FILE"
-        sync
-    fi
-fi
-
-# 使用统一的日志轮转函数（作为备份机制）
+# 检查并轮转主日志文件
 rotate_log "$GPU_GOV_LOG_FILE" "$MAX_LOG_SIZE_MB"
 
 # 确保文件存在
@@ -57,48 +93,349 @@ if [ ! -f "$LOG_LEVEL_FILE" ]; then
     chmod 666 "$LOG_LEVEL_FILE"
 fi
 
-# 处理日志等级设置
-if [ "$1" = "log_level" ]; then
-    if [ "$2" = "debug" ] || [ "$2" = "info" ] || [ "$2" = "warn" ] || [ "$2" = "error" ]; then
-        echo "$2" > "$LOG_LEVEL_FILE"
-        echo "日志等级已设置为: $2"
-        # 通知用户需要重启模块以应用更改
-        echo "请重启模块或设备以应用新的日志等级设置"
-        exit 0
+# 音量键选择器函数
+volume_key_selector() {
+    local timeout=15
+    local start_time=$(date +%s)
+    local key_detected=""
+
+    echo "$(log_prefix) 请使用音量键选择："
+    echo "$(log_prefix) [音量+] 确认选择  [音量-] 取消/返回"
+    echo "$(log_prefix) 等待用户选择（${timeout}秒后自动取消）..."
+
+    while [ -z "$key_detected" ]; do
+        local current_time=$(date +%s)
+        if [ $((current_time - start_time)) -ge $timeout ]; then
+            echo "$(log_prefix) 选择超时，自动取消"
+            return 1
+        fi
+
+        local key_event=$(getevent -qlc 1 2>/dev/null |
+            awk 'BEGIN{FS=" "} /KEY_VOLUMEUP/{print "UP"; exit} /KEY_VOLUMEDOWN/{print "DOWN"; exit}')
+
+        case "$key_event" in
+            "UP")
+                echo "$(log_prefix) 检测到音量上键"
+                key_detected="confirm"
+                ;;
+            "DOWN")
+                echo "$(log_prefix) 检测到音量下键"
+                key_detected="cancel"
+                ;;
+        esac
+        sleep 0.2
+    done
+
+    [ "$key_detected" = "confirm" ] && return 0 || return 1
+}
+
+# 检查GPU调速器服务状态
+check_governor_status() {
+    if pgrep -f "gpugovernor" >/dev/null; then
+        echo "运行中"
+        return 0
     else
-        # 显示当前日志等级和可用选项
-        current_level=$(cat "$LOG_LEVEL_FILE")
-        echo "当前日志等级: $current_level"
-        echo "可用的日志等级选项: debug, info, warn, error"
-        echo "用法: ./action.sh log_level [debug|info|warn|error]"
-        exit 0
+        echo "未运行"
+        return 1
     fi
-fi
+}
 
-# 提示用户使用日志等级设置
-if [ "$1" = "debug" ]; then
-    echo "调试模式已被移除，请使用日志等级设置代替"
-    echo "用法: ./action.sh log_level debug"
-    exit 0
-fi
+# 启动GPU调速器服务
+start_governor() {
+    # 检查服务是否已经运行
+    if check_governor_status >/dev/null; then
+        echo "$(log_prefix) GPU调速器服务已经在运行中"
+        return 0
+    fi
 
-# 获取当前游戏模式状态
-current_mode=$(cat "$GAME_MODE_FILE")
+    # 确保二进制文件存在并有执行权限
+    if [ ! -f "$GPUGOVERNOR_BIN" ]; then
+        echo "$(log_prefix) 错误: 二进制文件不存在: $GPUGOVERNOR_BIN"
+        return 1
+    fi
 
-# 根据参数切换状态
-if [ "$1" = "on" ]; then
-    echo "1" > "$GAME_MODE_FILE"
-    echo "游戏模式已开启"
-elif [ "$1" = "off" ]; then
-    echo "0" > "$GAME_MODE_FILE"
-    echo "游戏模式已关闭"
-else
-    # 切换当前状态
+    if [ ! -x "$GPUGOVERNOR_BIN" ]; then
+        echo "$(log_prefix) 二进制文件没有执行权限，尝试修复"
+        chmod 0755 "$GPUGOVERNOR_BIN"
+    fi
+
+    # 读取日志等级
+    log_level="info"
+    if [ -f "$LOG_LEVEL_FILE" ]; then
+        log_level=$(cat "$LOG_LEVEL_FILE")
+        # 验证日志等级是否有效
+        if [ "$log_level" != "debug" ] && [ "$log_level" != "info" ] && [ "$log_level" != "warn" ] && [ "$log_level" != "error" ]; then
+            log_level="info" # 默认为info级别
+        fi
+    fi
+
+    echo "$(log_prefix) 正在以$log_level级别启动GPU调速器服务..."
+
+    # 启动服务
+    nohup "$GPUGOVERNOR_BIN" >> "$GPU_GOV_LOG_FILE" 2>&1 &
+
+    # 等待服务启动
+    sleep 2
+    if check_governor_status >/dev/null; then
+        echo "$(log_prefix) GPU调速器服务启动成功"
+        return 0
+    else
+        echo "$(log_prefix) GPU调速器服务启动失败，请检查日志"
+        return 1
+    fi
+}
+
+# 停止GPU调速器服务
+stop_governor() {
+    if ! check_governor_status >/dev/null; then
+        echo "$(log_prefix) GPU调速器服务未运行"
+        return 0
+    fi
+
+    echo "$(log_prefix) 正在停止GPU调速器服务..."
+    killall gpugovernor
+
+    # 等待服务停止
+    sleep 1
+    if ! check_governor_status >/dev/null; then
+        echo "$(log_prefix) GPU调速器服务已停止"
+        return 0
+    else
+        echo "$(log_prefix) 无法停止GPU调速器服务，尝试强制终止"
+        killall -9 gpugovernor
+        sleep 1
+        if ! check_governor_status >/dev/null; then
+            echo "$(log_prefix) GPU调速器服务已强制停止"
+            return 0
+        else
+            echo "$(log_prefix) 无法终止GPU调速器服务，请手动检查"
+            return 1
+        fi
+    fi
+}
+
+# 切换游戏模式
+toggle_game_mode() {
+    # 获取当前游戏模式状态
+    local current_mode=$(cat "$GAME_MODE_FILE")
+
+    # 切换状态
     if [ "$current_mode" = "1" ]; then
         echo "0" > "$GAME_MODE_FILE"
-        echo "游戏模式已关闭"
+        echo "$(log_prefix) 游戏模式已关闭"
     else
         echo "1" > "$GAME_MODE_FILE"
-        echo "游戏模式已开启"
+        echo "$(log_prefix) 游戏模式已开启"
     fi
-fi
+}
+
+# 显示当前状态
+show_status() {
+    echo "----------------------------------------"
+    echo "$(log_prefix) 天玑GPU调速器状态信息"
+    echo "----------------------------------------"
+
+    # 显示游戏模式状态
+    local game_mode=$(cat "$GAME_MODE_FILE")
+    if [ "$game_mode" = "1" ]; then
+        echo "$(log_prefix) 游戏模式: 已开启"
+    else
+        echo "$(log_prefix) 游戏模式: 已关闭"
+    fi
+
+    # 显示调速器服务状态
+    local governor_status=$(check_governor_status)
+    echo "$(log_prefix) 调速器服务: $governor_status"
+
+    # 显示日志等级
+    local log_level=$(cat "$LOG_LEVEL_FILE")
+    echo "$(log_prefix) 日志等级: $log_level"
+
+    # 显示设备信息
+    echo "$(log_prefix) 设备型号: $(getprop ro.product.model 2>/dev/null || echo '未知')"
+    echo "$(log_prefix) 安卓版本: $(getprop ro.build.version.release 2>/dev/null || echo '未知')"
+
+    # 显示模块版本
+    local version=$(grep "^version=" "$SCRIPT_DIR/module.prop" | cut -d= -f2)
+    echo "$(log_prefix) 模块版本: $version"
+    echo "----------------------------------------"
+}
+
+# 处理日志等级设置
+handle_log_level() {
+    if [ "$1" = "debug" ] || [ "$1" = "info" ] || [ "$1" = "warn" ] || [ "$1" = "error" ]; then
+        echo "$1" > "$LOG_LEVEL_FILE"
+        echo "$(log_prefix) 日志等级已设置为: $1"
+        echo "$(log_prefix) 请重启调速器服务以应用新的日志等级设置"
+        return 0
+    else
+        # 显示当前日志等级和可用选项
+        local current_level=$(cat "$LOG_LEVEL_FILE")
+        echo "$(log_prefix) 当前日志等级: $current_level"
+        echo "$(log_prefix) 可用的日志等级选项: debug, info, warn, error"
+        echo "$(log_prefix) 用法: ./action.sh log_level [debug|info|warn|error]"
+        return 1
+    fi
+}
+
+# 显示主菜单并处理选择
+show_menu() {
+    # 显示欢迎信息
+    echo "=========================================="
+    echo "       天玑GPU调速器 - 控制菜单           "
+    echo "=========================================="
+    echo "$(log_prefix) 欢迎使用天玑GPU调速器控制菜单"
+    echo "----------------------------------------"
+
+    # 显示当前状态
+    show_status
+
+    # 准备菜单选项
+    local game_mode=$(cat "$GAME_MODE_FILE")
+    local game_mode_text="关闭"
+    [ "$game_mode" = "1" ] && game_mode_text="开启"
+
+    local governor_status=$(check_governor_status)
+    local governor_action="启动"
+    [ "$governor_status" = "运行中" ] && governor_action="停止"
+
+    echo "=========================================="
+    echo "请选择操作："
+    echo "1. 切换游戏模式 (当前: $game_mode_text)"
+    echo "2. ${governor_action}调速器服务 (当前: $governor_status)"
+    echo "3. 设置日志等级 (当前: $(cat "$LOG_LEVEL_FILE"))"
+    echo "0. 退出"
+    echo "=========================================="
+    echo "请使用音量键选择操作："
+    echo "[音量+] 下一选项  [音量-] 确认选择"
+    echo "----------------------------------------"
+
+    local selection=1
+    local confirmed=0
+    local timeout=30
+    local start_time=$(date +%s)
+
+    while [ $confirmed -eq 0 ]; do
+        # 显示当前选择
+        case $selection in
+            1) echo "当前选择: 1. 切换游戏模式" ;;
+            2) echo "当前选择: 2. ${governor_action}调速器服务" ;;
+            3) echo "当前选择: 3. 设置日志等级" ;;
+            0) echo "当前选择: 0. 退出" ;;
+        esac
+
+        # 检查超时
+        local current_time=$(date +%s)
+        if [ $((current_time - start_time)) -ge $timeout ]; then
+            echo "$(log_prefix) 选择超时，自动退出"
+            return
+        fi
+
+        # 获取按键
+        local key_event=$(getevent -qlc 1 2>/dev/null |
+            awk 'BEGIN{FS=" "} /KEY_VOLUMEUP/{print "UP"; exit} /KEY_VOLUMEDOWN/{print "DOWN"; exit}')
+
+        case "$key_event" in
+            "UP")
+                # 音量上键 - 下一选项
+                selection=$((selection + 1))
+                [ $selection -gt 3 ] && selection=0
+                ;;
+            "DOWN")
+                # 音量下键 - 确认选择
+                confirmed=1
+                ;;
+        esac
+
+        # 短暂延迟，避免按键检测过快
+        [ $confirmed -eq 0 ] && sleep 0.3
+    done
+
+    echo "$(log_prefix) 已选择选项 $selection"
+
+    # 处理选择
+    case $selection in
+        0)
+            echo "$(log_prefix) 退出菜单"
+            return
+            ;;
+        1)
+            echo "$(log_prefix) 切换游戏模式"
+            toggle_game_mode
+            # 显示新状态并返回主菜单
+            sleep 1
+            show_menu
+            ;;
+        2)
+            if [ "$governor_status" = "运行中" ]; then
+                echo "$(log_prefix) 停止调速器服务"
+                stop_governor
+            else
+                echo "$(log_prefix) 启动调速器服务"
+                start_governor
+            fi
+            # 显示新状态并返回主菜单
+            sleep 1
+            show_menu
+            ;;
+        3)
+            echo "$(log_prefix) 设置日志等级"
+            echo "可用的日志等级: debug, info, warn, error"
+            echo "当前日志等级: $(cat "$LOG_LEVEL_FILE")"
+
+            echo "请选择日志等级:"
+            echo "1. debug (调试)"
+            echo "2. info (信息)"
+            echo "3. warn (警告)"
+            echo "4. error (错误)"
+
+            local log_selection=2  # 默认选择info
+            local log_confirmed=0
+
+            while [ $log_confirmed -eq 0 ]; do
+                # 显示当前选择
+                case $log_selection in
+                    1) echo "当前选择: debug" ;;
+                    2) echo "当前选择: info" ;;
+                    3) echo "当前选择: warn" ;;
+                    4) echo "当前选择: error" ;;
+                esac
+
+                # 获取按键
+                local key_event=$(getevent -qlc 1 2>/dev/null |
+                    awk 'BEGIN{FS=" "} /KEY_VOLUMEUP/{print "UP"; exit} /KEY_VOLUMEDOWN/{print "DOWN"; exit}')
+
+                case "$key_event" in
+                    "UP")
+                        # 音量上键 - 下一选项
+                        log_selection=$((log_selection + 1))
+                        [ $log_selection -gt 4 ] && log_selection=1
+                        ;;
+                    "DOWN")
+                        # 音量下键 - 确认选择
+                        log_confirmed=1
+                        ;;
+                esac
+
+                # 短暂延迟，避免按键检测过快
+                [ $log_confirmed -eq 0 ] && sleep 0.3
+            done
+
+            # 设置日志等级
+            case $log_selection in
+                1) handle_log_level "debug" ;;
+                2) handle_log_level "info" ;;
+                3) handle_log_level "warn" ;;
+                4) handle_log_level "error" ;;
+            esac
+
+            # 返回主菜单
+            sleep 1
+            show_menu
+            ;;
+    esac
+}
+
+# 直接显示交互式菜单，不处理命令行参数
+# 因为脚本会被直接执行而不带参数
+show_menu
