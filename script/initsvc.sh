@@ -117,27 +117,30 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
 sync
 
 
-# 读取当前DVFS状态
-dvfs_status=$(cat $DVFS | cut -f2 -d ' ')
+# 读取当前DVFS状态并记录到初始化日志
+{
+  echo "$(date) - 检查DVFS状态"
+  dvfs_status=$(cat $DVFS | cut -f2 -d ' ')
 
-# 检查DVFS状态
-if [[ "$dvfs_status" != "0" ]]; then
-  # 显示警告信息
-  echo "警告：DVFS当前已启用(状态=$dvfs_status)，正在关闭..."
+  # 检查DVFS状态
+  if [[ "$dvfs_status" != "0" ]]; then
+    # 显示警告信息
+    echo "警告：DVFS当前已启用(状态=$dvfs_status)，正在关闭..."
 
-  # 关闭DVFS
-  echo 0 > $DVFS
+    # 关闭DVFS
+    echo 0 > $DVFS
 
-  # 确认DVFS已关闭
-  new_status=$(cat $DVFS | cut -f2 -d ' ')
-  if [[ "$new_status" == "0" ]]; then
-    echo "DVFS已成功关闭"
+    # 确认DVFS已关闭
+    new_status=$(cat $DVFS | cut -f2 -d ' ')
+    if [[ "$new_status" == "0" ]]; then
+      echo "DVFS已成功关闭"
+    else
+      echo "错误：无法关闭DVFS，当前状态仍为$new_status"
+    fi
   else
-    echo "错误：无法关闭DVFS，当前状态仍为$new_status"
+    echo "DVFS已经处于关闭状态"
   fi
-else
-  echo "DVFS已经处于关闭状态"
-fi
+} >> "$INIT_LOG" 2>&1
 
 # 内联gpugov_testconf函数的内容，避免函数调用问题
 {
