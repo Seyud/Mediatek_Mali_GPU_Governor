@@ -111,6 +111,7 @@ let gamesList_data = []; // 存储当前的游戏列表
 let currentVoltIndex = 0; // 当前电压选择器的索引
 let marginValue = 20; // 默认余量值
 let currentLanguage = 'zh'; // 当前语言，默认中文
+let lastGameModeStatus = false; // 上一次检测到的游戏模式状态
 
 // 电压调整相关全局变量
 const VOLT_STEP = 625; // 电压调整步长
@@ -1023,6 +1024,10 @@ async function initializeApp() {
         // 初始化页面显示
         switchPage('page-status'); // 默认显示状态页面
 
+        // 设置定时器，每秒检测一次游戏模式状态
+        console.log('设置游戏模式状态检测定时器');
+        setInterval(checkGameModeStatus, 1000);
+
         // 加载完成后显示提示
         try {
             toast(getTranslation('toast_webui_loaded'));
@@ -1247,6 +1252,8 @@ function setupEventListeners() {
             if (errno === 0) {
                 toast(getTranslation(gameModeToggle.checked ? 'toast_game_mode_on' : 'toast_game_mode_off'));
                 console.log(`游戏模式已切换为: ${value}`);
+                // 更新上一次状态
+                lastGameModeStatus = gameModeToggle.checked;
             } else {
                 console.error('切换游戏模式失败:', stderr);
                 toast(getTranslation('toast_game_mode_fail'));
@@ -1447,6 +1454,29 @@ async function loadModuleVersion() {
     }
 }
 
+// 检查游戏模式状态（每秒调用一次）
+async function checkGameModeStatus() {
+    try {
+        // 读取游戏模式状态
+        const { errno, stdout, stderr } = await exec(`cat ${GAME_MODE_PATH} 2>/dev/null || echo 0`);
+
+        if (errno === 0) {
+            const status = stdout.trim() === '1';
+
+            // 如果状态发生变化，更新UI
+            if (status !== lastGameModeStatus) {
+                console.log(`游戏模式状态变化: ${lastGameModeStatus ? '开启' : '关闭'} -> ${status ? '开启' : '关闭'}`);
+                gameModeToggle.checked = status;
+                lastGameModeStatus = status;
+            }
+        } else {
+            console.error('读取游戏模式状态失败:', stderr);
+        }
+    } catch (error) {
+        console.error('检查游戏模式状态失败:', error);
+    }
+}
+
 // 加载游戏模式状态
 async function loadGameModeStatus() {
     try {
@@ -1467,14 +1497,17 @@ async function loadGameModeStatus() {
         if (errno === 0) {
             const status = stdout.trim() === '1';
             gameModeToggle.checked = status;
+            lastGameModeStatus = status; // 更新上一次状态
             console.log(`当前游戏模式状态: ${status ? '开启' : '关闭'}`);
         } else {
             console.error('读取游戏模式状态失败:', stderr);
             gameModeToggle.checked = false; // 默认为关闭
+            lastGameModeStatus = false; // 更新上一次状态
         }
     } catch (error) {
         console.error('加载游戏模式状态失败:', error);
         gameModeToggle.checked = false; // 默认为关闭
+        lastGameModeStatus = false; // 更新上一次状态
     }
 }
 
