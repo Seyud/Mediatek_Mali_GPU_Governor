@@ -159,6 +159,7 @@ get_config_name() {
     "mt6891") echo "mtd1100" ;;
     "mt6893") echo "$(_get_mt689x_type)" ;; # 使用CPU7频率区分mt6891和mt6893
     "mt6895") echo "mtd8100" ;;
+    "mt6896") echo "mtd8200" ;;
     "mt6983") echo "mtd9000" ;;
     "gs101") echo "gs101" ;;
     *) echo "unsupported" ;;

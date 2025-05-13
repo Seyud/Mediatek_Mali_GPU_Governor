@@ -170,6 +170,14 @@ sync
             fi
         fi
 
+        # 特殊处理mt6895，可能是mt6896
+        if [ "$target" = "mt6895" ]; then
+            if [[ $(getprop ro.soc.model | grep 6896) != '' ]]; then
+                echo "检测到mt6895但ro.soc.model包含6896，判断为mt6896"
+                cfgname="mtd8200"
+            fi
+        fi
+
         if [ "$cfgname" = "unsupported" ]; then
             target="$(getprop ro.product.board)"
             cfgname="$(get_config_name "$target")"

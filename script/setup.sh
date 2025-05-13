@@ -160,6 +160,14 @@ install_gov() {
         fi
     fi
 
+    # 特殊处理mt6895，可能是mt6896
+    if [ "$target" = "mt6895" ]; then
+        if [[ $(getprop ro.soc.model | grep 6896) != '' ]]; then
+            echo "- Detected mt6895 but ro.soc.model contains 6896, identified as mt6896"
+            cfgname="mtd8200"
+        fi
+    fi
+
     if [ "$cfgname" = "unsupported" ]; then
         target="$(getprop ro.product.board)"
         cfgname="$(get_config_name "$target")"
