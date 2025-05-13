@@ -19,6 +19,39 @@ MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
 BIN_PATH="$SCRIPT_DIR/bin"
 GPUGOVERNOR_BIN="$BIN_PATH/gpugovernor"
 
+# 语言检测函数
+detect_language() {
+    # 尝试获取系统语言设置
+    local system_locale=$(getprop persist.sys.locale 2>/dev/null || getprop ro.product.locale 2>/dev/null)
+
+    # 如果无法获取或为空，尝试其他方法
+    if [ -z "$system_locale" ]; then
+        system_locale=$(settings get system system_locales 2>/dev/null || echo "zh-CN")
+    fi
+
+    # 检查是否包含中文标识
+    if echo "$system_locale" | grep -q -i "zh"; then
+        echo "zh"
+    else
+        echo "en"
+    fi
+}
+
+# 设置当前语言
+CURRENT_LANGUAGE=$(detect_language)
+
+# 翻译函数
+translate() {
+    local zh_text="$1"
+    local en_text="$2"
+
+    if [ "$CURRENT_LANGUAGE" = "zh" ]; then
+        echo "$zh_text"
+    else
+        echo "$en_text"
+    fi
+}
+
 # 日志前缀函数
 log_prefix() {
     echo "[$(date "+%Y-%m-%d %H:%M:%S")]"
@@ -64,7 +97,7 @@ rotate_log() {
         chmod 0666 "$log_file"
 
         # 记录轮转信息
-        echo "$(date) - 日志已轮转，原日志已备份到 ${log_file}.bak" >> "$log_file"
+        echo "$(date) - Log rotated, original log backed up to ${log_file}.bak" >> "$log_file"
         sync
         return 1
     fi
@@ -102,14 +135,14 @@ volume_key_selector() {
     local start_time=$(date +%s)
     local key_detected=""
 
-    echo "$(log_prefix) 请使用音量键选择："
-    echo "$(log_prefix) [音量+] 确认选择  [音量-] 取消/返回"
-    echo "$(log_prefix) 等待用户选择（${timeout}秒后自动取消）..."
+    echo "$(log_prefix) $(translate "请使用音量键选择：" "Please use volume keys to select:")"
+    echo "$(log_prefix) $(translate "[音量+] 确认选择  [音量-] 取消/返回" "[Volume+] Confirm  [Volume-] Cancel/Back")"
+    echo "$(log_prefix) $(translate "等待用户选择（${timeout}秒后自动取消）..." "Waiting for user selection (auto-cancel in ${timeout} seconds)...")"
 
     while [ -z "$key_detected" ]; do
         local current_time=$(date +%s)
         if [ $((current_time - start_time)) -ge $timeout ]; then
-            echo "$(log_prefix) 选择超时，自动取消"
+            echo "$(log_prefix) $(translate "选择超时，自动取消" "Selection timeout, automatically cancelled")"
             return 1
         fi
 
@@ -118,11 +151,11 @@ volume_key_selector() {
 
         case "$key_event" in
             "UP")
-                echo "$(log_prefix) 检测到音量上键"
+                echo "$(log_prefix) $(translate "检测到音量上键" "Volume up key detected")"
                 key_detected="confirm"
                 ;;
             "DOWN")
-                echo "$(log_prefix) 检测到音量下键"
+                echo "$(log_prefix) $(translate "检测到音量下键" "Volume down key detected")"
                 key_detected="cancel"
                 ;;
         esac
@@ -135,10 +168,10 @@ volume_key_selector() {
 # 检查GPU调速器服务状态
 check_governor_status() {
     if pgrep -f "gpugovernor" >/dev/null; then
-        echo "运行中"
+        translate "运行中" "Running"
         return 0
     else
-        echo "未运行"
+        translate "未运行" "Not running"
         return 1
     fi
 }
@@ -147,18 +180,18 @@ check_governor_status() {
 start_governor() {
     # 检查服务是否已经运行
     if check_governor_status >/dev/null; then
-        echo "$(log_prefix) GPU调速器服务已经在运行中"
+        echo "$(log_prefix) $(translate "GPU调速器服务已经在运行中" "GPU Governor service is already running")"
         return 0
     fi
 
     # 确保二进制文件存在并有执行权限
     if [ ! -f "$GPUGOVERNOR_BIN" ]; then
-        echo "$(log_prefix) 错误: 二进制文件不存在: $GPUGOVERNOR_BIN"
+        echo "$(log_prefix) $(translate "错误: 二进制文件不存在: $GPUGOVERNOR_BIN" "Error: Binary file does not exist: $GPUGOVERNOR_BIN")"
         return 1
     fi
 
     if [ ! -x "$GPUGOVERNOR_BIN" ]; then
-        echo "$(log_prefix) 二进制文件没有执行权限，尝试修复"
+        echo "$(log_prefix) $(translate "二进制文件没有执行权限，尝试修复" "Binary file does not have execution permission, attempting to fix")"
         chmod 0755 "$GPUGOVERNOR_BIN"
     fi
 
@@ -172,7 +205,7 @@ start_governor() {
         fi
     fi
 
-    echo "$(log_prefix) 正在以$log_level级别启动GPU调速器服务..."
+    echo "$(log_prefix) $(translate "正在以$log_level级别启动GPU调速器服务..." "Starting GPU Governor service with $log_level level...")"
 
     # 启动服务
     nohup "$GPUGOVERNOR_BIN" >> "$GPU_GOV_LOG_FILE" 2>&1 &
@@ -180,10 +213,10 @@ start_governor() {
     # 等待服务启动
     sleep 2
     if check_governor_status >/dev/null; then
-        echo "$(log_prefix) GPU调速器服务启动成功"
+        echo "$(log_prefix) $(translate "GPU调速器服务启动成功" "GPU Governor service started successfully")"
         return 0
     else
-        echo "$(log_prefix) GPU调速器服务启动失败，请检查日志"
+        echo "$(log_prefix) $(translate "GPU调速器服务启动失败，请检查日志" "GPU Governor service failed to start, please check logs")"
         return 1
     fi
 }
@@ -191,27 +224,27 @@ start_governor() {
 # 停止GPU调速器服务
 stop_governor() {
     if ! check_governor_status >/dev/null; then
-        echo "$(log_prefix) GPU调速器服务未运行"
+        echo "$(log_prefix) $(translate "GPU调速器服务未运行" "GPU Governor service is not running")"
         return 0
     fi
 
-    echo "$(log_prefix) 正在停止GPU调速器服务..."
+    echo "$(log_prefix) $(translate "正在停止GPU调速器服务..." "Stopping GPU Governor service...")"
     killall gpugovernor
 
     # 等待服务停止
     sleep 1
     if ! check_governor_status >/dev/null; then
-        echo "$(log_prefix) GPU调速器服务已停止"
+        echo "$(log_prefix) $(translate "GPU调速器服务已停止" "GPU Governor service has been stopped")"
         return 0
     else
-        echo "$(log_prefix) 无法停止GPU调速器服务，尝试强制终止"
+        echo "$(log_prefix) $(translate "无法停止GPU调速器服务，尝试强制终止" "Unable to stop GPU Governor service, attempting to force terminate")"
         killall -9 gpugovernor
         sleep 1
         if ! check_governor_status >/dev/null; then
-            echo "$(log_prefix) GPU调速器服务已强制停止"
+            echo "$(log_prefix) $(translate "GPU调速器服务已强制停止" "GPU Governor service has been forcibly stopped")"
             return 0
         else
-            echo "$(log_prefix) 无法终止GPU调速器服务，请手动检查"
+            echo "$(log_prefix) $(translate "无法终止GPU调速器服务，请手动检查" "Unable to terminate GPU Governor service, please check manually")"
             return 1
         fi
     fi
@@ -225,42 +258,43 @@ toggle_game_mode() {
     # 切换状态
     if [ "$current_mode" = "1" ]; then
         echo "0" > "$GAME_MODE_FILE"
-        echo "$(log_prefix) 游戏模式已关闭"
+        echo "$(log_prefix) $(translate "游戏模式已关闭" "Game mode has been disabled")"
     else
         echo "1" > "$GAME_MODE_FILE"
-        echo "$(log_prefix) 游戏模式已开启"
+        echo "$(log_prefix) $(translate "游戏模式已开启" "Game mode has been enabled")"
     fi
 }
 
 # 显示当前状态
 show_status() {
     echo "----------------------------------------"
-    echo "$(log_prefix) 天玑GPU调速器状态信息"
+    echo "$(log_prefix) $(translate "天玑GPU调速器状态信息" "Mediatek GPU Governor Status Information")"
     echo "----------------------------------------"
 
     # 显示游戏模式状态
     local game_mode=$(cat "$GAME_MODE_FILE")
     if [ "$game_mode" = "1" ]; then
-        echo "$(log_prefix) 游戏模式: 已开启"
+        echo "$(log_prefix) $(translate "游戏模式: 已开启" "Game Mode: Enabled")"
     else
-        echo "$(log_prefix) 游戏模式: 已关闭"
+        echo "$(log_prefix) $(translate "游戏模式: 已关闭" "Game Mode: Disabled")"
     fi
 
     # 显示调速器服务状态
     local governor_status=$(check_governor_status)
-    echo "$(log_prefix) 调速器服务: $governor_status"
+    echo "$(log_prefix) $(translate "调速器服务: $governor_status" "Governor Service: $governor_status")"
 
     # 显示日志等级
     local log_level=$(cat "$LOG_LEVEL_FILE")
-    echo "$(log_prefix) 日志等级: $log_level"
+    echo "$(log_prefix) $(translate "日志等级: $log_level" "Log Level: $log_level")"
 
     # 显示设备信息
-    echo "$(log_prefix) 设备型号: $(getprop ro.product.model 2>/dev/null || echo '未知')"
-    echo "$(log_prefix) 安卓版本: $(getprop ro.build.version.release 2>/dev/null || echo '未知')"
+    local unknown_text=$(translate "未知" "Unknown")
+    echo "$(log_prefix) $(translate "设备型号: " "Device Model: ")$(getprop ro.product.model 2>/dev/null || echo "$unknown_text")"
+    echo "$(log_prefix) $(translate "安卓版本: " "Android Version: ")$(getprop ro.build.version.release 2>/dev/null || echo "$unknown_text")"
 
     # 显示模块版本
     local version=$(grep "^version=" "$SCRIPT_DIR/module.prop" | cut -d= -f2)
-    echo "$(log_prefix) 模块版本: $version"
+    echo "$(log_prefix) $(translate "模块版本: " "Module Version: ")$version"
     echo "----------------------------------------"
 }
 
@@ -268,15 +302,15 @@ show_status() {
 handle_log_level() {
     if [ "$1" = "debug" ] || [ "$1" = "info" ] || [ "$1" = "warn" ] || [ "$1" = "error" ]; then
         echo "$1" > "$LOG_LEVEL_FILE"
-        echo "$(log_prefix) 日志等级已设置为: $1"
-        echo "$(log_prefix) 请重启调速器服务以应用新的日志等级设置"
+        echo "$(log_prefix) $(translate "日志等级已设置为: $1" "Log level has been set to: $1")"
+        echo "$(log_prefix) $(translate "请重启调速器服务以应用新的日志等级设置" "Please restart the governor service to apply the new log level setting")"
         return 0
     else
         # 显示当前日志等级和可用选项
         local current_level=$(cat "$LOG_LEVEL_FILE")
-        echo "$(log_prefix) 当前日志等级: $current_level"
-        echo "$(log_prefix) 可用的日志等级选项: debug, info, warn, error"
-        echo "$(log_prefix) 用法: ./action.sh log_level [debug|info|warn|error]"
+        echo "$(log_prefix) $(translate "当前日志等级: $current_level" "Current log level: $current_level")"
+        echo "$(log_prefix) $(translate "可用的日志等级选项: debug, info, warn, error" "Available log level options: debug, info, warn, error")"
+        echo "$(log_prefix) $(translate "用法: ./action.sh log_level [debug|info|warn|error]" "Usage: ./action.sh log_level [debug|info|warn|error]")"
         return 1
     fi
 }
@@ -285,9 +319,9 @@ handle_log_level() {
 show_menu() {
     # 显示欢迎信息
     echo "=========================================="
-    echo "       天玑GPU调速器 - 控制菜单           "
+    echo "       $(translate "天玑GPU调速器 - 控制菜单" "Mediatek GPU Governor - Control Menu")           "
     echo "=========================================="
-    echo "$(log_prefix) 欢迎使用天玑GPU调速器控制菜单"
+    echo "$(log_prefix) $(translate "欢迎使用天玑GPU调速器控制菜单" "Welcome to the Mediatek GPU Governor control menu")"
     echo "----------------------------------------"
 
     # 显示当前状态
@@ -295,22 +329,22 @@ show_menu() {
 
     # 准备菜单选项
     local game_mode=$(cat "$GAME_MODE_FILE")
-    local game_mode_text="关闭"
-    [ "$game_mode" = "1" ] && game_mode_text="开启"
+    local game_mode_text=$(translate "关闭" "Disabled")
+    [ "$game_mode" = "1" ] && game_mode_text=$(translate "开启" "Enabled")
 
     local governor_status=$(check_governor_status)
-    local governor_action="启动"
-    [ "$governor_status" = "运行中" ] && governor_action="停止"
+    local governor_action=$(translate "启动" "Start")
+    [ "$governor_status" = $(translate "运行中" "Running") ] && governor_action=$(translate "停止" "Stop")
 
     echo "=========================================="
-    echo "请选择操作："
-    echo "1. 切换游戏模式 (当前: $game_mode_text)"
-    echo "2. ${governor_action}调速器服务 (当前: $governor_status)"
-    echo "3. 设置日志等级 (当前: $(cat "$LOG_LEVEL_FILE"))"
-    echo "0. 退出"
+    echo "$(translate "请选择操作：" "Please select an operation:")"
+    echo "1. $(translate "切换游戏模式" "Toggle Game Mode") ($(translate "当前" "Current"): $game_mode_text)"
+    echo "2. ${governor_action}$(translate "调速器服务" " Governor Service") ($(translate "当前" "Current"): $governor_status)"
+    echo "3. $(translate "设置日志等级" "Set Log Level") ($(translate "当前" "Current"): $(cat "$LOG_LEVEL_FILE"))"
+    echo "0. $(translate "退出" "Exit")"
     echo "=========================================="
-    echo "请使用音量键选择操作："
-    echo "[音量+] 下一选项  [音量-] 确认选择"
+    echo "$(translate "请使用音量键选择操作：" "Please use volume keys to select:")"
+    echo "$(translate "[音量+] 下一选项  [音量-] 确认选择" "[Volume+] Next option  [Volume-] Confirm selection")"
     echo "----------------------------------------"
 
     local selection=1
@@ -321,16 +355,16 @@ show_menu() {
     while [ $confirmed -eq 0 ]; do
         # 显示当前选择
         case $selection in
-            1) echo "当前选择: 1. 切换游戏模式" ;;
-            2) echo "当前选择: 2. ${governor_action}调速器服务" ;;
-            3) echo "当前选择: 3. 设置日志等级" ;;
-            0) echo "当前选择: 0. 退出" ;;
+            1) echo "$(translate "当前选择" "Current selection"): 1. $(translate "切换游戏模式" "Toggle Game Mode")" ;;
+            2) echo "$(translate "当前选择" "Current selection"): 2. ${governor_action}$(translate "调速器服务" " Governor Service")" ;;
+            3) echo "$(translate "当前选择" "Current selection"): 3. $(translate "设置日志等级" "Set Log Level")" ;;
+            0) echo "$(translate "当前选择" "Current selection"): 0. $(translate "退出" "Exit")" ;;
         esac
 
         # 检查超时
         local current_time=$(date +%s)
         if [ $((current_time - start_time)) -ge $timeout ]; then
-            echo "$(log_prefix) 选择超时，自动退出"
+            echo "$(log_prefix) $(translate "选择超时，自动退出" "Selection timeout, automatically exiting")"
             return
         fi
 
@@ -354,27 +388,27 @@ show_menu() {
         [ $confirmed -eq 0 ] && sleep 0.3
     done
 
-    echo "$(log_prefix) 已选择选项 $selection"
+    echo "$(log_prefix) $(translate "已选择选项" "Selected option") $selection"
 
     # 处理选择
     case $selection in
         0)
-            echo "$(log_prefix) 退出菜单"
+            echo "$(log_prefix) $(translate "退出菜单" "Exiting menu")"
             return
             ;;
         1)
-            echo "$(log_prefix) 切换游戏模式"
+            echo "$(log_prefix) $(translate "切换游戏模式" "Toggling game mode")"
             toggle_game_mode
             # 显示新状态并返回主菜单
             sleep 1
             show_menu
             ;;
         2)
-            if [ "$governor_status" = "运行中" ]; then
-                echo "$(log_prefix) 停止调速器服务"
+            if [ "$governor_status" = $(translate "运行中" "Running") ]; then
+                echo "$(log_prefix) $(translate "停止调速器服务" "Stopping governor service")"
                 stop_governor
             else
-                echo "$(log_prefix) 启动调速器服务"
+                echo "$(log_prefix) $(translate "启动调速器服务" "Starting governor service")"
                 start_governor
             fi
             # 显示新状态并返回主菜单
@@ -382,15 +416,15 @@ show_menu() {
             show_menu
             ;;
         3)
-            echo "$(log_prefix) 设置日志等级"
-            echo "可用的日志等级: debug, info, warn, error"
-            echo "当前日志等级: $(cat "$LOG_LEVEL_FILE")"
+            echo "$(log_prefix) $(translate "设置日志等级" "Setting log level")"
+            echo "$(translate "可用的日志等级" "Available log levels"): debug, info, warn, error"
+            echo "$(translate "当前日志等级" "Current log level"): $(cat "$LOG_LEVEL_FILE")"
 
-            echo "请选择日志等级:"
-            echo "1. debug (调试)"
-            echo "2. info (信息)"
-            echo "3. warn (警告)"
-            echo "4. error (错误)"
+            echo "$(translate "请选择日志等级" "Please select a log level"):"
+            echo "1. debug ($(translate "调试" "Debug"))"
+            echo "2. info ($(translate "信息" "Information"))"
+            echo "3. warn ($(translate "警告" "Warning"))"
+            echo "4. error ($(translate "错误" "Error"))"
 
             local log_selection=2  # 默认选择info
             local log_confirmed=0
@@ -398,10 +432,10 @@ show_menu() {
             while [ $log_confirmed -eq 0 ]; do
                 # 显示当前选择
                 case $log_selection in
-                    1) echo "当前选择: debug" ;;
-                    2) echo "当前选择: info" ;;
-                    3) echo "当前选择: warn" ;;
-                    4) echo "当前选择: error" ;;
+                    1) echo "$(translate "当前选择" "Current selection"): debug" ;;
+                    2) echo "$(translate "当前选择" "Current selection"): info" ;;
+                    3) echo "$(translate "当前选择" "Current selection"): warn" ;;
+                    4) echo "$(translate "当前选择" "Current selection"): error" ;;
                 esac
 
                 # 获取按键
