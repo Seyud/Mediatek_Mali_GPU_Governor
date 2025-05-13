@@ -39,10 +39,10 @@ set_permissions() {
 
 # 生成游戏列表配置文件
 generate_gamelist() {
-    echo "查找安装的游戏，并配置games.conf"
-    echo "* GPU调速器可以对游戏列表内的应用开启游戏模式*"
+    echo "Searching for installed games and configuring games.conf"
+    echo "* GPU Governor can enable game mode for applications in the game list *"
 
-    echo ">> 添加预设游戏&基准测试程序"
+    echo ">> Adding preset games & benchmark applications"
     preset_games='xyz.aethersx2.android
 org.ppsspp.ppsspp
 org.ppsspp.ppssppgold
@@ -111,7 +111,7 @@ com.activision.callofduty.warzone
 com.MadOut.BIG'
     echo "$preset_games" > "$GAMES_FILE"
 
-    echo ">> 查找并添加基于Unity&UE4引擎的游戏"
+    echo ">> Searching and adding Unity & UE4 engine based games"
     pm list packages -3 | grep -v 'mobileqq' | cut -f2 -d ':' | while read package
     do
       path=$(pm path $package | cut -f2 -d ':')
@@ -128,7 +128,7 @@ com.MadOut.BIG'
 
     scene_games=/data/data/com.omarea.vtools/shared_prefs/games.xml
     if [[ -f $scene_games ]]; then
-      echo '>> 添加SCENE识别的游戏'
+      echo '>> Adding games recognized by SCENE'
       grep '="true"' /data/data/com.omarea.vtools/shared_prefs/games.xml | cut -f2 -d '"' | while read package
       do
         r=$(grep $package "$GAMES_FILE")
@@ -139,7 +139,7 @@ com.MadOut.BIG'
       done
     fi
 
-    echo "- 游戏列表配置文件已生成: $GAMES_FILE"
+    echo "- Game list configuration file generated: $GAMES_FILE"
 }
 install_gov() {
     echo "- ro.board.platform=$(getprop ro.board.platform)"
@@ -152,10 +152,10 @@ install_gov() {
     if [ "$target" = "mt6983" ]; then
         # 如果CPU7最大频率小于2700000，则是mt6891
         if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
-            echo "- 检测到mt6983但CPU7频率较低，判断为mt6891"
+            echo "- Detected mt6983 but CPU7 frequency is lower, identified as mt6891"
             cfgname="mtd1100"
         else
-            echo "- 检测到mt6983且CPU7频率正常，判断为mt6893"
+            echo "- Detected mt6983 with normal CPU7 frequency, identified as mt6893"
             cfgname="mtd1200"
         fi
     fi

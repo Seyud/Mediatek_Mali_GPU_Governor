@@ -22,37 +22,37 @@ mkdir -p /data/adb/gpu_governor/log 2>/dev/null
 INIT_LOG="/data/adb/gpu_governor/log/initsvc.log"
 
 # 记录目录信息到初始化日志
-echo "$(date) - 初始化开始" >> "$INIT_LOG"
+echo "$(date) - Initialization started" >> "$INIT_LOG"
 echo "SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
 echo "MODULE_DIR=$MODULE_DIR" >> "$INIT_LOG"
 
 # 确保路径信息正确加载
 if [ -f "$SCRIPT_DIR/pathinfo.sh" ]; then
     . "$SCRIPT_DIR/pathinfo.sh"
-    echo "已成功加载 pathinfo.sh" >> "$INIT_LOG"
+    echo "Successfully loaded pathinfo.sh" >> "$INIT_LOG"
 else
     # 尝试其他可能的位置
     if [ -f "$MODULE_DIR/script/pathinfo.sh" ]; then
         . "$MODULE_DIR/script/pathinfo.sh"
-        echo "已从 module/script 成功加载 pathinfo.sh" >> "$INIT_LOG"
+        echo "Successfully loaded pathinfo.sh from module/script" >> "$INIT_LOG"
     else
         # 由于pathinfo.sh未加载，log函数不可用，直接写入初始化日志
-        echo "错误: pathinfo.sh 未在 $SCRIPT_DIR 或 $MODULE_DIR/script 中找到" >> "$INIT_LOG"
+        echo "Error: pathinfo.sh not found in $SCRIPT_DIR or $MODULE_DIR/script" >> "$INIT_LOG"
         exit 1
     fi
 fi
 
 # 现在可以使用log函数了
-log "初始化服务开始运行"
+log "Initialization service started running"
 log "SCRIPT_DIR=$SCRIPT_DIR"
 log "MODULE_DIR=$MODULE_DIR"
 
 # 加载其他库
 if [ -f "$SCRIPT_DIR/libcommon.sh" ]; then
     . "$SCRIPT_DIR/libcommon.sh"
-    log "已加载 libcommon.sh"
+    log "Loaded libcommon.sh"
 else
-    log "错误: libcommon.sh 未找到，路径: $SCRIPT_DIR"
+    log "Error: libcommon.sh not found, path: $SCRIPT_DIR"
     exit 1
 fi
 
@@ -84,7 +84,7 @@ if [ -f "$GPUGOV_LOGPATH" ]; then
     cp "$GPUGOV_LOGPATH" "${GPUGOV_LOGPATH}.bak" 2>/dev/null
     true > "$GPUGOV_LOGPATH"
     chmod 0666 "$GPUGOV_LOGPATH"
-    echo "$(date) - 系统启动时强制轮转日志，原日志已备份到 ${GPUGOV_LOGPATH}.bak" >> "$GPUGOV_LOGPATH"
+    echo "$(date) - Forced log rotation at system startup, original log backed up to ${GPUGOV_LOGPATH}.bak" >> "$GPUGOV_LOGPATH"
     sync
 fi
 
@@ -119,13 +119,13 @@ sync
 
 # 读取当前DVFS状态并记录到初始化日志
 {
-  echo "$(date) - 检查DVFS状态"
+  echo "$(date) - Checking DVFS status"
   dvfs_status=$(cat $DVFS | cut -f2 -d ' ')
 
   # 检查DVFS状态
   if [[ "$dvfs_status" != "0" ]]; then
     # 显示警告信息
-    echo "警告：DVFS当前已启用(状态=$dvfs_status)，正在关闭..."
+    echo "Warning: DVFS is currently enabled (status=$dvfs_status), disabling now..."
 
     # 关闭DVFS
     echo 0 > $DVFS
@@ -133,12 +133,12 @@ sync
     # 确认DVFS已关闭
     new_status=$(cat $DVFS | cut -f2 -d ' ')
     if [[ "$new_status" == "0" ]]; then
-      echo "DVFS已成功关闭"
+      echo "DVFS successfully disabled"
     else
-      echo "错误：无法关闭DVFS，当前状态仍为$new_status"
+      echo "Error: Failed to disable DVFS, current status is still $new_status"
     fi
   else
-    echo "DVFS已经处于关闭状态"
+    echo "DVFS is already disabled"
   fi
 } >> "$INIT_LOG" 2>&1
 
@@ -208,7 +208,7 @@ sync
     # 确保gpu_gov.log文件存在并设置正确权限
     if [ ! -f "$GPUGOV_LOGPATH" ]; then
         touch "$GPUGOV_LOGPATH"
-        echo "$(date) - GPU Governor日志文件已创建" >> "$INIT_LOG"
+        echo "$(date) - GPU Governor log file created" >> "$INIT_LOG"
     fi
     chmod 0666 "$GPUGOV_LOGPATH"
 
@@ -237,7 +237,7 @@ sync
         chmod -R 0777 "$LOG_PATH" 2>/dev/null
 
         # 记录启动信息到主日志文件
-        echo "$(date) - 正在以debug级别启动GPU Governor"
+        echo "$(date) - Starting GPU Governor with debug level"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
         nohup "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
@@ -246,7 +246,7 @@ sync
         echo "Using log level: $log_level"
 
         # 记录启动信息到主日志文件
-        echo "$(date) - 正在以$log_level级别启动GPU Governor"
+        echo "$(date) - Starting GPU Governor with $log_level level"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
         nohup "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &

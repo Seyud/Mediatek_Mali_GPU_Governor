@@ -118,7 +118,7 @@ rotate_log() {
 
     # 如果文件大小超过阈值（80%的限制），进行轮转
     if [ "$file_size" -gt "$threshold_bytes" ]; then
-        echo "日志文件 $log_file 大小($file_size 字节)超过阈值($threshold_bytes 字节)，进行轮转"
+        echo "Log file $log_file size($file_size bytes) exceeds threshold($threshold_bytes bytes), rotating"
 
         # 创建备份文件（如果已存在则覆盖）
         cp "$log_file" "${log_file}.bak" 2>/dev/null
@@ -128,7 +128,7 @@ rotate_log() {
         chmod 0666 "$log_file"
 
         # 记录轮转信息
-        echo "$(date) - 日志已轮转，原日志已备份到 ${log_file}.bak" >> "$log_file"
+        echo "$(date) - Log rotated, original log backed up to ${log_file}.bak" >> "$log_file"
         sync
         return 1
     fi
