@@ -142,14 +142,26 @@ body {
     overflow: visible; /* 确保弹出内容不会被截断 */
 }
 
+/* 设置页面中的选项间距更大 */
+#settingsCard .status-item {
+    margin-bottom: 24px; /* 增加间距 */
+    padding-bottom: 8px; /* 添加底部内边距 */
+}
+
 .status-item:last-child {
     margin-bottom: 0;
 }
 
 .setting-description {
     margin-top: 8px;
+    margin-bottom: 16px; /* 添加底部间距 */
     color: var(--secondary-text-color);
     font-size: 12px;
+}
+
+/* 设置页面中的描述文本 */
+#settingsCard .setting-description {
+    margin-bottom: 24px; /* 增加底部间距 */
 }
 
 .select-container {
@@ -341,7 +353,17 @@ th {
     position: relative;
     width: 100%;
     cursor: pointer;
-    z-index: 1001; /* 确保在其他元素之上 */
+    z-index: 10; /* 默认z-index */
+}
+
+/* 为语言选择器设置更高的z-index */
+#languageContainer {
+    z-index: 30;
+}
+
+/* 为日志等级选择器设置较低的z-index */
+#logLevelContainer {
+    z-index: 20;
 }
 
 .selected-option {
@@ -392,11 +414,21 @@ th {
     border-radius: 4px;
     margin-top: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1002; /* 确保在最上层 */
+    z-index: 11; /* 默认比选择器高1 */
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
     opacity: 0;
+}
+
+/* 为语言选择器的选项容器设置更高的z-index */
+#languageOptions {
+    z-index: 31;
+}
+
+/* 为日志等级选择器的选项容器设置较低的z-index */
+#logLevelOptions {
+    z-index: 21;
 }
 
 .custom-select.open .options-container {
@@ -691,6 +723,13 @@ th {
     border-radius: 4px;
     background-color: var(--background-color);
     color: var(--text-color);
+}
+
+.input-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--secondary-text-color);
 }
 
 .form-actions {

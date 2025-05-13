@@ -47,6 +47,13 @@ const marginValue_elem = document.getElementById('marginValue');
 const marginDecreaseBtn = document.getElementById('marginDecreaseBtn');
 const marginIncreaseBtn = document.getElementById('marginIncreaseBtn');
 
+// 语言设置相关DOM元素
+const htmlRoot = document.getElementById('htmlRoot');
+const languageSelect = document.getElementById('languageSelect');
+const languageContainer = document.getElementById('languageContainer');
+const selectedLanguage = document.getElementById('selectedLanguage');
+const languageOptions = document.getElementById('languageOptions');
+
 // 自定义电压和内存档位选择器DOM元素
 const selectedVolt = document.getElementById('selectedVolt');
 const voltDecreaseBtn = document.getElementById('voltDecreaseBtn');
@@ -83,7 +90,8 @@ const navItems = document.querySelectorAll('.nav-item');
 // 路径常量
 const LOG_PATH = '/data/adb/gpu_governor/log';
 const CONFIG_PATH = '/data/gpu_freq_table.conf';
-const GAMES_PATH = '/data/adb/gpu_governor/game/games.conf';
+const GAMES_PATH = '/data/adb/gpu_governor/game'; // 游戏目录路径
+const GAMES_FILE = '/data/adb/gpu_governor/game/games.conf'; // 游戏列表文件路径
 const GAME_MODE_PATH = '/data/adb/gpu_governor/game/game_mode';
 const LOG_LEVEL_PATH = '/data/adb/gpu_governor/log/log_level';
 const MAX_LOG_SIZE_MB = 5; // 日志文件最大大小，单位MB
@@ -102,6 +110,7 @@ let editingIndex = -1; // 当前正在编辑的配置索引，-1表示新增
 let gamesList_data = []; // 存储当前的游戏列表
 let currentVoltIndex = 0; // 当前电压选择器的索引
 let marginValue = 20; // 默认余量值
+let currentLanguage = 'zh'; // 当前语言，默认中文
 
 // 电压调整相关全局变量
 const VOLT_STEP = 625; // 电压调整步长
@@ -114,18 +123,872 @@ let increaseTimer = null; // 增加电压的定时器
 const pressDelay = 500; // 长按多久后开始连续触发（毫秒）
 const pressInterval = 150; // 连续触发的间隔（毫秒）
 
+// 翻译字典
+const translations = {
+    'zh': {
+        // 页面标题
+        'title': '天玑GPU调速器',
+        // 加载提示
+        'loading': '加载中',
+        // 顶部标题
+        'header_title': '天玑GPU调速器',
+        // 底部导航
+        'nav_status': '状态',
+        'nav_config': '配置',
+        'nav_log': '日志',
+        'nav_settings': '设置',
+        // 状态页面
+        'status_title': '模块状态',
+        'status_running': '运行状态:',
+        'status_running_active': '运行中',
+        'status_running_inactive': '未运行',
+        'status_checking': '检查中...',
+        'status_game_mode': '游戏模式:',
+        'status_module_version': '模块版本:',
+        'status_unknown': '未知',
+        // 配置页面
+        'config_gpu_title': 'GPU配置表',
+        'config_freq': '频率 (MHz)',
+        'config_volt': '电压 (uV)',
+        'config_ddr': '内存档位',
+        'config_edit': '编辑',
+        'config_loading': '加载中...',
+        'config_not_found': '未找到配置',
+        'config_add': '添加配置',
+        'config_save': '保存配置',
+        'config_margin_title': 'GPU频率计算余量',
+        'config_margin_percent': '余量百分比 (%):',
+        'config_margin_desc1': '余量越大，GPU升频越积极，性能越充裕',
+        'config_margin_desc2': '游戏模式下会自动增加10%的余量',
+        'config_margin_save': '保存余量设置',
+        'config_games_title': '游戏列表',
+        'config_games_add': '添加游戏',
+        'config_games_save': '保存列表',
+        // 日志页面
+        'log_title': '运行日志',
+        'log_refresh': '刷新',
+        'log_main': '主日志',
+        'log_init': '初始化日志',
+        'log_loading': '加载中...',
+        'log_empty': '日志为空',
+        'log_not_found': '未找到日志',
+        'log_size_warning': '警告: 日志文件大小已超过限制，将自动轮转。',
+        // 设置页面
+        'settings_title': '设置',
+        'settings_theme_follow': '深色模式跟随系统:',
+        'settings_language': '语言设置:',
+        'settings_language_follow': '跟随系统',
+        'settings_language_zh': '中文',
+        'settings_language_en': 'English',
+        'settings_language_desc1': '修改语言设置后实时生效',
+        'settings_language_desc2': '跟随系统将自动检测系统语言设置',
+        'settings_log_level': '主日志等级:',
+        'settings_log_level_debug': 'Debug (详细)',
+        'settings_log_level_info': 'Info (信息)',
+        'settings_log_level_warn': 'Warn (警告)',
+        'settings_log_level_error': 'Error (错误)',
+        'settings_log_level_desc1': '修改日志等级后实时生效',
+        'settings_log_level_desc2': '设置为Debug级别将启用详细日志记录',
+        // 编辑配置对话框
+        'edit_config_title': '编辑GPU配置',
+        'edit_config_freq': '频率 (MHz):',
+        'edit_config_freq_hint': '请输入KHz值，表格中显示为MHz',
+        'edit_config_volt': '电压 (uV):',
+        'edit_config_ddr': '内存档位:',
+        'edit_config_ddr_default': '999 (不调整)',
+        'edit_config_ddr_highest': '0 (最高)',
+        'edit_config_ddr_high': '1',
+        'edit_config_ddr_medium': '2',
+        'edit_config_ddr_low': '3 (最低)',
+        'edit_config_save': '保存',
+        'edit_config_cancel': '取消',
+        'edit_config_delete': '删除',
+        // 编辑游戏对话框
+        'edit_game_title': '编辑游戏列表',
+        'edit_game_package': '应用包名:',
+        'edit_game_package_example': '例如: com.tencent.tmgp.sgame',
+        'edit_game_save': '保存',
+        'edit_game_cancel': '取消',
+        // 提示消息
+        'toast_webui_loaded': 'WebUI加载完成',
+        'toast_theme_follow_disabled': '已关闭跟随系统主题，现在可以手动切换主题',
+        'toast_theme_follow_enabled': '已开启跟随系统主题',
+        'toast_theme_follow_keep': '已关闭跟随系统主题，将保持当前主题',
+        'toast_game_mode_on': '游戏模式已开启',
+        'toast_game_mode_off': '游戏模式已关闭',
+        'toast_game_mode_fail': '切换游戏模式失败，请检查权限',
+        'toast_config_updated': '配置已更新，请点击"保存配置"按钮保存到文件',
+        'toast_config_deleted': '配置已删除，请点击"保存配置"按钮保存到文件',
+        'toast_config_saved': '配置已成功保存',
+        'toast_config_save_fail': '保存配置失败，请检查权限',
+        'toast_config_empty': '没有配置可保存',
+        'toast_freq_invalid': '请输入有效的频率值',
+        'toast_index_invalid': '无效的配置索引',
+        'toast_margin_saved': '余量设置已成功保存',
+        'toast_margin_save_fail': '保存余量设置失败，请检查权限',
+        'toast_game_added': '游戏已添加，请点击"保存列表"按钮保存到文件',
+        'toast_game_deleted': '游戏已删除，请点击"保存列表"按钮保存到文件',
+        'toast_game_exists': '该应用包名已存在于列表中',
+        'toast_game_invalid': '请输入有效的应用包名',
+        'toast_games_saved': '游戏列表已成功保存',
+        'toast_games_save_fail': '保存游戏列表失败，请检查权限',
+        'toast_games_empty': '没有游戏可保存',
+        'toast_log_level_debug': '日志等级已设置为: debug，重启模块后将启用详细日志记录',
+        'toast_log_level_set': '日志等级已设置为: {level}，重启模块后生效',
+        'toast_log_level_fail': '保存日志等级失败，请检查权限',
+        'toast_language_changed': '语言已切换为{language}',
+        'toast_language_follow_system': '语言已设置为跟随系统',
+        // 版权信息
+        'copyright_text': '天玑GPU调速器 © 2025 酷安@瓦力喀'
+    },
+    'en': {
+        // Page title
+        'title': 'Dimensity GPU Governor',
+        // Loading hint
+        'loading': 'Loading',
+        // Header title
+        'header_title': 'Dimensity GPU Governor',
+        // Bottom navigation
+        'nav_status': 'Status',
+        'nav_config': 'Config',
+        'nav_log': 'Log',
+        'nav_settings': 'Settings',
+        // Status page
+        'status_title': 'Module Status',
+        'status_running': 'Running Status:',
+        'status_running_active': 'Running',
+        'status_running_inactive': 'Not Running',
+        'status_checking': 'Checking...',
+        'status_game_mode': 'Game Mode:',
+        'status_module_version': 'Module Version:',
+        'status_unknown': 'Unknown',
+        // Config page
+        'config_gpu_title': 'GPU Configuration',
+        'config_freq': 'Frequency (MHz)',
+        'config_volt': 'Voltage (uV)',
+        'config_ddr': 'Memory Level',
+        'config_edit': 'Edit',
+        'config_loading': 'Loading...',
+        'config_not_found': 'No configuration found',
+        'config_add': 'Add Config',
+        'config_save': 'Save Config',
+        'config_margin_title': 'GPU Frequency Calculation Margin',
+        'config_margin_percent': 'Margin Percentage (%):',
+        'config_margin_desc1': 'Higher margin means more aggressive frequency scaling and better performance',
+        'config_margin_desc2': 'Game mode automatically adds 10% to the margin',
+        'config_margin_save': 'Save Margin',
+        'config_games_title': 'Games List',
+        'config_games_add': 'Add Game',
+        'config_games_save': 'Save List',
+        // Log page
+        'log_title': 'Runtime Log',
+        'log_refresh': 'Refresh',
+        'log_main': 'Main Log',
+        'log_init': 'Init Log',
+        'log_loading': 'Loading...',
+        'log_empty': 'Log is empty',
+        'log_not_found': 'Log not found',
+        'log_size_warning': 'Warning: Log file size exceeds limit, it will be rotated automatically.',
+        // Settings page
+        'settings_title': 'Settings',
+        'settings_theme_follow': 'Follow System Dark Mode:',
+        'settings_language': 'Language:',
+        'settings_language_follow': 'Follow System',
+        'settings_language_zh': '中文',
+        'settings_language_en': 'English',
+        'settings_language_desc1': 'Language changes take effect immediately',
+        'settings_language_desc2': 'Follow System will detect system language settings',
+        'settings_log_level': 'Main Log Level:',
+        'settings_log_level_debug': 'Debug (Detailed)',
+        'settings_log_level_info': 'Info',
+        'settings_log_level_warn': 'Warn',
+        'settings_log_level_error': 'Error',
+        'settings_log_level_desc1': 'Log level changes take effect immediately',
+        'settings_log_level_desc2': 'Debug level enables detailed logging',
+        // Edit config dialog
+        'edit_config_title': 'Edit GPU Config',
+        'edit_config_freq': 'Frequency (MHz):',
+        'edit_config_freq_hint': 'Please enter KHz value, displayed as MHz in table',
+        'edit_config_volt': 'Voltage (uV):',
+        'edit_config_ddr': 'Memory Level:',
+        'edit_config_ddr_default': '999 (No Change)',
+        'edit_config_ddr_highest': '0 (Highest)',
+        'edit_config_ddr_high': '1',
+        'edit_config_ddr_medium': '2',
+        'edit_config_ddr_low': '3 (Lowest)',
+        'edit_config_save': 'Save',
+        'edit_config_cancel': 'Cancel',
+        'edit_config_delete': 'Delete',
+        // Edit game dialog
+        'edit_game_title': 'Edit Game List',
+        'edit_game_package': 'Package Name:',
+        'edit_game_package_example': 'Example: com.tencent.tmgp.sgame',
+        'edit_game_save': 'Save',
+        'edit_game_cancel': 'Cancel',
+        // Toast messages
+        'toast_webui_loaded': 'WebUI loaded successfully',
+        'toast_theme_follow_disabled': 'System theme following disabled, you can now switch themes manually',
+        'toast_theme_follow_enabled': 'System theme following enabled',
+        'toast_theme_follow_keep': 'System theme following disabled, current theme will be kept',
+        'toast_game_mode_on': 'Game mode enabled',
+        'toast_game_mode_off': 'Game mode disabled',
+        'toast_game_mode_fail': 'Failed to toggle game mode, please check permissions',
+        'toast_config_updated': 'Configuration updated, please click "Save Config" to save to file',
+        'toast_config_deleted': 'Configuration deleted, please click "Save Config" to save to file',
+        'toast_config_saved': 'Configuration saved successfully',
+        'toast_config_save_fail': 'Failed to save configuration, please check permissions',
+        'toast_config_empty': 'No configuration to save',
+        'toast_freq_invalid': 'Please enter a valid frequency value',
+        'toast_index_invalid': 'Invalid configuration index',
+        'toast_margin_saved': 'Margin settings saved successfully',
+        'toast_margin_save_fail': 'Failed to save margin settings, please check permissions',
+        'toast_game_added': 'Game added, please click "Save List" to save to file',
+        'toast_game_deleted': 'Game deleted, please click "Save List" to save to file',
+        'toast_game_exists': 'This package name already exists in the list',
+        'toast_game_invalid': 'Please enter a valid package name',
+        'toast_games_saved': 'Games list saved successfully',
+        'toast_games_save_fail': 'Failed to save games list, please check permissions',
+        'toast_games_empty': 'No games to save',
+        'toast_log_level_debug': 'Log level set to: debug, detailed logging will be enabled after module restart',
+        'toast_log_level_set': 'Log level set to: {level}, will take effect after module restart',
+        'toast_log_level_fail': 'Failed to save log level, please check permissions',
+        'toast_language_changed': 'Language changed to {language}',
+        'toast_language_follow_system': 'Language set to follow system',
+        // Copyright information
+        'copyright_text': 'Dimensity GPU Governor © 2025 Coolapk@Walika'
+    }
+};
+
+// 获取翻译文本
+function getTranslation(key, replacements = {}) {
+    // 获取当前语言的翻译
+    const translation = translations[currentLanguage] || translations['zh'];
+
+    // 获取翻译文本
+    let text = translation[key] || key;
+
+    // 替换占位符
+    for (const [placeholder, value] of Object.entries(replacements)) {
+        text = text.replace(`{${placeholder}}`, value);
+    }
+
+    return text;
+}
+
+// 应用翻译到界面
+function applyTranslations() {
+    try {
+        // 更新页面标题
+        document.title = getTranslation('title');
+
+        // 更新HTML语言属性
+        if (htmlRoot) {
+            htmlRoot.setAttribute('lang', currentLanguage === 'en' ? 'en' : 'zh-CN');
+        }
+
+        // 更新加载提示
+        if (loading) {
+            loading.textContent = getTranslation('loading');
+        }
+
+        // 更新顶部标题
+        const headerTitle = document.querySelector('.header-content h1');
+        if (headerTitle) {
+            headerTitle.textContent = getTranslation('header_title');
+        }
+
+        // 更新底部导航
+        document.querySelectorAll('.nav-item').forEach(item => {
+            try {
+                const pageId = item.getAttribute('data-page');
+                const navText = item.querySelector('.nav-text');
+                if (!navText) return;
+
+                if (pageId === 'page-status') {
+                    navText.textContent = getTranslation('nav_status');
+                } else if (pageId === 'page-config') {
+                    navText.textContent = getTranslation('nav_config');
+                } else if (pageId === 'page-log') {
+                    navText.textContent = getTranslation('nav_log');
+                } else if (pageId === 'page-settings') {
+                    navText.textContent = getTranslation('nav_settings');
+                }
+            } catch (e) {
+                console.error('更新导航项失败:', e);
+            }
+        });
+    } catch (e) {
+        console.error('应用基本翻译失败:', e);
+    }
+
+    // 更新状态页面
+    try {
+        const statusTitle = document.querySelector('#statusCard .card-title');
+        if (statusTitle) {
+            statusTitle.textContent = getTranslation('status_title');
+        }
+
+        const runningLabel = document.querySelector('#statusCard .status-item:nth-child(1) > span:first-child');
+        if (runningLabel) {
+            runningLabel.textContent = getTranslation('status_running');
+        }
+
+        const gameModeLabel = document.querySelector('#statusCard .status-item:nth-child(2) > span:first-child');
+        if (gameModeLabel) {
+            gameModeLabel.textContent = getTranslation('status_game_mode');
+        }
+
+        const versionLabel = document.querySelector('#statusCard .status-item:nth-child(3) > span:first-child');
+        if (versionLabel) {
+            versionLabel.textContent = getTranslation('status_module_version');
+        }
+
+        // 更新模块版本文本，如果是"未知"或"Unknown"，则使用翻译
+        const versionValue = document.getElementById('moduleVersion');
+        if (versionValue && (versionValue.textContent === '未知' || versionValue.textContent === 'Unknown')) {
+            versionValue.textContent = getTranslation('status_unknown');
+        }
+
+        // 更新版权信息
+        const copyrightText = document.querySelector('#copyrightCard .copyright-content p');
+        if (copyrightText) {
+            copyrightText.textContent = getTranslation('copyright_text');
+        }
+
+        // 根据当前状态更新运行状态文本
+        const statusBadge = document.getElementById('runningStatus');
+        if (statusBadge) {
+            if (statusBadge.classList.contains('status-running')) {
+                statusBadge.textContent = getTranslation('status_running_active');
+            } else if (statusBadge.classList.contains('status-stopped')) {
+                statusBadge.textContent = getTranslation('status_running_inactive');
+            } else {
+                statusBadge.textContent = getTranslation('status_checking');
+            }
+        }
+    } catch (e) {
+        console.error('更新状态页面翻译失败:', e);
+    }
+
+    // 更新配置页面
+    try {
+        // GPU配置表
+        const gpuConfigTitle = document.querySelector('#gpuConfigCard .card-title');
+        if (gpuConfigTitle) {
+            gpuConfigTitle.textContent = getTranslation('config_gpu_title');
+        }
+
+        // 表头
+        try {
+            const freqHeader = document.querySelector('#gpuFreqTable thead tr th:nth-child(1)');
+            if (freqHeader) {
+                freqHeader.textContent = getTranslation('config_freq');
+            }
+
+            const voltHeader = document.querySelector('#gpuFreqTable thead tr th:nth-child(2)');
+            if (voltHeader) {
+                voltHeader.textContent = getTranslation('config_volt');
+            }
+
+            const ddrHeader = document.querySelector('#gpuFreqTable thead tr th:nth-child(3)');
+            if (ddrHeader) {
+                ddrHeader.textContent = getTranslation('config_ddr');
+            }
+
+            const editHeader = document.querySelector('#gpuFreqTable thead tr th:nth-child(4)');
+            if (editHeader) {
+                editHeader.textContent = getTranslation('config_edit');
+            }
+        } catch (e) {
+            console.error('更新表头翻译失败:', e);
+        }
+
+        // 按钮
+        const addConfigBtn = document.getElementById('addConfigBtn');
+        if (addConfigBtn) {
+            addConfigBtn.textContent = getTranslation('config_add');
+        }
+
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        if (saveConfigBtn) {
+            saveConfigBtn.textContent = getTranslation('config_save');
+        }
+
+        // 更新余量配置
+        try {
+            const marginTitle = document.querySelector('#marginCard .card-title');
+            if (marginTitle) {
+                marginTitle.textContent = getTranslation('config_margin_title');
+            }
+
+            const marginLabel = document.querySelector('#marginCard .status-item > span:first-child');
+            if (marginLabel) {
+                marginLabel.textContent = getTranslation('config_margin_percent');
+            }
+
+            const marginDesc1 = document.querySelector('#marginCard .setting-description small:nth-child(1)');
+            if (marginDesc1) {
+                marginDesc1.textContent = getTranslation('config_margin_desc1');
+            }
+
+            const marginDesc2 = document.querySelector('#marginCard .setting-description small:nth-child(2)');
+            if (marginDesc2) {
+                marginDesc2.textContent = getTranslation('config_margin_desc2');
+            }
+
+            const saveMarginBtn = document.getElementById('saveMarginBtn');
+            if (saveMarginBtn) {
+                saveMarginBtn.textContent = getTranslation('config_margin_save');
+            }
+        } catch (e) {
+            console.error('更新余量配置翻译失败:', e);
+        }
+
+        // 更新游戏列表
+        try {
+            const gamesTitle = document.querySelector('#gamesCard .card-title');
+            if (gamesTitle) {
+                gamesTitle.textContent = getTranslation('config_games_title');
+            }
+
+            const addGameBtn = document.getElementById('addGameBtn');
+            if (addGameBtn) {
+                addGameBtn.textContent = getTranslation('config_games_add');
+            }
+
+            const saveGamesBtn = document.getElementById('saveGamesBtn');
+            if (saveGamesBtn) {
+                saveGamesBtn.textContent = getTranslation('config_games_save');
+            }
+        } catch (e) {
+            console.error('更新游戏列表翻译失败:', e);
+        }
+    } catch (e) {
+        console.error('更新配置页面翻译失败:', e);
+    }
+
+    // 更新日志页面
+    try {
+        const logTitle = document.querySelector('#logCard .card-title');
+        if (logTitle) {
+            logTitle.textContent = getTranslation('log_title');
+        }
+
+        const refreshLogBtn = document.getElementById('refreshLogBtn');
+        if (refreshLogBtn) {
+            refreshLogBtn.textContent = getTranslation('log_refresh');
+        }
+
+        const mainLogOption = document.querySelector('#logFileOptions .option[data-value="gpu_gov.log"]');
+        if (mainLogOption) {
+            mainLogOption.textContent = getTranslation('log_main');
+        }
+
+        const initLogOption = document.querySelector('#logFileOptions .option[data-value="initsvc.log"]');
+        if (initLogOption) {
+            initLogOption.textContent = getTranslation('log_init');
+        }
+    } catch (e) {
+        console.error('更新日志页面翻译失败:', e);
+    }
+
+    // 更新设置页面
+    try {
+        const settingsTitle = document.querySelector('#settingsCard .card-title');
+        if (settingsTitle) {
+            settingsTitle.textContent = getTranslation('settings_title');
+        }
+
+        // 主题设置
+        const themeFollowLabel = document.querySelector('#settingsCard .status-item:nth-child(1) > span:first-child');
+        if (themeFollowLabel) {
+            themeFollowLabel.textContent = getTranslation('settings_theme_follow');
+        }
+
+        // 语言设置
+        try {
+            const languageLabel = document.querySelector('#settingsCard .status-item:nth-child(2) > span:first-child');
+            if (languageLabel) {
+                languageLabel.textContent = getTranslation('settings_language');
+            }
+
+            const systemOption = document.querySelector('#languageOptions .option[data-value="system"]');
+            if (systemOption) {
+                systemOption.textContent = getTranslation('settings_language_follow');
+            }
+
+            const languageDesc1 = document.querySelector('#settingsCard .status-item:nth-child(2) + .setting-description small:nth-child(1)');
+            if (languageDesc1) {
+                languageDesc1.textContent = getTranslation('settings_language_desc1');
+            }
+
+            const languageDesc2 = document.querySelector('#settingsCard .status-item:nth-child(2) + .setting-description small:nth-child(2)');
+            if (languageDesc2) {
+                languageDesc2.textContent = getTranslation('settings_language_desc2');
+            }
+        } catch (e) {
+            console.error('更新语言设置翻译失败:', e);
+        }
+
+        // 日志等级设置
+        try {
+            const logLevelLabel = document.querySelector('#settingsCard .status-item:nth-child(3) > span:first-child');
+            if (logLevelLabel) {
+                logLevelLabel.textContent = getTranslation('settings_log_level');
+            }
+
+            const debugOption = document.querySelector('#logLevelOptions .option[data-value="debug"]');
+            if (debugOption) {
+                debugOption.textContent = getTranslation('settings_log_level_debug');
+            }
+
+            const infoOption = document.querySelector('#logLevelOptions .option[data-value="info"]');
+            if (infoOption) {
+                infoOption.textContent = getTranslation('settings_log_level_info');
+            }
+
+            const warnOption = document.querySelector('#logLevelOptions .option[data-value="warn"]');
+            if (warnOption) {
+                warnOption.textContent = getTranslation('settings_log_level_warn');
+            }
+
+            const errorOption = document.querySelector('#logLevelOptions .option[data-value="error"]');
+            if (errorOption) {
+                errorOption.textContent = getTranslation('settings_log_level_error');
+            }
+
+            const logLevelDesc1 = document.querySelector('#settingsCard .status-item:nth-child(3) + .setting-description small:nth-child(1)');
+            if (logLevelDesc1) {
+                logLevelDesc1.textContent = getTranslation('settings_log_level_desc1');
+            }
+
+            const logLevelDesc2 = document.querySelector('#settingsCard .status-item:nth-child(3) + .setting-description small:nth-child(2)');
+            if (logLevelDesc2) {
+                logLevelDesc2.textContent = getTranslation('settings_log_level_desc2');
+            }
+        } catch (e) {
+            console.error('更新日志等级设置翻译失败:', e);
+        }
+    } catch (e) {
+        console.error('更新设置页面翻译失败:', e);
+    }
+
+    // 更新编辑配置对话框
+    try {
+        // 标题
+        const configTitle = document.querySelector('#editConfigModal .modal-content h3');
+        if (configTitle) {
+            configTitle.textContent = getTranslation('edit_config_title');
+        }
+
+        // 表单标签
+        try {
+            // 直接使用ID选择器，避免使用nth-child
+            const freqLabel = document.querySelector('label[for="freqInput"]');
+            if (freqLabel) {
+                freqLabel.textContent = getTranslation('edit_config_freq');
+            }
+
+            // 更新频率输入提示
+            const freqHint = document.querySelector('#freqInput + small.input-hint');
+            if (freqHint) {
+                freqHint.textContent = getTranslation('edit_config_freq_hint');
+            }
+
+            // 电压标签
+            const voltLabel = document.querySelector('label[for="voltSelect"]');
+            if (voltLabel) {
+                voltLabel.textContent = getTranslation('edit_config_volt');
+            }
+
+            // 内存档位标签
+            const ddrLabel = document.querySelector('label[for="ddrSelect"]');
+            if (ddrLabel) {
+                ddrLabel.textContent = getTranslation('edit_config_ddr');
+            }
+        } catch (e) {
+            console.error('更新编辑配置表单标签翻译失败:', e);
+        }
+
+        // 内存档位选项
+        try {
+            const ddrDefaultOption = document.querySelector('#ddrOptions .option[data-value="999"]');
+            if (ddrDefaultOption) {
+                ddrDefaultOption.textContent = getTranslation('edit_config_ddr_default');
+            }
+
+            const ddrHighestOption = document.querySelector('#ddrOptions .option[data-value="0"]');
+            if (ddrHighestOption) {
+                ddrHighestOption.textContent = getTranslation('edit_config_ddr_highest');
+            }
+
+            const ddrHighOption = document.querySelector('#ddrOptions .option[data-value="1"]');
+            if (ddrHighOption) {
+                ddrHighOption.textContent = getTranslation('edit_config_ddr_high');
+            }
+
+            const ddrMediumOption = document.querySelector('#ddrOptions .option[data-value="2"]');
+            if (ddrMediumOption) {
+                ddrMediumOption.textContent = getTranslation('edit_config_ddr_medium');
+            }
+
+            const ddrLowOption = document.querySelector('#ddrOptions .option[data-value="3"]');
+            if (ddrLowOption) {
+                ddrLowOption.textContent = getTranslation('edit_config_ddr_low');
+            }
+        } catch (e) {
+            console.error('更新内存档位选项翻译失败:', e);
+        }
+
+        // 按钮
+        const saveItemBtn = document.getElementById('saveItemBtn');
+        if (saveItemBtn) {
+            saveItemBtn.textContent = getTranslation('edit_config_save');
+        }
+
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        if (cancelEditBtn) {
+            cancelEditBtn.textContent = getTranslation('edit_config_cancel');
+        }
+
+        const deleteItemBtn = document.getElementById('deleteItemBtn');
+        if (deleteItemBtn) {
+            deleteItemBtn.textContent = getTranslation('edit_config_delete');
+        }
+    } catch (e) {
+        console.error('更新编辑配置对话框翻译失败:', e);
+    }
+
+    // 更新编辑游戏对话框
+    try {
+        const gameTitle = document.querySelector('#editGameModal .modal-content h3');
+        if (gameTitle) {
+            gameTitle.textContent = getTranslation('edit_game_title');
+        }
+
+        const packageLabel = document.querySelector('#editGameModal .form-group label');
+        if (packageLabel) {
+            packageLabel.textContent = getTranslation('edit_game_package');
+        }
+
+        const packageInput = document.getElementById('packageNameInput');
+        if (packageInput) {
+            packageInput.placeholder = getTranslation('edit_game_package_example');
+        }
+
+        const saveGameBtn = document.getElementById('saveGameBtn');
+        if (saveGameBtn) {
+            saveGameBtn.textContent = getTranslation('edit_game_save');
+        }
+
+        const cancelGameBtn = document.getElementById('cancelGameBtn');
+        if (cancelGameBtn) {
+            cancelGameBtn.textContent = getTranslation('edit_game_cancel');
+        }
+    } catch (e) {
+        console.error('更新编辑游戏对话框翻译失败:', e);
+    }
+
+    // 更新当前选中的日志等级文本
+    try {
+        if (logLevelSelect && selectedLogLevel) {
+            const currentLogLevel = logLevelSelect.value;
+            if (currentLogLevel === 'debug') {
+                selectedLogLevel.textContent = getTranslation('settings_log_level_debug');
+            } else if (currentLogLevel === 'info') {
+                selectedLogLevel.textContent = getTranslation('settings_log_level_info');
+            } else if (currentLogLevel === 'warn') {
+                selectedLogLevel.textContent = getTranslation('settings_log_level_warn');
+            } else if (currentLogLevel === 'error') {
+                selectedLogLevel.textContent = getTranslation('settings_log_level_error');
+            }
+        }
+    } catch (e) {
+        console.error('更新当前日志等级文本失败:', e);
+    }
+
+    // 更新当前选中的日志文件文本
+    try {
+        if (logFileSelect && selectedLogFile) {
+            const currentLogFile = logFileSelect.value;
+            if (currentLogFile === 'gpu_gov.log') {
+                selectedLogFile.textContent = getTranslation('log_main');
+            } else if (currentLogFile === 'initsvc.log') {
+                selectedLogFile.textContent = getTranslation('log_init');
+            }
+        }
+    } catch (e) {
+        console.error('更新当前日志文件文本失败:', e);
+    }
+}
+
+// 检测系统语言
+async function detectSystemLanguage() {
+    try {
+        // 尝试使用浏览器API获取系统语言
+        const browserLanguage = navigator.language || navigator.userLanguage || 'zh-CN';
+        console.log(`检测到浏览器语言: ${browserLanguage}`);
+
+        // 尝试使用KernelSU API获取系统语言（如果可用）
+        try {
+            const { errno, stdout } = await exec('getprop persist.sys.locale || getprop ro.product.locale || echo "zh-CN"');
+
+            if (errno === 0 && stdout.trim()) {
+                const locale = stdout.trim().toLowerCase();
+                console.log(`检测到系统语言: ${locale}`);
+
+                // 根据语言代码判断
+                if (locale.startsWith('en')) {
+                    return 'en';
+                } else {
+                    return 'zh';
+                }
+            }
+        } catch (e) {
+            console.log('无法通过系统属性检测语言，将使用浏览器语言');
+        }
+
+        // 如果无法通过系统属性获取，则使用浏览器语言
+        if (browserLanguage.startsWith('en')) {
+            return 'en';
+        } else {
+            return 'zh';
+        }
+    } catch (error) {
+        console.error('检测系统语言失败:', error);
+        return 'zh'; // 默认使用中文
+    }
+}
+
+// 初始化语言设置
+async function initLanguage() {
+    // 检查是否有用户保存的语言设置
+    const savedLanguageSetting = localStorage.getItem('languageSetting');
+    const savedLanguage = localStorage.getItem('language');
+
+    // 如果是首次使用，将语言设置保存到localStorage
+    if (savedLanguageSetting === null) {
+        localStorage.setItem('languageSetting', 'system');
+    }
+
+    // 根据设置决定使用哪个语言
+    if (savedLanguageSetting === 'system' || savedLanguageSetting === null) {
+        // 如果设置了跟随系统，则检测系统语言
+        currentLanguage = await detectSystemLanguage();
+        localStorage.setItem('language', currentLanguage);
+    } else if (savedLanguage) {
+        // 如果没有设置跟随系统，但有保存的语言，则使用保存的语言
+        currentLanguage = savedLanguage;
+    }
+
+    // 更新语言选择器显示
+    languageSelect.value = savedLanguageSetting || 'system';
+
+    // 安全地获取选项文本
+    try {
+        const option = document.querySelector(`#languageOptions .option[data-value="${savedLanguageSetting || 'system'}"]`);
+        if (option) {
+            selectedLanguage.textContent = option.textContent;
+        } else {
+            // 如果找不到元素，使用默认文本
+            selectedLanguage.textContent = savedLanguageSetting === 'en' ? 'English' :
+                                          savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
+        }
+    } catch (e) {
+        console.error('获取语言选项文本失败:', e);
+        // 使用默认文本
+        selectedLanguage.textContent = savedLanguageSetting === 'en' ? 'English' :
+                                      savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
+    }
+
+    // 应用翻译
+    applyTranslations();
+
+    // 设置语言选择器事件
+    setupLanguageEvents();
+}
+
+// 设置语言选择器事件
+function setupLanguageEvents() {
+    // 自定义语言选择事件
+    languageContainer.addEventListener('click', () => {
+        languageContainer.classList.toggle('open');
+    });
+
+    // 点击语言选项时
+    const languageOptionElements = document.querySelectorAll('#languageOptions .option');
+    languageOptionElements.forEach(option => {
+        option.addEventListener('click', async (e) => {
+            e.stopPropagation(); // 防止事件冒泡到container
+
+            // 移除所有选项的选中状态
+            languageOptionElements.forEach(opt => opt.classList.remove('selected'));
+
+            // 为当前选项添加选中状态
+            option.classList.add('selected');
+
+            // 更新显示的文本
+            selectedLanguage.textContent = option.textContent;
+
+            // 更新隐藏的select元素的值
+            const selectedValue = option.getAttribute('data-value');
+            languageSelect.value = selectedValue;
+
+            // 关闭下拉菜单
+            languageContainer.classList.remove('open');
+
+            // 保存设置
+            localStorage.setItem('languageSetting', selectedValue);
+
+            // 如果选择了跟随系统
+            if (selectedValue === 'system') {
+                // 检测系统语言
+                const systemLanguage = await detectSystemLanguage();
+                currentLanguage = systemLanguage;
+                localStorage.setItem('language', systemLanguage);
+                toast(getTranslation('toast_language_follow_system'));
+            } else {
+                // 直接使用选择的语言
+                currentLanguage = selectedValue;
+                localStorage.setItem('language', selectedValue);
+
+                // 显示提示
+                const languageName = selectedValue === 'zh' ? '中文' : 'English';
+                toast(getTranslation('toast_language_changed', { language: languageName }));
+            }
+
+            // 应用翻译
+            applyTranslations();
+        });
+    });
+}
+
 // 初始化
-document.addEventListener('DOMContentLoaded', () => {
-    // 检查主题
-    initTheme();
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // 先显示界面，避免长时间加载
+        loading.style.display = 'none';
+        app.style.display = 'block';
 
-    // 设置事件监听器
-    setupEventListeners();
+        // 检查主题
+        initTheme();
 
-    // 加载数据
-    initializeApp();
+        // 设置事件监听器
+        setupEventListeners();
 
-    // 注意：initMarginSetting()会在loadGpuConfig()完成后自动调用
+        // 初始化语言设置
+        await initLanguage();
+
+        // 加载数据
+        initializeApp();
+
+        // 注意：initMarginSetting()会在loadGpuConfig()完成后自动调用
+    } catch (e) {
+        console.error('初始化失败:', e);
+        // 确保界面显示
+        if (loading) loading.style.display = 'none';
+        if (app) app.style.display = 'block';
+    }
 });
 
 // 初始化应用
@@ -162,9 +1025,9 @@ async function initializeApp() {
 
         // 加载完成后显示提示
         try {
-            toast('WebUI加载完成');
+            toast(getTranslation('toast_webui_loaded'));
         } catch (e) {
-            console.log('WebUI加载完成');
+            console.log(getTranslation('toast_webui_loaded'));
         }
     } catch (error) {
         console.error('初始化失败:', error);
@@ -229,7 +1092,7 @@ function initTheme() {
         if (localStorage.getItem('followSystemTheme') === 'true') {
             localStorage.setItem('followSystemTheme', 'false');
             followSystemThemeToggle.checked = false;
-            toast('已关闭跟随系统主题，现在可以手动切换主题');
+            toast(getTranslation('toast_theme_follow_disabled'));
         }
 
         const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -249,9 +1112,9 @@ function initTheme() {
             const systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', systemTheme);
             localStorage.setItem('theme', systemTheme);
-            toast('已开启跟随系统主题');
+            toast(getTranslation('toast_theme_follow_enabled'));
         } else {
-            toast('已关闭跟随系统主题，将保持当前主题');
+            toast(getTranslation('toast_theme_follow_keep'));
         }
     });
 
@@ -382,11 +1245,11 @@ function setupEventListeners() {
             const { errno, stderr } = await exec(`echo "${value}" > ${GAME_MODE_PATH}`);
 
             if (errno === 0) {
-                toast(`游戏模式已${gameModeToggle.checked ? '开启' : '关闭'}`);
+                toast(getTranslation(gameModeToggle.checked ? 'toast_game_mode_on' : 'toast_game_mode_off'));
                 console.log(`游戏模式已切换为: ${value}`);
             } else {
                 console.error('切换游戏模式失败:', stderr);
-                toast('切换游戏模式失败，请检查权限');
+                toast(getTranslation('toast_game_mode_fail'));
                 // 恢复开关状态
                 gameModeToggle.checked = !gameModeToggle.checked;
             }
@@ -545,15 +1408,15 @@ async function checkModuleStatus() {
         const { errno, stdout } = await exec('pgrep -f gpugovernor || echo ""');
 
         if (errno === 0 && stdout.trim()) {
-            runningStatus.textContent = '运行中';
+            runningStatus.textContent = getTranslation('status_running_active');
             runningStatus.className = 'status-badge status-running';
         } else {
-            runningStatus.textContent = '未运行';
+            runningStatus.textContent = getTranslation('status_running_inactive');
             runningStatus.className = 'status-badge status-stopped';
         }
     } catch (error) {
         console.error('检查模块状态失败:', error);
-        runningStatus.textContent = '检查失败';
+        runningStatus.textContent = getTranslation('status_checking');
         runningStatus.className = 'status-badge status-stopped';
     }
 }
@@ -573,12 +1436,14 @@ async function loadModuleVersion() {
             if (errno2 === 0 && stdout2.trim()) {
                 moduleVersion.textContent = stdout2.trim();
             } else {
-                moduleVersion.textContent = '未知';
+                // 使用当前语言的"未知"文本
+                moduleVersion.textContent = currentLanguage === 'en' ? 'Unknown' : '未知';
             }
         }
     } catch (error) {
         console.error('加载模块版本失败:', error);
-        moduleVersion.textContent = '未知';
+        // 使用当前语言的"未知"文本
+        moduleVersion.textContent = currentLanguage === 'en' ? 'Unknown' : '未知';
     }
 }
 
@@ -966,9 +1831,11 @@ function openEditModal(index = -1) {
     if (index >= 0 && index < gpuConfigs.length) {
         // 编辑现有配置
         const config = gpuConfigs[index];
+
+        // 设置频率输入框 - 第一个表单组
         freqInput.value = config.freq;
 
-        // 设置电压选择
+        // 设置电压选择 - 第二个表单组
         const voltValue = config.volt;
         selectedVolt.textContent = voltValue;
 
@@ -993,7 +1860,7 @@ function openEditModal(index = -1) {
         voltDecreaseBtn.disabled = voltValue <= MIN_VOLT;
         voltIncreaseBtn.disabled = voltValue >= MAX_VOLT;
 
-        // 设置内存档位选择
+        // 设置内存档位选择 - 第三个表单组
         const ddrOption = Array.from(ddrSelect.options).find(option => parseInt(option.value) === config.ddr);
         if (ddrOption) {
             ddrSelect.value = ddrOption.value;
@@ -1014,11 +1881,10 @@ function openEditModal(index = -1) {
         deleteItemBtn.style.display = 'block';
     } else {
         // 添加新配置
+        // 设置频率输入框 - 第一个表单组
         freqInput.value = '';
-        voltSelect.selectedIndex = 0;
-        ddrSelect.selectedIndex = 0;
 
-        // 重置电压选择器
+        // 重置电压选择器 - 第二个表单组
         currentVoltValue = MAX_VOLT; // 设置为最大值
         selectedVolt.textContent = currentVoltValue;
         voltSelect.value = currentVoltValue;
@@ -1027,7 +1893,8 @@ function openEditModal(index = -1) {
         voltDecreaseBtn.disabled = currentVoltValue <= MIN_VOLT;
         voltIncreaseBtn.disabled = currentVoltValue >= MAX_VOLT;
 
-        // 重置内存档位选择器
+        // 重置内存档位选择器 - 第三个表单组
+        ddrSelect.selectedIndex = 0;
         selectedDdr.textContent = '999 (不调整)';
 
         // 更新内存档位选中状态
@@ -1057,7 +1924,7 @@ function saveConfigItem() {
     const ddr = parseInt(ddrSelect.value);
 
     if (!freq || isNaN(freq)) {
-        toast('请输入有效的频率值');
+        toast(getTranslation('toast_freq_invalid'));
         return;
     }
 
@@ -1075,7 +1942,7 @@ function saveConfigItem() {
     // 刷新表格
     refreshGpuTable();
 
-    toast('配置已更新，请点击"保存配置"按钮保存到文件');
+    toast(getTranslation('toast_config_updated'));
 }
 
 // 删除配置项
@@ -1202,7 +2069,7 @@ async function saveConfigToFile() {
 // 加载游戏列表
 async function loadGamesList() {
     try {
-        const { errno, stdout } = await exec(`cat ${GAMES_PATH}`);
+        const { errno, stdout } = await exec(`cat ${GAMES_FILE}`);
 
         if (errno === 0 && stdout.trim()) {
             const games = stdout.trim().split('\n').filter(game => game.trim());
@@ -1324,7 +2191,7 @@ async function saveGamesToFile() {
         const gamesContent = gamesList_data.join('\n');
 
         // 保存到文件
-        const { errno } = await exec(`echo '${gamesContent}' > ${GAMES_PATH}`);
+        const { errno } = await exec(`echo '${gamesContent}' > ${GAMES_FILE}`);
 
         if (errno === 0) {
             toast('游戏列表已成功保存');
@@ -1437,13 +2304,13 @@ async function saveLogLevel() {
 
         if (errno === 0) {
             if (selectedLevel === 'debug') {
-                toast(`日志等级已设置为: ${selectedLevel}，重启模块后将启用详细日志记录`);
+                toast(getTranslation('toast_log_level_debug'));
             } else {
-                toast(`日志等级已设置为: ${selectedLevel}，重启模块后生效`);
+                toast(getTranslation('toast_log_level_set', { level: selectedLevel }));
             }
             console.log(`日志等级已保存: ${selectedLevel}`);
         } else {
-            toast('保存日志等级失败，请检查权限');
+            toast(getTranslation('toast_log_level_fail'));
             console.error('保存日志等级失败');
         }
     } catch (error) {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -164,6 +164,29 @@
                             </div>
 
                             <div class="status-item">
+                                <span>语言设置:</span>
+                                <div class="select-container">
+                                    <div class="custom-select" id="languageContainer">
+                                        <div class="selected-option" id="selectedLanguage">跟随系统</div>
+                                        <div class="options-container" id="languageOptions">
+                                            <div class="option" data-value="system">跟随系统</div>
+                                            <div class="option" data-value="zh">中文</div>
+                                            <div class="option" data-value="en">English</div>
+                                        </div>
+                                    </div>
+                                    <select id="languageSelect" class="select" style="display: none;">
+                                        <option value="system">跟随系统</option>
+                                        <option value="zh">中文</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="setting-description">
+                                <small>修改语言设置后实时生效</small>
+                                <small>跟随系统将自动检测系统语言设置</small>
+                            </div>
+
+                            <div class="status-item">
                                 <span>主日志等级:</span>
                                 <div class="select-container">
                                     <div class="custom-select" id="logLevelContainer">
@@ -198,8 +221,9 @@
                     <span class="close-modal">&times;</span>
                     <h3>编辑GPU配置</h3>
                     <div class="form-group">
-                        <label for="freqInput">频率 (KHz):</label>
-                        <input type="number" id="freqInput" min="100000" max="1000000" step="1000" placeholder="例如: 350000">
+                        <label for="freqInput">频率 (MHz):</label>
+                        <input type="number" id="freqInput" min="100000" max="1000000" step="1000" placeholder="例如: 350000 (KHz)">
+                        <small class="input-hint">请输入KHz值，表格中显示为MHz</small>
                     </div>
                     <div class="form-group">
                         <label for="voltSelect">电压 (uV):</label>
