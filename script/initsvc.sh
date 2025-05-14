@@ -21,6 +21,25 @@ fi
 mkdir -p /data/adb/gpu_governor/log 2>/dev/null
 INIT_LOG="/data/adb/gpu_governor/log/initsvc.log"
 
+# 轮转初始化日志并备份旧的初始化日志
+if [ -f "$INIT_LOG" ]; then
+    # 创建带时间戳的备份文件名
+    BACKUP_TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+    INIT_LOG_BACKUP="${INIT_LOG}.${BACKUP_TIMESTAMP}.bak"
+
+    # 备份旧的初始化日志
+    cp "$INIT_LOG" "$INIT_LOG_BACKUP" 2>/dev/null
+
+    # 清空原始日志文件
+    true > "$INIT_LOG"
+
+    # 设置正确的权限
+    chmod 0666 "$INIT_LOG"
+
+    # 记录轮转信息
+    echo "$(date) - Initialization log rotated, previous log backed up to ${INIT_LOG_BACKUP}" > "$INIT_LOG"
+fi
+
 # 记录目录信息到初始化日志
 echo "$(date) - Initialization started" >> "$INIT_LOG"
 echo "SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
@@ -53,6 +72,15 @@ if [ -f "$SCRIPT_DIR/libcommon.sh" ]; then
     log "Loaded libcommon.sh"
 else
     log "Error: libcommon.sh not found, path: $SCRIPT_DIR"
+    exit 1
+fi
+
+# 加载cgroup库
+if [ -f "$SCRIPT_DIR/libcgroup.sh" ]; then
+    . "$SCRIPT_DIR/libcgroup.sh"
+    log "Loaded libcgroup.sh"
+else
+    log "Error: libcgroup.sh not found, path: $SCRIPT_DIR"
     exit 1
 fi
 
@@ -248,7 +276,8 @@ sync
         echo "$(date) - Starting GPU Governor with debug level"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
-        nohup "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
+        killall gpugovernor
+        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" >"$GPUGOV_LOGPATH" 2>&1 &
 
     else
         echo "Using log level: $log_level"
@@ -257,7 +286,8 @@ sync
         echo "$(date) - Starting GPU Governor with $log_level level"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
-        nohup "$BIN_PATH/gpugovernor" >> "$GPUGOV_LOGPATH" 2>&1 &
+        killall gpugovernor
+        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" >"$GPUGOV_LOGPATH" 2>&1 &
     fi
     sync
 

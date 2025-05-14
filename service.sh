@@ -10,9 +10,6 @@ until [ -d $DIR ]; do
 	sleep 1
 done
 
-killall gpugovernor
-RUST_BACKTRACE=1 nohup $MODDIR/bin/gpugovernor >$LOG 2>&1 &
-
 if [ "$MODDIR" = "$0" ]; then
     MODDIR=$(dirname "$0")
 fi
