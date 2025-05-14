@@ -28,7 +28,7 @@ const app = document.getElementById('app');
 const loading = document.getElementById('loading');
 const themeToggle = document.getElementById('themeToggle');
 const runningStatus = document.getElementById('runningStatus');
-const gameModeToggle = document.getElementById('gameModeToggle');
+const gameModeStatus = document.getElementById('gameModeStatus');
 const moduleVersion = document.getElementById('moduleVersion');
 const followSystemThemeToggle = document.getElementById('followSystemThemeToggle');
 const logLevelSelect = document.getElementById('logLevelSelect');
@@ -145,6 +145,8 @@ const translations = {
         'status_running_inactive': '未运行',
         'status_checking': '检查中...',
         'status_game_mode': '游戏模式:',
+        'status_game_mode_on': '开启',
+        'status_game_mode_off': '关闭',
         'status_module_version': '模块版本:',
         'status_unknown': '未知',
         // 配置页面
@@ -261,6 +263,8 @@ const translations = {
         'status_running_inactive': 'Not Running',
         'status_checking': 'Checking...',
         'status_game_mode': 'Game Mode:',
+        'status_game_mode_on': 'Enabled',
+        'status_game_mode_off': 'Disabled',
         'status_module_version': 'Module Version:',
         'status_unknown': 'Unknown',
         // Config page
@@ -1236,37 +1240,7 @@ function setupEventListeners() {
         });
     }
 
-    // 游戏模式开关
-    gameModeToggle.addEventListener('change', async () => {
-        try {
-            // 直接修改游戏模式文件，而不是调用action.sh脚本
-            // 这样可以避免路径和权限问题
-            const value = gameModeToggle.checked ? '1' : '0';
-
-            // 确保目录存在
-            await exec(`mkdir -p ${GAMES_PATH}`);
-
-            // 写入游戏模式状态
-            const { errno, stderr } = await exec(`echo "${value}" > ${GAME_MODE_PATH}`);
-
-            if (errno === 0) {
-                toast(getTranslation(gameModeToggle.checked ? 'toast_game_mode_on' : 'toast_game_mode_off'));
-                console.log(`游戏模式已切换为: ${value}`);
-                // 更新上一次状态
-                lastGameModeStatus = gameModeToggle.checked;
-            } else {
-                console.error('切换游戏模式失败:', stderr);
-                toast(getTranslation('toast_game_mode_fail'));
-                // 恢复开关状态
-                gameModeToggle.checked = !gameModeToggle.checked;
-            }
-        } catch (error) {
-            console.error('切换游戏模式失败:', error);
-            toast('切换游戏模式失败: ' + error.message);
-            // 恢复开关状态
-            gameModeToggle.checked = !gameModeToggle.checked;
-        }
-    });
+    // 游戏模式状态不再提供切换功能，只显示状态
 
     // 刷新日志按钮
     refreshLogBtn.addEventListener('click', () => {
@@ -1466,7 +1440,16 @@ async function checkGameModeStatus() {
             // 如果状态发生变化，更新UI
             if (status !== lastGameModeStatus) {
                 console.log(`游戏模式状态变化: ${lastGameModeStatus ? '开启' : '关闭'} -> ${status ? '开启' : '关闭'}`);
-                gameModeToggle.checked = status;
+
+                // 更新游戏模式状态显示
+                if (status) {
+                    gameModeStatus.textContent = getTranslation('status_game_mode_on');
+                    gameModeStatus.className = 'status-badge status-running';
+                } else {
+                    gameModeStatus.textContent = getTranslation('status_game_mode_off');
+                    gameModeStatus.className = 'status-badge status-stopped';
+                }
+
                 lastGameModeStatus = status;
             }
         } else {
@@ -1496,18 +1479,29 @@ async function loadGameModeStatus() {
 
         if (errno === 0) {
             const status = stdout.trim() === '1';
-            gameModeToggle.checked = status;
+
+            // 更新游戏模式状态显示
+            if (status) {
+                gameModeStatus.textContent = getTranslation('status_game_mode_on');
+                gameModeStatus.className = 'status-badge status-running';
+            } else {
+                gameModeStatus.textContent = getTranslation('status_game_mode_off');
+                gameModeStatus.className = 'status-badge status-stopped';
+            }
+
             lastGameModeStatus = status; // 更新上一次状态
             console.log(`当前游戏模式状态: ${status ? '开启' : '关闭'}`);
         } else {
             console.error('读取游戏模式状态失败:', stderr);
-            gameModeToggle.checked = false; // 默认为关闭
-            lastGameModeStatus = false; // 更新上一次状态
+            gameModeStatus.textContent = getTranslation('status_checking');
+            gameModeStatus.className = 'status-badge status-stopped';
+            lastGameModeStatus = false; // 默认为关闭
         }
     } catch (error) {
         console.error('加载游戏模式状态失败:', error);
-        gameModeToggle.checked = false; // 默认为关闭
-        lastGameModeStatus = false; // 更新上一次状态
+        gameModeStatus.textContent = getTranslation('status_checking');
+        gameModeStatus.className = 'status-badge status-stopped';
+        lastGameModeStatus = false; // 默认为关闭
     }
 }
 
