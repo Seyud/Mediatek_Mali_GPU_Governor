@@ -41,22 +41,22 @@ if [ -f "$INIT_LOG" ]; then
 fi
 
 # 记录目录信息到初始化日志
-echo "$(date) - Initialization started" >> "$INIT_LOG"
-echo "SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
-echo "MODULE_DIR=$MODULE_DIR" >> "$INIT_LOG"
+echo "$(date) - 🚀 Initialization started" >> "$INIT_LOG"
+echo "📁 SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
+echo "📁 MODULE_DIR=$MODULE_DIR" >> "$INIT_LOG"
 
 # 确保路径信息正确加载
 if [ -f "$SCRIPT_DIR/pathinfo.sh" ]; then
     . "$SCRIPT_DIR/pathinfo.sh"
-    echo "Successfully loaded pathinfo.sh" >> "$INIT_LOG"
+    echo "✅ Successfully loaded pathinfo.sh" >> "$INIT_LOG"
 else
     # 尝试其他可能的位置
     if [ -f "$MODULE_DIR/script/pathinfo.sh" ]; then
         . "$MODULE_DIR/script/pathinfo.sh"
-        echo "Successfully loaded pathinfo.sh from module/script" >> "$INIT_LOG"
+        echo "✅ Successfully loaded pathinfo.sh from module/script" >> "$INIT_LOG"
     else
         # 由于pathinfo.sh未加载，log函数不可用，直接写入初始化日志
-        echo "Error: pathinfo.sh not found in $SCRIPT_DIR or $MODULE_DIR/script" >> "$INIT_LOG"
+        echo "❌ Error: pathinfo.sh not found in $SCRIPT_DIR or $MODULE_DIR/script" >> "$INIT_LOG"
         exit 1
     fi
 fi
@@ -175,11 +175,11 @@ sync
     # 使用统一的日志轮转函数
     rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
 
-    echo "Starting gpu governor"
+    echo "🚀 Starting gpu governor"
 
     # 检查用户配置文件
     if [ -f "$USER_PATH/gpu_freq_table.conf" ]; then
-        echo "Found user config at $USER_PATH/gpu_freq_table.conf"
+        echo "📄 Found user config at $USER_PATH/gpu_freq_table.conf"
         GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
     else
         # 获取设备平台信息
@@ -222,7 +222,7 @@ sync
         GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
     fi
 
-    echo "Using config $GPUGOV_CONFPATH"
+    echo "⚙️ Using config $GPUGOV_CONFPATH"
 
     # 再次检查日志大小
     rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
@@ -299,7 +299,7 @@ sync
 
     rebuild_process_scan_cache
     change_task_cgroup "gpugovernor" "background" "cpuset"
-    echo "GPU Governor started successfully"
+    echo "✅ GPU Governor started successfully"
 
     # 再次检查日志大小
     rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"

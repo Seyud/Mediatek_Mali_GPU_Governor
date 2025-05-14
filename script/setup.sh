@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Runonce after boot, to speed up the transition of power modes in powercfg
+# 🚀 Runonce after boot, to speed up the transition of power modes in powercfg
 
 BASEDIR="$(dirname $(readlink -f "$0"))"
 MODULE_PATH=$MODPATH
@@ -8,8 +8,8 @@ MODULE_PATH=$MODPATH
 
 # $1:error_message
 abort() {
-    echo "$1"
-    echo "! Installation failed."
+    echo "❌ $1"
+    echo "❌ Installation failed."
     exit 1
 }
 
@@ -39,10 +39,10 @@ set_permissions() {
 
 # 生成游戏列表配置文件
 generate_gamelist() {
-    echo "Searching for installed games and configuring games.conf"
-    echo "* GPU Governor can enable game mode for applications in the game list *"
+    echo "🔍 Searching for installed games and configuring games.conf"
+    echo "🎮 GPU Governor can enable game mode for applications in the game list 🎮"
 
-    echo ">> Adding preset games & benchmark applications"
+    echo "📋 Adding preset games & benchmark applications"
     preset_games='xyz.aethersx2.android
 org.ppsspp.ppsspp
 org.ppsspp.ppssppgold
@@ -111,7 +111,7 @@ com.activision.callofduty.warzone
 com.MadOut.BIG'
     echo "$preset_games" > "$GAMES_FILE"
 
-    echo ">> Searching and adding Unity & UE4 engine based games"
+    echo "🎯 Searching and adding Unity & UE4 engine based games"
     pm list packages -3 | grep -v 'mobileqq' | cut -f2 -d ':' | while read package
     do
       path=$(pm path $package | cut -f2 -d ':')
@@ -128,7 +128,7 @@ com.MadOut.BIG'
 
     scene_games=/data/data/com.omarea.vtools/shared_prefs/games.xml
     if [[ -f $scene_games ]]; then
-      echo '>> Adding games recognized by SCENE'
+      echo '🎲 Adding games recognized by SCENE'
       grep '="true"' /data/data/com.omarea.vtools/shared_prefs/games.xml | cut -f2 -d '"' | while read package
       do
         r=$(grep $package "$GAMES_FILE")
@@ -139,11 +139,11 @@ com.MadOut.BIG'
       done
     fi
 
-    echo "- Game list configuration file generated: $GAMES_FILE"
+    echo "📝 Game list configuration file generated: $GAMES_FILE"
 }
 install_gov() {
-    echo "- ro.board.platform=$(getprop ro.board.platform)"
-    echo "- ro.product.board=$(getprop ro.product.board)"
+    echo "📱 ro.board.platform=$(getprop ro.board.platform)"
+    echo "📱 ro.product.board=$(getprop ro.product.board)"
 
     target="$(getprop ro.board.platform)"
     cfgname="$(get_config_name $target)"
@@ -152,10 +152,10 @@ install_gov() {
     if [ "$target" = "mt6983" ]; then
         # 如果CPU7最大频率小于2700000，则是mt6891
         if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
-            echo "- Detected mt6983 but CPU7 frequency is lower, identified as mt6891"
+            echo "🔍 Detected mt6983 but CPU7 frequency is lower, identified as mt6891"
             cfgname="mtd1100"
         else
-            echo "- Detected mt6983 with normal CPU7 frequency, identified as mt6893"
+            echo "🔍 Detected mt6983 with normal CPU7 frequency, identified as mt6893"
             cfgname="mtd1200"
         fi
     fi
@@ -163,7 +163,7 @@ install_gov() {
     # 特殊处理mt6895，可能是mt6896
     if [ "$target" = "mt6895" ]; then
         if [[ $(getprop ro.soc.model | grep 6896) != '' ]]; then
-            echo "- Detected mt6895 but ro.soc.model contains 6896, identified as mt6896"
+            echo "🔍 Detected mt6895 but ro.soc.model contains 6896, identified as mt6896"
             cfgname="mtd8200"
         fi
     fi
@@ -173,7 +173,7 @@ install_gov() {
         cfgname="$(get_config_name "$target")"
     fi
     if [ "$cfgname" = "unsupported" ] || [ ! -f "$MODULE_PATH"/config/"$cfgname".conf ]; then
-        echo "! Target [$target] not supported. Using default configuration."
+        echo "⚠️ Target [$target] not supported. Using default configuration."
         # 使用模块目录下的默认配置文件
         cfgname="default"
     fi
@@ -194,26 +194,26 @@ install_gov() {
         else
             cp -f "$MODULE_PATH"/config/"$cfgname".conf "$USER_PATH"/gpu_freq_table.conf
         fi
-        echo "- GPU Freq Table config is located at $USER_PATH/gpu_freq_table.conf"
+        echo "⚙️ GPU Freq Table config is located at $USER_PATH/gpu_freq_table.conf"
     fi
-    echo "- Logs will be stored in $LOG_PATH"
+    echo "📊 Logs will be stored in $LOG_PATH"
 
     # 创建游戏模式文件，初始值为0（关闭），如果已存在则不创建
     if [ ! -f "$GAME_MODE_FILE" ]; then
         echo "0" > "$GAME_MODE_FILE"
         chmod 0666 "$GAME_MODE_FILE"
-        echo "- Game mode file created at $GAME_MODE_FILE"
+        echo "🎮 Game mode file created at $GAME_MODE_FILE"
     else
-        echo "- Game mode file already exists at $GAME_MODE_FILE"
+        echo "🎮 Game mode file already exists at $GAME_MODE_FILE"
     fi
 
     # 创建日志等级文件，默认为info级别，如果已存在则不创建
     if [ ! -f "$LOG_LEVEL_FILE" ]; then
         echo "info" > "$LOG_LEVEL_FILE"
         chmod 0666 "$LOG_LEVEL_FILE"
-        echo "- Log level file created at $LOG_LEVEL_FILE (default: info)"
+        echo "📝 Log level file created at $LOG_LEVEL_FILE (default: info)"
     else
-        echo "- Log level file already exists at $LOG_LEVEL_FILE"
+        echo "📝 Log level file already exists at $LOG_LEVEL_FILE"
     fi
 
     # 生成游戏列表配置文件
@@ -238,14 +238,14 @@ module_name="$(grep_prop name "$MODULE_PATH"/module.prop)"
 module_author="$(grep_prop author "$MODULE_PATH"/module.prop)"
 
 echo ""
-echo "* $module_name"
-echo "* Author: $module_author"
-echo "* Version: $module_version"
+echo "🚀 $module_name"
+echo "👨‍💻 Author: $module_author"
+echo "📌 Version: $module_version"
 echo ""
 
-echo "- Installing"
+echo "🔄 Installing..."
 
 install_gov
 set_permissions
 
-echo "- Install Finished"
+echo "✅ Install Finished"
