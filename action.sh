@@ -8,6 +8,15 @@
 #
 # 注意：此脚本会被直接执行而不带参数
 
+# 获取脚本所在目录
+SCRIPT_DIR=${0%/*}
+if [ "$SCRIPT_DIR" = "$0" ]; then
+    SCRIPT_DIR=$(dirname "$0")
+fi
+if [ "$SCRIPT_DIR" = "." ]; then
+    SCRIPT_DIR=$(pwd)
+fi
+
 # 定义常量
 GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
@@ -184,10 +193,31 @@ start_governor() {
         return 0
     fi
 
+    # 如果BIN_PATH不存在，尝试查找其他可能的位置
+    if [ ! -d "$BIN_PATH" ]; then
+        echo "$(log_prefix) $(translate "BIN_PATH不存在，尝试查找其他位置" "BIN_PATH does not exist, trying to find alternative locations")"
+
+        # 尝试在模块目录下查找
+        if [ -d "/data/adb/modules/Mediatek_Mali_GPU_Governor/bin" ]; then
+            BIN_PATH="/data/adb/modules/Mediatek_Mali_GPU_Governor/bin"
+            GPUGOVERNOR_BIN="$BIN_PATH/gpugovernor"
+            echo "$(log_prefix) $(translate "找到备选路径" "Found alternative path"): $BIN_PATH"
+        fi
+    fi
+
     # 确保二进制文件存在并有执行权限
     if [ ! -f "$GPUGOVERNOR_BIN" ]; then
-        echo "$(log_prefix) $(translate "错误: 二进制文件不存在: $GPUGOVERNOR_BIN" "Error: Binary file does not exist: $GPUGOVERNOR_BIN")"
-        return 1
+        echo "$(log_prefix) $(translate "错误: 二进制文件不存在" "Error: Binary file does not exist"): $GPUGOVERNOR_BIN"
+
+        # 尝试在系统中查找gpugovernor二进制文件
+        FOUND_BIN=$(find /data/adb/modules -name gpugovernor -type f 2>/dev/null | head -n 1)
+        if [ -n "$FOUND_BIN" ]; then
+            echo "$(log_prefix) $(translate "找到二进制文件" "Found binary file"): $FOUND_BIN"
+            GPUGOVERNOR_BIN="$FOUND_BIN"
+        else
+            echo "$(log_prefix) $(translate "无法找到gpugovernor二进制文件" "Unable to find gpugovernor binary file")"
+            return 1
+        fi
     fi
 
     if [ ! -x "$GPUGOVERNOR_BIN" ]; then
@@ -208,6 +238,7 @@ start_governor() {
     echo "$(log_prefix) $(translate "正在以$log_level级别启动GPU调速器服务..." "Starting GPU Governor service with $log_level level...")"
 
     # 启动服务
+    echo "$(log_prefix) $(translate "执行命令" "Executing command"): nohup $GPUGOVERNOR_BIN >> $GPU_GOV_LOG_FILE 2>&1 &"
     nohup "$GPUGOVERNOR_BIN" >> "$GPU_GOV_LOG_FILE" 2>&1 &
 
     # 等待服务启动
@@ -217,6 +248,7 @@ start_governor() {
         return 0
     else
         echo "$(log_prefix) $(translate "GPU调速器服务启动失败，请检查日志" "GPU Governor service failed to start, please check logs")"
+        echo "$(log_prefix) $(translate "启动失败，请检查日志获取详细错误信息" "Start failed, please check log for detailed error information"): $GPU_GOV_LOG_FILE"
         return 1
     fi
 }
@@ -293,7 +325,21 @@ show_status() {
     echo "$(log_prefix) $(translate "安卓版本: " "Android Version: ")$(getprop ro.build.version.release 2>/dev/null || echo "$unknown_text")"
 
     # 显示模块版本
-    local version=$(grep "^version=" "$SCRIPT_DIR/module.prop" | cut -d= -f2)
+    local version=""
+    # 尝试从不同位置读取模块版本
+    if [ -f "$SCRIPT_DIR/module.prop" ]; then
+        version=$(grep "^version=" "$SCRIPT_DIR/module.prop" | cut -d= -f2)
+    elif [ -f "/data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop" ]; then
+        version=$(grep "^version=" "/data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop" | cut -d= -f2)
+    else
+        # 尝试查找模块属性文件
+        local module_prop=$(find /data/adb/modules -name module.prop -type f | grep -i gpu | head -n 1)
+        if [ -n "$module_prop" ]; then
+            version=$(grep "^version=" "$module_prop" | cut -d= -f2)
+        else
+            version=$(translate "未知" "Unknown")
+        fi
+    fi
     echo "$(log_prefix) $(translate "模块版本: " "Module Version: ")$version"
     echo "----------------------------------------"
 }
