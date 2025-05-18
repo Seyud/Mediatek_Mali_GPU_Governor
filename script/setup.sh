@@ -159,8 +159,8 @@ com.MadOut.BIG'
     echo "$(translate "📝 游戏列表配置文件已生成：" "📝 Game list configuration file generated:") $GAMES_FILE"
 }
 install_gov() {
-    echo "$(translate "📱 设备平台：" "📱 Device platform:") ro.board.platform=$(getprop ro.board.platform)"
-    echo "$(translate "📱 产品主板：" "📱 Product board:") ro.product.board=$(getprop ro.product.board)"
+    echo "$(translate "📱 设备平台：" "📱 Device platform:") $(getprop ro.board.platform)"
+    echo "$(translate "📱 产品主板：" "📱 Product board:") $(getprop ro.product.board)"
 
     target="$(getprop ro.board.platform)"
     cfgname="$(get_config_name $target)"
@@ -219,7 +219,7 @@ install_gov() {
             NOW_TIME=$(date +%s)
             timeout 1 getevent -lc 1 2>&1 | grep KEY_VOLUME >"$TMPDIR/events"
             if [ $((NOW_TIME - START_TIME)) -gt 9 ]; then
-                echo "$(translate "⏰ 10秒无输入，默认保留旧配置。" "⏰ No input detected after 10 seconds, defaulting to keep old configuration.")"
+                echo "$(translate "⏰ 10秒无输入，默认保留旧配置。" "⏰ No input detected after 10 秒之前, defaulting to keep old configuration.")"
                 # 保留旧配置，不做任何操作
                 break
             elif $(cat $TMPDIR/events 2>/dev/null | grep -q KEY_VOLUMEUP); then
