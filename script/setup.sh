@@ -277,8 +277,13 @@ install_gov() {
         echo "$(translate "📝 日志等级文件已存在于" "📝 Log level file already exists at") $LOG_LEVEL_FILE"
     fi
 
-    # 生成游戏列表配置文件
-    generate_gamelist
+    # 检查游戏列表配置文件是否已存在
+    if [ -f "$GAMES_FILE" ]; then
+        echo "$(translate "🎮 游戏列表配置文件已存在，跳过生成" "🎮 Game list configuration file already exists, skipping generation") $GAMES_FILE"
+    else
+        # 生成游戏列表配置文件
+        generate_gamelist
+    fi
 }
 
 grep_prop() {
