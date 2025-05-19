@@ -188,6 +188,47 @@ def clean_temp_files():
 
     print("临时文件清理完成")
 
+def ensure_lf_line_endings():
+    """确保所有脚本文件使用LF换行符"""
+    # 需要检查的文件类型
+    file_types = [".sh", ".py", ".js", ".css", ".html", ".md", ".conf", ".prop"]
+
+    # 统计信息
+    total_files = 0
+    converted_files = 0
+
+    print("正在检查文件换行符...")
+
+    # 遍历所有文件
+    for file_type in file_types:
+        for file_path in Path(WORK_DIR).glob(f"**/*{file_type}"):
+            # 排除某些目录
+            if any(part.startswith(".") for part in file_path.parts):
+                continue
+
+            total_files += 1
+
+            # 读取文件内容（二进制模式）
+            try:
+                with open(file_path, 'rb') as f:
+                    content = f.read()
+
+                # 检查是否包含CRLF
+                if b'\r\n' in content:
+                    # 转换CRLF为LF
+                    content = content.replace(b'\r\n', b'\n')
+
+                    # 写回文件（二进制模式）
+                    with open(file_path, 'wb') as f:
+                        f.write(content)
+
+                    print(f"  已转换: {file_path.relative_to(WORK_DIR)} (CRLF -> LF)")
+                    converted_files += 1
+            except Exception as e:
+                print(f"  处理文件失败: {file_path.relative_to(WORK_DIR)}, 错误: {str(e)}")
+
+    print(f"换行符检查完成! 共检查 {total_files} 个文件，转换了 {converted_files} 个文件。")
+
 def open_output_directory(output_path):
     """打开输出文件所在目录"""
     output_dir = os.path.dirname(os.path.abspath(output_path))
@@ -206,6 +247,7 @@ def main():
     parser.add_argument("-o", "--output", help="指定输出文件名")
     parser.add_argument("-c", "--clean", action="store_true", help="打包前清理临时文件")
     parser.add_argument("-d", "--open-dir", action="store_true", help="打包完成后打开输出目录")
+    parser.add_argument("--no-fix-eol", action="store_true", help="跳过换行符检查和修复")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -220,6 +262,10 @@ def main():
     # 如果指定了清理临时文件
     if args.clean:
         clean_temp_files()
+
+    # 检查并修复文件换行符（除非明确指定跳过）
+    if not args.no_fix_eol:
+        ensure_lf_line_endings()
 
     # 创建ZIP压缩包
     success = create_zip_package(args.output)
