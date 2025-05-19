@@ -14,13 +14,13 @@ locale=$(getprop persist.sys.locale || getprop ro.product.locale || getprop pers
 
 # 如果系统语言是英文，设置语言为英文
 if echo "$locale" | grep -qi "en"; then
-  language="en"
+    language="en"
 fi
 
 # 翻译函数 - 根据当前语言显示对应文本
 # $1:中文文本 $2:英文文本
 translate() {
-  [ "$language" = "en" ] && echo "$2" || echo "$1"
+    [ "$language" = "en" ] && echo "$2" || echo "$1"
 }
 
 # $1:error_message_zh $2:error_message_en
@@ -126,34 +126,32 @@ com.netease.race
 
 com.activision.callofduty.warzone
 com.MadOut.BIG'
-    echo "$preset_games" > "$GAMES_FILE"
+    echo "$preset_games" >"$GAMES_FILE"
 
     echo "$(translate "🎯 正在搜索并添加基于Unity和UE4引擎的游戏" "🎯 Searching and adding Unity & UE4 engine based games")"
-    pm list packages -3 | grep -v 'mobileqq' | cut -f2 -d ':' | while read package
-    do
-      path=$(pm path $package | cut -f2 -d ':')
-      dir=${path%/*}
-      libs="$dir/lib/arm64"
-      if [[ -d $libs ]]; then
-        game_libs=$(ls $libs | grep -E '(libunity.so|libUE3.so|libUE4.so)')
-        if [[ "$game_libs" != '' ]] && [[ $(echo "$preset_games" | grep $package) == '' ]]; then
-          echo " + $package"
-          echo $package >> "$GAMES_FILE"
+    pm list packages -3 | grep -v 'mobileqq' | cut -f2 -d ':' | while read package; do
+        path=$(pm path $package | cut -f2 -d ':')
+        dir=${path%/*}
+        libs="$dir/lib/arm64"
+        if [[ -d $libs ]]; then
+            game_libs=$(ls $libs | grep -E '(libunity.so|libUE3.so|libUE4.so)')
+            if [[ "$game_libs" != '' ]] && [[ $(echo "$preset_games" | grep $package) == '' ]]; then
+                echo " + $package"
+                echo $package >>"$GAMES_FILE"
+            fi
         fi
-      fi
     done
 
     scene_games=/data/data/com.omarea.vtools/shared_prefs/games.xml
     if [[ -f $scene_games ]]; then
-      echo "$(translate "🎲 添加被SCENE识别的游戏" "🎲 Adding games recognized by SCENE")"
-      grep '="true"' /data/data/com.omarea.vtools/shared_prefs/games.xml | cut -f2 -d '"' | while read package
-      do
-        r=$(grep $package "$GAMES_FILE")
-        if [[ "$r" == '' ]]; then
-          echo " + $package"
-          echo $package >> "$GAMES_FILE"
-        fi
-      done
+        echo "$(translate "🎲 添加被SCENE识别的游戏" "🎲 Adding games recognized by SCENE")"
+        grep '="true"' /data/data/com.omarea.vtools/shared_prefs/games.xml | cut -f2 -d '"' | while read package; do
+            r=$(grep $package "$GAMES_FILE")
+            if [[ "$r" == '' ]]; then
+                echo " + $package"
+                echo $package >>"$GAMES_FILE"
+            fi
+        done
     fi
 
     echo "$(translate "📝 游戏列表配置文件已生成：" "📝 Game list configuration file generated:") $GAMES_FILE"
@@ -194,7 +192,7 @@ install_gov() {
         # 使用模块目录下的默认配置文件
         cfgname="default"
     fi
-    if [ "$cfgname" == "mt6983" ] || [ "$cfgname" == "mt6895" ];then
+    if [ "$cfgname" == "mt6983" ] || [ "$cfgname" == "mt6895" ]; then
         touch "$MODULE_PATH"/USE_DEBUGFS
     fi
     mkdir -p "$LOG_PATH"
@@ -261,7 +259,7 @@ install_gov() {
 
     # 创建游戏模式文件，初始值为0（关闭），如果已存在则不创建
     if [ ! -f "$GAME_MODE_FILE" ]; then
-        echo "0" > "$GAME_MODE_FILE"
+        echo "0" >"$GAME_MODE_FILE"
         chmod 0666 "$GAME_MODE_FILE"
         echo "$(translate "🎮 游戏模式文件已创建于" "🎮 Game mode file created at") $GAME_MODE_FILE"
     else
@@ -270,7 +268,7 @@ install_gov() {
 
     # 创建日志等级文件，默认为info级别，如果已存在则不创建
     if [ ! -f "$LOG_LEVEL_FILE" ]; then
-        echo "info" > "$LOG_LEVEL_FILE"
+        echo "info" >"$LOG_LEVEL_FILE"
         chmod 0666 "$LOG_LEVEL_FILE"
         echo "$(translate "📝 日志等级文件已创建于" "📝 Log level file created at") $LOG_LEVEL_FILE $(translate "（默认：info）" "(default: info)")"
     else
