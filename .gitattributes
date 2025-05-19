@@ -1,0 +1,24 @@
+# 设置默认行为，如果core.autocrlf未设置
+* text=auto
+
+# 明确声明应该规范化的文本文件，并在检出时转换为本机行尾
+*.sh text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.xml text eol=lf
+*.json text eol=lf
+*.conf text eol=lf
+*.prop text eol=lf
+
+# 声明二进制文件，不应该被修改
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.jar binary
+*.so binary
