@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" id="htmlRoot">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <!-- 使用本地字体或系统字体，避免网络请求 -->
 </head>
+
 <body>
     <div id="loading">加载中</div>
     <div id="app" style="display: none;">
@@ -47,7 +49,7 @@
                     <!-- 版权信息卡片 -->
                     <section class="card" id="copyrightCard">
                         <div class="card-content copyright-content">
-                            <p>天玑GPU调速器 © 2025 酷安@瓦力喀</p>
+                            <p>天玑GPU调速器 © 2025 酷安@瓦力喀 / Github@Seyud</p>
                         </div>
                     </section>
                 </div>
@@ -184,28 +186,33 @@
                             </div>
 
                             <div class="status-item">
-                                <span>主日志等级:</span>
+                                <span data-i18n="settings_log_level">主日志等级:</span>
                                 <div class="select-container">
                                     <div class="custom-select" id="logLevelContainer">
-                                        <div class="selected-option" id="selectedLogLevel">Info (信息)</div>
+                                        <div class="selected-option" id="selectedLogLevel"
+                                            data-i18n="settings_log_level_info">Info (信息)</div>
                                         <div class="options-container" id="logLevelOptions">
-                                            <div class="option" data-value="debug">Debug (详细)</div>
-                                            <div class="option" data-value="info">Info (信息)</div>
-                                            <div class="option" data-value="warn">Warn (警告)</div>
-                                            <div class="option" data-value="error">Error (错误)</div>
+                                            <div class="option" data-value="debug" data-i18n="settings_log_level_debug">
+                                                Debug (详细)</div>
+                                            <div class="option" data-value="info" data-i18n="settings_log_level_info">
+                                                Info (信息)</div>
+                                            <div class="option" data-value="warn" data-i18n="settings_log_level_warn">
+                                                Warn (警告)</div>
+                                            <div class="option" data-value="error" data-i18n="settings_log_level_error">
+                                                Error (错误)</div>
                                         </div>
                                     </div>
                                     <select id="logLevelSelect" class="select" style="display: none;">
-                                        <option value="debug">Debug (详细)</option>
-                                        <option value="info">Info (信息)</option>
-                                        <option value="warn">Warn (警告)</option>
-                                        <option value="error">Error (错误)</option>
+                                        <option value="debug" data-i18n="settings_log_level_debug">Debug (详细)</option>
+                                        <option value="info" data-i18n="settings_log_level_info">Info (信息)</option>
+                                        <option value="warn" data-i18n="settings_log_level_warn">Warn (警告)</option>
+                                        <option value="error" data-i18n="settings_log_level_error">Error (错误)</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="setting-description">
-                                <small>修改日志等级后实时生效</small>
-                                <small>设置为Debug级别将启用详细日志记录</small>
+                                <small data-i18n="settings_log_level_desc1">修改日志等级后实时生效</small>
+                                <small data-i18n="settings_log_level_desc2">设置为Debug级别将启用详细日志记录</small>
                             </div>
                         </div>
                     </section>
@@ -219,7 +226,8 @@
                     <h3>编辑GPU配置</h3>
                     <div class="form-group">
                         <label for="freqInput">频率 (MHz):</label>
-                        <input type="number" id="freqInput" min="100000" max="1000000" step="1000" placeholder="例如: 350000 (KHz)">
+                        <input type="number" id="freqInput" min="100000" max="1000000" step="1000"
+                            placeholder="例如: 350000 (KHz)">
                         <small class="input-hint">请输入KHz值，表格中显示为MHz</small>
                     </div>
                     <div class="form-group">
@@ -305,4 +313,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>

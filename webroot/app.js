@@ -242,7 +242,9 @@ const translations = {
         'toast_language_changed': '语言已切换为{language}',
         'toast_language_follow_system': '语言已设置为跟随系统',
         // 版权信息
-        'copyright_text': '天玑GPU调速器 © 2025 酷安@瓦力喀'
+        'copyright_text': '天玑GPU调速器 © 2025 酷安@瓦力喀 / Github@Seyud',
+        'config_games_not_found': '未找到游戏',
+        'config_games_list_not_found': '未找到游戏列表'
     },
     'en': {
         // Page title
@@ -360,7 +362,9 @@ const translations = {
         'toast_language_changed': 'Language changed to {language}',
         'toast_language_follow_system': 'Language set to follow system',
         // Copyright information
-        'copyright_text': 'Dimensity GPU Governor © 2025 Coolapk@Walika'
+        'copyright_text': 'Dimensity GPU Governor © 2025 Coolapk@Walika / Github@Seyud',
+        'config_games_not_found': 'No games found',
+        'config_games_list_not_found': 'No games list found'
     }
 };
 
@@ -452,6 +456,18 @@ function applyTranslations() {
         const versionValue = document.getElementById('moduleVersion');
         if (versionValue && (versionValue.textContent === '未知' || versionValue.textContent === 'Unknown')) {
             versionValue.textContent = getTranslation('status_unknown');
+        }
+
+        // 更新游戏模式状态文本（新增，保证切换语言时状态同步）
+        const gameModeStatus = document.getElementById('gameModeStatus');
+        if (gameModeStatus) {
+            if (gameModeStatus.classList.contains('status-running')) {
+                gameModeStatus.textContent = getTranslation('status_game_mode_on');
+            } else if (gameModeStatus.classList.contains('status-stopped')) {
+                gameModeStatus.textContent = getTranslation('status_game_mode_off');
+            } else {
+                gameModeStatus.textContent = getTranslation('status_checking');
+            }
         }
 
         // 更新版权信息
@@ -825,6 +841,34 @@ function applyTranslations() {
     } catch (e) {
         console.error('更新当前日志文件文本失败:', e);
     }
+
+    // 新增：切换语言时刷新动态内容
+    try {
+        if (typeof refreshGpuTable === 'function') {
+            refreshGpuTable();
+        }
+    } catch (e) {
+        console.error('刷新GPU配置表格失败:', e);
+    }
+    try {
+        if (typeof refreshGamesList === 'function') {
+            refreshGamesList();
+        }
+    } catch (e) {
+        console.error('刷新游戏列表失败:', e);
+    }
+
+    // 新增：批量应用data-i18n国际化（适用于主日志等级等静态文本）
+    try {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (key && translations[currentLanguage] && translations[currentLanguage][key]) {
+                el.textContent = getTranslation(key);
+            }
+        });
+    } catch (e) {
+        console.error('批量应用data-i18n国际化失败:', e);
+    }
 }
 
 // 检测系统语言
@@ -897,13 +941,13 @@ async function initLanguage() {
         } else {
             // 如果找不到元素，使用默认文本
             selectedLanguage.textContent = savedLanguageSetting === 'en' ? 'English' :
-                                          savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
+                savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
         }
     } catch (e) {
         console.error('获取语言选项文本失败:', e);
         // 使用默认文本
         selectedLanguage.textContent = savedLanguageSetting === 'en' ? 'English' :
-                                      savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
+            savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
     }
 
     // 应用翻译
@@ -1560,10 +1604,10 @@ async function loadGpuConfig() {
                 // 初始化电压选择下拉框
                 initVoltSelect();
             } else {
-                gpuFreqTable.innerHTML = '<tr><td colspan="4" class="loading-text">未找到配置</td></tr>';
+                gpuFreqTable.innerHTML = `<tr><td colspan="4" class="loading-text">${getTranslation('config_not_found')}</td></tr>`;
             }
         } else {
-            gpuFreqTable.innerHTML = '<tr><td colspan="4" class="loading-text">未找到配置</td></tr>';
+            gpuFreqTable.innerHTML = `<tr><td colspan="4" class="loading-text">${getTranslation('config_not_found')}</td></tr>`;
         }
 
         // 初始化margin设置（确保在读取配置后调用）
@@ -2001,7 +2045,7 @@ function refreshGpuTable() {
     gpuFreqTable.innerHTML = '';
 
     if (gpuConfigs.length === 0) {
-        gpuFreqTable.innerHTML = '<tr><td colspan="4" class="loading-text">未找到配置</td></tr>';
+        gpuFreqTable.innerHTML = `<tr><td colspan="4" class="loading-text">${getTranslation('config_not_found')}</td></tr>`;
         return;
     }
 
@@ -2039,7 +2083,7 @@ function refreshGpuTable() {
         editBtn.className = 'edit-btn';
         editBtn.innerHTML = '✏️';
         editBtn.title = '编辑/删除';
-        editBtn.onclick = function() {
+        editBtn.onclick = function () {
             openEditModal(index);
             return false; // 阻止事件冒泡
         };
@@ -2107,10 +2151,10 @@ async function loadGamesList() {
             if (games.length > 0) {
                 refreshGamesList();
             } else {
-                gamesList.innerHTML = '<li class="loading-text">未找到游戏</li>';
+                gamesList.innerHTML = `<li class="loading-text">${getTranslation('config_games_not_found')}</li>`;
             }
         } else {
-            gamesList.innerHTML = '<li class="loading-text">未找到游戏列表</li>';
+            gamesList.innerHTML = `<li class="loading-text">${getTranslation('config_games_list_not_found')}</li>`;
         }
     } catch (error) {
         console.error('加载游戏列表失败:', error);
@@ -2123,7 +2167,7 @@ function refreshGamesList() {
     gamesList.innerHTML = '';
 
     if (gamesList_data.length === 0) {
-        gamesList.innerHTML = '<li class="loading-text">未找到游戏</li>';
+        gamesList.innerHTML = `<li class="loading-text">${getTranslation('config_games_not_found')}</li>`;
         return;
     }
 
@@ -2140,7 +2184,7 @@ function refreshGamesList() {
         deleteBtn.className = 'game-delete-btn';
         deleteBtn.innerHTML = '✖';
         deleteBtn.title = '删除';
-        deleteBtn.onclick = function(e) {
+        deleteBtn.onclick = function (e) {
             e.stopPropagation(); // 阻止事件冒泡
             deleteGameItem(index);
         };
@@ -2372,7 +2416,7 @@ async function loadLog() {
         // 检查日志文件大小
         const { errno: statErrno, stdout: statOutput } = await exec(`stat -c %s ${LOG_PATH}/${selectedLog} 2>/dev/null || echo "0"`);
 
-        if (statErrno === 0 && statOutput.trim() !== "0" && statOutput.trim() !== "日志文件不存在") {
+        if (statErrno === 0 && statOutput.trim() !== "0" && statOutput.trim() !== getTranslation('log_not_found')) {
             const fileSize = parseInt(statOutput.trim());
             const maxSizeBytes = MAX_LOG_SIZE_MB * 1024 * 1024;
 
@@ -2391,6 +2435,12 @@ async function loadLog() {
         // 使用cat而不是tail，某些设备可能没有tail命令
         const { errno, stdout } = await exec(`cat ${LOG_PATH}/${selectedLog} 2>/dev/null || echo "日志文件不存在"`);
 
+        // 新增：日志文件不存在时多语言处理
+        if (stdout.trim() === "日志文件不存在") {
+            logContent.textContent = getTranslation('log_not_found');
+            return;
+        }
+
         if (errno === 0) {
             // 如果日志太长，只显示最后100行
             const lines = stdout.trim().split('\n');
@@ -2406,21 +2456,21 @@ async function loadLog() {
                     const sizeInfo = `[日志文件大小: ${fileSizeMB}MB / ${MAX_LOG_SIZE_MB}MB]\n`;
 
                     if (fileSize > maxSizeBytes) {
-                        logContent.textContent = `警告: 日志文件大小已超过限制，将自动轮转。\n${sizeInfo}\n${lastLines || '日志为空'}`;
+                        logContent.textContent = `警告: 日志文件大小已超过限制，将自动轮转。\n${sizeInfo}\n${lastLines || getTranslation('log_empty')}`;
                     } else {
-                        logContent.textContent = `${sizeInfo}\n${lastLines || '日志为空'}`;
+                        logContent.textContent = `${sizeInfo}\n${lastLines || getTranslation('log_empty')}`;
                     }
                 } else {
-                    logContent.textContent = lastLines || '日志为空';
+                    logContent.textContent = lastLines || getTranslation('log_empty');
                 }
             } else {
-                logContent.textContent = lastLines || '日志为空';
+                logContent.textContent = lastLines || getTranslation('log_empty');
             }
 
             // 滚动到底部
             logContent.scrollTop = logContent.scrollHeight;
         } else {
-            logContent.textContent = '未找到日志';
+            logContent.textContent = getTranslation('log_not_found');
         }
     } catch (error) {
         console.error('加载日志失败:', error);
