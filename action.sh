@@ -1,10 +1,9 @@
 #!/system/bin/sh
 # 天玑GPU调速器控制脚本
 # 功能：
-# 1. 切换游戏模式（开启/关闭）
-# 2. 控制调速器服务（启动/停止）
-# 3. 设置日志等级
-# 4. 使用音量键进行选择
+# 1. 控制调速器服务（启动/停止）
+# 2. 设置日志等级
+# 3. 使用音量键进行选择
 #
 # 注意：此脚本会被直接执行而不带参数
 
@@ -282,21 +281,6 @@ stop_governor() {
     fi
 }
 
-# 切换游戏模式
-toggle_game_mode() {
-    # 获取当前游戏模式状态
-    local current_mode=$(cat "$GAME_MODE_FILE")
-
-    # 切换状态
-    if [ "$current_mode" = "1" ]; then
-        echo "0" > "$GAME_MODE_FILE"
-        echo "$(log_prefix) $(translate "游戏模式已关闭" "Game mode has been disabled")"
-    else
-        echo "1" > "$GAME_MODE_FILE"
-        echo "$(log_prefix) $(translate "游戏模式已开启" "Game mode has been enabled")"
-    fi
-}
-
 # 显示当前状态
 show_status() {
     echo "----------------------------------------"
@@ -346,19 +330,69 @@ show_status() {
 
 # 处理日志等级设置
 handle_log_level() {
-    if [ "$1" = "debug" ] || [ "$1" = "info" ] || [ "$1" = "warn" ] || [ "$1" = "error" ]; then
-        echo "$1" > "$LOG_LEVEL_FILE"
-        echo "$(log_prefix) $(translate "日志等级已设置为: $1" "Log level has been set to: $1")"
-        echo "$(log_prefix) $(translate "请重启调速器服务以应用新的日志等级设置" "Please restart the governor service to apply the new log level setting")"
-        return 0
-    else
-        # 显示当前日志等级和可用选项
-        local current_level=$(cat "$LOG_LEVEL_FILE")
-        echo "$(log_prefix) $(translate "当前日志等级: $current_level" "Current log level: $current_level")"
-        echo "$(log_prefix) $(translate "可用的日志等级选项: debug, info, warn, error" "Available log level options: debug, info, warn, error")"
-        echo "$(log_prefix) $(translate "用法: ./action.sh log_level [debug|info|warn|error]" "Usage: ./action.sh log_level [debug|info|warn|error]")"
-        return 1
-    fi
+    # 显示当前日志等级和可用选项
+    local current_level=$(cat "$LOG_LEVEL_FILE")
+    echo "$(log_prefix) $(translate "当前日志等级: $current_level" "Current log level: $current_level")"
+    echo "$(log_prefix) $(translate "可用的日志等级选项: debug, info, warn, error" "Available log level options: debug, info, warn, error")"
+
+    # 等待用户选择
+    echo "$(translate "请选择日志等级" "Please select a log level"):"
+    echo "1. debug ($(translate "调试" "Debug"))"
+    echo "2. info ($(translate "信息" "Information"))"
+    echo "3. warn ($(translate "警告" "Warning"))"
+    echo "4. error ($(translate "错误" "Error"))"
+
+    echo "$(translate "请使用音量键选择：" "Please use volume keys to select:")"
+    echo "$(translate "[音量+] 下一选项  [音量-] 确认选择" "[Volume+] Next option  [Volume-] Confirm selection")"
+
+    local log_selection=0  # 初始化为0，表示未选择
+    local log_confirmed=0
+
+    while [ $log_confirmed -eq 0 ]; do
+        # 获取按键
+        local key_event=$(getevent -qlc 1 2>/dev/null |
+            awk 'BEGIN{FS=" "} /KEY_VOLUMEUP/{print "UP"; exit} /KEY_VOLUMEDOWN/{print "DOWN"; exit}')
+
+        case "$key_event" in
+            "UP")
+                # 音量上键 - 下一选项
+                log_selection=$((log_selection + 1))
+                [ $log_selection -gt 4 ] && log_selection=1
+                # 显示当前选择
+                case $log_selection in
+                    1) echo "$(translate "当前选择" "Current selection"): debug" ;;
+                    2) echo "$(translate "当前选择" "Current selection"): info" ;;
+                    3) echo "$(translate "当前选择" "Current selection"): warn" ;;
+                    4) echo "$(translate "当前选择" "Current selection"): error" ;;
+                esac
+                ;;
+            "DOWN")
+                # 音量下键 - 确认选择
+                if [ $log_selection -eq 0 ]; then
+                    echo "$(translate "请先选择一个日志等级" "Please select a log level first")"
+                    continue
+                fi
+                log_confirmed=1
+                ;;
+        esac
+
+        # 短暂延迟，避免按键检测过快
+        [ $log_confirmed -eq 0 ] && sleep 0.3
+    done
+
+    # 根据选择设置日志等级
+    local selected_level=""
+    case $log_selection in
+        1) selected_level="debug" ;;
+        2) selected_level="info" ;;
+        3) selected_level="warn" ;;
+        4) selected_level="error" ;;
+    esac
+
+    # 设置日志等级
+    echo "$selected_level" > "$LOG_LEVEL_FILE"
+    echo "$(log_prefix) $(translate "日志等级已设置为: $selected_level" "Log level has been set to: $selected_level")"
+    return 0
 }
 
 # 显示主菜单并处理选择
@@ -373,20 +407,14 @@ show_menu() {
     # 显示当前状态
     show_status
 
-    # 准备菜单选项
-    local game_mode=$(cat "$GAME_MODE_FILE")
-    local game_mode_text=$(translate "关闭" "Disabled")
-    [ "$game_mode" = "1" ] && game_mode_text=$(translate "开启" "Enabled")
-
     local governor_status=$(check_governor_status)
     local governor_action=$(translate "启动" "Start")
     [ "$governor_status" = $(translate "运行中" "Running") ] && governor_action=$(translate "停止" "Stop")
 
     echo "=========================================="
     echo "$(translate "请选择操作：" "Please select an operation:")"
-    echo "1. $(translate "切换游戏模式" "Toggle Game Mode") ($(translate "当前" "Current"): $game_mode_text)"
-    echo "2. ${governor_action}$(translate "调速器服务" " Governor Service") ($(translate "当前" "Current"): $governor_status)"
-    echo "3. $(translate "设置日志等级" "Set Log Level") ($(translate "当前" "Current"): $(cat "$LOG_LEVEL_FILE"))"
+    echo "1. ${governor_action}$(translate "调速器服务" " Governor Service") ($(translate "当前" "Current"): $governor_status)"
+    echo "2. $(translate "设置日志等级" "Set Log Level") ($(translate "当前" "Current"): $(cat "$LOG_LEVEL_FILE"))"
     echo "0. $(translate "退出" "Exit")"
     echo "=========================================="
     echo "$(translate "请使用音量键选择操作：" "Please use volume keys to select:")"
@@ -401,9 +429,8 @@ show_menu() {
     while [ $confirmed -eq 0 ]; do
         # 显示当前选择
         case $selection in
-            1) echo "$(translate "当前选择" "Current selection"): 1. $(translate "切换游戏模式" "Toggle Game Mode")" ;;
-            2) echo "$(translate "当前选择" "Current selection"): 2. ${governor_action}$(translate "调速器服务" " Governor Service")" ;;
-            3) echo "$(translate "当前选择" "Current selection"): 3. $(translate "设置日志等级" "Set Log Level")" ;;
+            1) echo "$(translate "当前选择" "Current selection"): 1. ${governor_action}$(translate "调速器服务" " Governor Service")" ;;
+            2) echo "$(translate "当前选择" "Current selection"): 2. $(translate "设置日志等级" "Set Log Level")" ;;
             0) echo "$(translate "当前选择" "Current selection"): 0. $(translate "退出" "Exit")" ;;
         esac
 
@@ -422,7 +449,7 @@ show_menu() {
             "UP")
                 # 音量上键 - 下一选项
                 selection=$((selection + 1))
-                [ $selection -gt 3 ] && selection=0
+                [ $selection -gt 2 ] && selection=0
                 ;;
             "DOWN")
                 # 音量下键 - 确认选择
@@ -443,13 +470,6 @@ show_menu() {
             return
             ;;
         1)
-            echo "$(log_prefix) $(translate "切换游戏模式" "Toggling game mode")"
-            toggle_game_mode
-            # 显示新状态并返回主菜单
-            sleep 1
-            show_menu
-            ;;
-        2)
             if [ "$governor_status" = $(translate "运行中" "Running") ]; then
                 echo "$(log_prefix) $(translate "停止调速器服务" "Stopping governor service")"
                 stop_governor
@@ -461,56 +481,12 @@ show_menu() {
             sleep 1
             show_menu
             ;;
-        3)
+        2)
             echo "$(log_prefix) $(translate "设置日志等级" "Setting log level")"
             echo "$(translate "可用的日志等级" "Available log levels"): debug, info, warn, error"
             echo "$(translate "当前日志等级" "Current log level"): $(cat "$LOG_LEVEL_FILE")"
 
-            echo "$(translate "请选择日志等级" "Please select a log level"):"
-            echo "1. debug ($(translate "调试" "Debug"))"
-            echo "2. info ($(translate "信息" "Information"))"
-            echo "3. warn ($(translate "警告" "Warning"))"
-            echo "4. error ($(translate "错误" "Error"))"
-
-            local log_selection=2  # 默认选择info
-            local log_confirmed=0
-
-            while [ $log_confirmed -eq 0 ]; do
-                # 显示当前选择
-                case $log_selection in
-                    1) echo "$(translate "当前选择" "Current selection"): debug" ;;
-                    2) echo "$(translate "当前选择" "Current selection"): info" ;;
-                    3) echo "$(translate "当前选择" "Current selection"): warn" ;;
-                    4) echo "$(translate "当前选择" "Current selection"): error" ;;
-                esac
-
-                # 获取按键
-                local key_event=$(getevent -qlc 1 2>/dev/null |
-                    awk 'BEGIN{FS=" "} /KEY_VOLUMEUP/{print "UP"; exit} /KEY_VOLUMEDOWN/{print "DOWN"; exit}')
-
-                case "$key_event" in
-                    "UP")
-                        # 音量上键 - 下一选项
-                        log_selection=$((log_selection + 1))
-                        [ $log_selection -gt 4 ] && log_selection=1
-                        ;;
-                    "DOWN")
-                        # 音量下键 - 确认选择
-                        log_confirmed=1
-                        ;;
-                esac
-
-                # 短暂延迟，避免按键检测过快
-                [ $log_confirmed -eq 0 ] && sleep 0.3
-            done
-
-            # 设置日志等级
-            case $log_selection in
-                1) handle_log_level "debug" ;;
-                2) handle_log_level "info" ;;
-                3) handle_log_level "warn" ;;
-                4) handle_log_level "error" ;;
-            esac
+            handle_log_level
 
             # 返回主菜单
             sleep 1
