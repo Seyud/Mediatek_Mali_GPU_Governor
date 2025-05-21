@@ -1,5 +1,7 @@
 # Dimensity GPU Governor 🚀
 
+[![Discord](https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white)](https://discord.gg/Hk4uzxGfZp) [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/Mediatek_Mali_GPU_Governor)
+
 ## Introduction 📝
 
 Mediatek Mali GPU Governor is a GPU frequency regulation tool designed specifically for MediaTek processors. It intelligently monitors GPU load and dynamically adjusts frequency to provide better gaming experience and power efficiency. Developed in Rust language, it features high efficiency and stability.
