@@ -43,11 +43,18 @@ is_eas() {
 }
 
 is_mtk() {
-    if [ "$(getprop | grep ro.mtk)" != "" ]; then
-        echo "true"
-    else
-        echo "false"
-    fi
+    local soc_model="$(getprop ro.soc.model)"
+    local hw_check="$(getprop ro.hardware)
+                    $(getprop ro.board.platform)
+                    $(getprop ro.boot.hardware)
+                    $(getprop ro.soc.manufacturer)
+                    $soc_model"
+
+    local pattern='(mt[0-9]{4}|mediatek|dimensity|helio[ _-]g?[0-9]{2})'
+
+    echo "$hw_check" | tr '[:upper:]' '[:lower:]' | grep -qE "$pattern"
+
+    [ $? -eq 0 ] && echo "true" || echo "false"
 }
 
 _get_sm6150_type() {

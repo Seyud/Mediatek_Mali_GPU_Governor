@@ -188,9 +188,13 @@ install_gov() {
         cfgname="$(get_config_name "$target")"
     fi
     if [ "$cfgname" = "unsupported" ] || [ ! -f "$MODULE_PATH"/config/"$cfgname".conf ]; then
-        echo "$(translate "⚠️ 目标设备 [$target] 不受支持。使用默认配置。" "⚠️ Target [$target] not supported. Using default configuration.")"
-        # 使用模块目录下的默认配置文件
-        cfgname="default"
+        # 检查是否为MTK设备
+        if [ "$(is_mtk)" = "true" ]; then
+            echo "$(translate "⚠️ 目标设备 [$target] 是MTK设备但没有专用配置，使用默认配置。" "⚠️ Target [$target] is MTK device but no specific config found, using default configuration.")"
+            cfgname="default"
+        else
+            abort "目标设备 [$target] 不受支持，仅支持联发科(MTK)芯片。" "Target [$target] not supported. Only supports MediaTek(MTK) chips."
+        fi
     fi
     if [ "$cfgname" == "mt6983" ] || [ "$cfgname" == "mt6895" ]; then
         touch "$MODULE_PATH"/USE_DEBUGFS
