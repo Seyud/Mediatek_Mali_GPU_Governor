@@ -1,39 +1,43 @@
-# Dimensity GPU Governor Changelog 📝
+# 📋 MediaTek Mali GPU Governor Changelog
 
-## v2.4 → v2.5 (2025.05.19) 🚀
+## 🚀 v2.5 → v2.6 (2025-05-19 → 2025-06-01)
 
-### 🌟 New Features
+### ✨ Core Feature Additions
 
-- 🔄 **Game Mode Real-time Updates**: Detects game mode status changes every second and automatically updates the interface, improving user experience
-- 🌐 **Installation Script Multi-language Support**: Installation script now supports bilingual display in Chinese and English, automatically switching based on system language
-- 📱 **Device Compatibility Description**: Clearly marks support for MediaTek processors with Mali GPU, including the Dimensity series
-- 🔧 **Configuration File Protection Mechanism**: Checks if the game list file already exists during installation, preserving user customizations by not overwriting existing files
-- 📊 **Log Rotation Mechanism Optimization**: Detailed explanation of the log rotation mechanism, automatically rotating when log files reach 80% of the maximum limit
-- 🔋 **DCS Mechanism Optimization**: Added DCS mechanism, optimizing standby restart issues and improving system stability
+#### 🔧 V2 Driver Optimization Mechanism
+- ⚡ **Smart Frequency Writing**: When the same frequency is detected continuously, reduce unnecessary write operations through a counter mechanism
+- 🔄 **Forced Write Threshold**: Default set to 5 times, when the same frequency count reaches the threshold, force execution of write to ensure system stability
 
-### 🛠️ Interface Improvements
+#### 🚀 Startup System Refactoring
+- 🌐 **Enhanced Bilingual Support**: Initialization scripts now include complete Chinese-English bilingual support system
+- 📝 **Smart Logging Functions**: Added bilingual logging that automatically selects Chinese or English output based on system language
+- 🔄 **Dynamic Module Description**: Real-time update of module description status (Starting→Running→Error), providing better user feedback
+- 🆔 **PID Management Mechanism**: Added process ID management to prevent duplicate startup
+- 📊 **Status Description System**: Support for displaying running, stopped, error, starting and other status
+- 🔧 **Module Description Updates**: Dynamic update of module information
 
-- 🎨 **WebUI Interface Optimization**: Improved Miuix style design, enhancing visual experience
-- 🌙 **Dark Mode Enhancement**: Optimized display of interface elements in dark mode
-- 📱 **Mobile Interaction Optimization**: Improved touch operation experience, especially for voltage adjustment functionality
-- 🔤 **Multi-language Support Enhancement**: Improved Chinese-English translation, increasing language switching fluidity
+### 🔄 Feature Changes and Optimizations
 
-### 🐛 Bug Fixes
+#### 🎮 Interaction Control Simplification
+- ❌ **Removed Manual Game Mode Toggle**: `action.sh` script no longer supports manual enable/disable game mode functionality
+- 🎯 **Menu Streamlining**: Main menu reduced from 4 options to 3 (Governor Service Control, Log Level Settings, Exit)
+- 🤖 **Focus on Auto Detection**: Game mode completely relies on automatic detection of application package names in `games.conf`
 
-- 🔍 **Foreground Application Detection Optimization**: Improved foreground application package name extraction method, increasing detection accuracy
-- 🔄 **Configuration File Loading Logic Optimization**: Fixed issues where configuration files couldn't be correctly loaded in specific situations
-- 📝 **Logging Improvements**: Added more detailed debugging information for easier problem diagnosis
-- 🔧 **Installation Script Robustness Enhancement**: Improved error handling, increasing installation success rate
-- 🔌 **Standby Restart Issue Fixed**: Resolved device restart issues after standby on some devices by monitoring device charging status through DCS mechanism
+#### 📚 Documentation System Expansion
+- 🌍 **Complete English Documentation**: Added `docs/en/README.md` providing complete English version documentation
+- 🔗 **Community Link Integration**: Added community badges at the top of documentation
+- 📖 **Structured Reorganization**: Reorganized documentation content by function type to improve readability
+- 🎯 **Feature Classification Optimization**: Categorized features into "Core Functions", "User Interface & Interaction", "Technical Features"
 
-### 📚 Documentation Updates
+### 🛠️ Technical Improvements
 
-- 📖 **README Documentation Improvement**: Updated installation requirements and supported device descriptions
-- 🔍 **FAQ Supplements**: Added more frequently asked questions and answers
-- 📊 **Load Threshold Settings Description**: Detailed explanation of load threshold settings in game mode
-- 📝 **Logging System Description Optimization**: Improved explanation of log levels and rotation mechanisms
+#### 💻 Rust Core Code Optimization
+- 🎯 **V2 Driver Write Logic**: Added smart frequency write logic
+- 📊 **Counter Mechanism**: When the same frequency is detected, increment counter and force write when threshold is reached
+- 🔄 **DCS Mechanism Optimization**: Improved handling logic for standby restart issues
 
-### 📋 Other Changes
+#### 📋 Script System Enhancement
+- 🌐 **Language Detection**: Initialization scripts added automatic language detection functionality
+- 📝 **Enhanced Logging**: All log outputs support Chinese-English bilingual display
 
-- 🔧 **Internal Code Structure Optimization**: Improved code maintainability and performance
-- 🚀 **Startup Speed Optimization**: Reduced startup time, improving response speed
+---
