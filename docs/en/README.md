@@ -4,40 +4,47 @@
 
 ## Introduction 📝
 
-Mediatek Mali GPU Governor is a GPU frequency regulation tool designed specifically for MediaTek processors. It intelligently monitors GPU load and dynamically adjusts frequency to provide better gaming experience and power efficiency. Developed in Rust language, it features high efficiency and stability.
+Dimensity GPU Governor (Mediatek Mali GPU Governor) is a GPU frequency regulation tool designed specifically for MediaTek processors. By intelligently monitoring GPU load and dynamically adjusting frequency, it provides better gaming experience and power balance. The core program is developed in Rust language, featuring high efficiency and stability, combined with a complete module script system and modern WebUI interface to provide users with a comprehensive GPU governor solution.
 
 ## Features ✨
 
-- 🎮 **Game Mode**: Automatically identifies gaming applications and applies optimized GPU frequency settings
-- 📊 **Load Monitoring**: Monitors GPU load in real-time and dynamically adjusts frequency based on demand
-- ⚡ **Performance Optimization**: Provides high performance when needed, reduces frequency when idle to save power
-- 🔧 **Highly Customizable**: Customize GPU frequency and voltage through configuration files
-- 📱 **Wide Compatibility**: Supports various MediaTek processor platforms, including Dimensity series
-- 🖥️ **WebUI Interface**: Graphical management interface based on KernelSU, supports dark/light mode with Miuix style
-- 📝 **Multi-level Logging**: Supports debug, info, warn, error log levels for easier debugging
-- 🔄 **Multi-level Load Thresholds**: Intelligent frequency adjustment for five load regions: very low, low, medium, high, very high
+### Core Functionality
+- 🎮 **Smart Game Mode**: Automatically identifies gaming applications and applies optimized GPU frequency settings
+- 📊 **Real-time Load Monitoring**: High-performance implementation based on Rust, monitors GPU load in real-time and dynamically adjusts frequency based on demand
+- ⚡ **Adaptive Performance Optimization**: Provides high performance when needed, reduces frequency when idle to save power
+- 🔄 **Multi-level Load Thresholds**: Supports intelligent frequency adjustment for five load regions: very low, low, medium, high, very high
+- 🎯 **Precise Frequency Control**: Supports GPUFreq v1/v2 drivers, automatically detects and adapts to different devices
+
+### User Interface & Interaction
+- 🖥️ **Modern WebUI**: Graphical management interface based on KernelSU API, using Miuix style design
+- 🌓 **Theme Support**: Supports dark/light modes, automatically adapts to system settings or manual switching
 - 🌐 **Multi-language Support**: Supports Chinese and English interfaces, automatically detects system language settings
+- 🎛️ **Interactive Control**: Provides volume key control script, supports interactive operations
+
+### Technical Features
+- 🦀 **Rust Core**: Core governor algorithms developed in Rust language, ensuring memory safety and high performance
+- 🔧 **Highly Customizable**: Customize GPU frequency, voltage, and memory frequency levels through configuration files
+- 📱 **Wide Compatibility**: Supports various MediaTek processor platforms, including Dimensity series, Helio series, etc.
+- 📝 **Complete Logging System**: Supports debug, info, warn, error log levels with automatic log rotation
+- 🔄 **Automatic Configuration**: Automatically detects device model and applies appropriate configuration files during installation
 
 ## Installation Requirements 📋
 
+### Device Requirements
 - Rooted Android device
 - Device with MediaTek processor (MTK) supporting Mali GPU
 - Magisk v20.4+ or KernelSU or APatch or other root solutions that support modules
-- WebUI functionality requires KernelSU, APatch, or installing [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone)/[MMRL](https://github.com/MMRLApp/MMRL) applications
 
-## Installation Method 💻
-
-1. Install this module in Magisk or KernelSU
-2. Restart the device
-3. The module will automatically configure and start the GPU governor service
-4. After installation, the module will automatically recognize the device model and apply appropriate configuration
-5. If the device model is not supported, the default configuration file will be used
+### WebUI Functionality Requirements
+- WebUI functionality requires KernelSU, APatch, or installing one of the following applications:
+  - [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) - Standalone WebUI application
+  - [MMRL](https://github.com/MMRLApp/MMRL) - Module manager application
 
 ## Configuration Files ⚙️
 
 ### GPU Frequency Table Configuration
 
-The configuration file is located at `/data/gpu_freq_table.conf`, with the following format:
+The main configuration file is located at `/data/gpu_freq_table.conf`. The module will automatically select the appropriate configuration file based on the device model:
 
 ```
 # Margin: Adjusts the margin percentage for GPU frequency calculation
@@ -56,10 +63,19 @@ Margin=5
 853000 60625 0
 ```
 
+**Configuration Parameter Description**:
 - **Freq**: GPU frequency (KHz)
 - **Volt**: Voltage (μV)
 - **DDR_OPP**: Memory frequency level (999 means no adjustment, 0-3 represents different levels)
 - **Margin**: Frequency calculation margin percentage (can be adjusted through WebUI or by directly editing the configuration file)
+
+**Preset Configuration Files**:
+- `config/mtd1000.conf` - Dimensity 1000 series
+- `config/mtd1100.conf` - Dimensity 1100 series
+- `config/mtd1200.conf` - Dimensity 1200 series
+- `config/mtd8100.conf` - Dimensity 8100 series
+- `config/mtd8200.conf` - Dimensity 8200 series
+- `config/mtd9000.conf` - Dimensity 9000 series
 
 ### Game List Configuration
 
@@ -69,21 +85,25 @@ The game list configuration file is located at `/data/adb/gpu_governor/game/game
 
 ### Interactive Control Menu
 
-The module provides an `action.sh` script that allows interactive operation via volume keys:
+The module provides an `action.sh` script that supports interactive operations via volume keys:
 
-```
-# Execute the script directly, no parameters needed
-./action.sh
-```
-
-The script will display an interactive menu allowing the following operations via volume keys:
-- **Toggle Game Mode**: Enable or disable game mode
+**Script Functions**:
+- **Toggle Game Mode**: Enable or disable game mode, takes effect immediately
 - **Control Governor Service**: Start or stop the GPU governor service
 - **Set Log Level**: Choose debug, info, warn, or error level
+- **View Module Status**: Display module version, running status, and other information
+- **Log Management**: Automatic log rotation to prevent log files from becoming too large
+
+**Operation Method**:
+- Volume Up Key: Move up in options
+- Volume Down Key: Move down in options
+- Power Key: Confirm selection
 
 The script automatically detects the current system language and displays the corresponding Chinese or English interface.
 
-Game mode status is saved in the `/data/adb/gpu_governor/game/game_mode` file, with a value of `1` indicating enabled and `0` indicating disabled.
+**Status Files**:
+- Game mode status: `/data/adb/gpu_governor/game/game_mode` (1=enabled, 0=disabled)
+- Log level setting: `/data/adb/gpu_governor/log/log_level`
 
 ### Log Level Settings
 
@@ -96,15 +116,27 @@ Changes to the log level take effect immediately without needing to restart the 
 
 ### Load Threshold Settings
 
-The module implements multi-level load thresholds for intelligently adjusting GPU frequency:
+The module implements multi-level load thresholds internally for intelligently adjusting GPU frequency. The system automatically adjusts thresholds based on the current mode:
 
-- **Very Low Load**: Default below 10%, reduces frequency to save power
-- **Low Load**: Default 10-30%, moderately reduces frequency
-- **Medium Load**: Default 30-70%, maintains balanced frequency
-- **High Load**: Default 70-90%, increases frequency for better performance
-- **Very High Load**: Default above 90%, uses maximum frequency
+**Normal Mode** (default load thresholds: 10/30/70/90):
+- **Very Low Load**: Below 10%, reduces frequency to save power
+- **Low Load**: 10-30%, moderately reduces frequency
+- **Medium Load**: 30-70%, maintains balanced frequency
+- **High Load**: 70-90%, increases frequency for better performance
+- **Very High Load**: Above 90%, uses maximum frequency
 
-In game mode, a more aggressive frequency increase strategy is used, with load thresholds at 5/20/60/85, entering high load areas faster to provide a better gaming experience. This design allows for quicker response to load changes during gaming, providing a smoother experience.
+**Game Mode** (performance load thresholds: 5/20/60/85):
+- **Very Low Load**: Below 5%, minimum frequency
+- **Low Load**: 5-20%, lower frequency
+- **Medium Load**: 20-60%, medium frequency
+- **High Load**: 60-85%, high frequency
+- **Very High Load**: Above 85%, maximum frequency
+
+**Advanced Governor Parameters**:
+- **Hysteresis Thresholds**: Prevents frequency jitter, game mode 65%/40%, normal mode 75%/30%
+- **Debounce Time**: Game mode 10ms/30ms, normal mode 20ms/50ms
+- **Adaptive Sampling**: Dynamically adjusts sampling interval based on load, base interval 16ms (approximately 60Hz)
+- **Load Trend Analysis**: Detects load increase/decrease trends, optimizes frequency adjustment strategy
 
 ## Logging System 📊
 
@@ -167,7 +199,7 @@ If your device is not on the support list, the module will use the default confi
 
 ## WebUI Interface 🖥️
 
-This module provides a KernelSU-based WebUI interface for users to intuitively manage and monitor the GPU governor. The WebUI uses Miuix style design, supporting dark/light modes and multiple languages.
+This module provides a modern WebUI interface based on KernelSU API, using Miuix style design to provide users with an intuitive GPU governor management and monitoring experience.
 
 ### Access Methods
 
@@ -182,32 +214,55 @@ Magisk users can access the WebUI through the following methods:
 
 ### Features
 
+#### Core Functions
 - **Real-time Status Monitoring**: View module running status, version information, and game mode status
 - **GPU Frequency Configuration**: View and edit current GPU frequency table configuration, supporting adjustment of frequency, voltage, and memory levels
-- **Game List Management**: View and edit configured game lists
+- **Game List Management**: View and edit configured game lists, supporting adding/removing games
 - **Log Viewing**: View module operation logs in real-time, supporting selection of different log files and log levels
+- **Margin Settings**: Support for adjusting the margin percentage for GPU frequency calculation
+
+#### Interface Features
 - **Dark Mode Support**: Automatically adapts to system dark/light mode, with manual toggling also available
-- **Log Level Settings**: Support for directly setting log levels in the WebUI
 - **Multi-language Support**: Support for Chinese and English interfaces, automatically detecting system language settings
-- **Voltage Adjustment**: Support for using a rotary selector for voltage adjustment, long press for continuous adjustment (±625 units each time)
-- **Game Mode Real-time Updates**: Checks for game mode status changes every second and updates the interface
+- **Voltage Adjuster**: Support for using a rotary selector for voltage adjustment, long press for continuous adjustment (±625 units each time)
+- **Real-time Updates**: Checks for game mode status changes every second and updates the interface
+- **Toast Notifications**: Operation feedback and status notifications
 
 ### Interface Layout
 
-The WebUI provides a multi-page layout, with page switching via the bottom bar, including the following main sections:
+The WebUI uses a multi-page layout with page switching via the bottom navigation bar:
 
-- **Status Page**: Displays module running status, version information, and game mode switch
-- **Configuration Page**: Displays and edits current configuration of frequency, voltage, and memory frequency levels, as well as managing game lists and margin settings
-- **Log Page**: Displays recent operation logs, supporting selection of different log files and log levels
-- **Settings Page**: Provides theme settings, language settings, log level settings, and other options
+#### 📊 Status Page
+- Display module running status and version information
+- Game mode switch control
+- Current GPU frequency and load display
+
+#### ⚙️ Configuration Page
+- GPU frequency table configuration editing
+- Voltage and memory frequency level adjustment
+- Game list management
+- Margin setting adjustment
+
+#### 📝 Log Page
+- Real-time log viewing
+- Log file selection (gpu_gov.log, initsvc.log)
+- Log level filtering
+
+#### 🔧 Settings Page
+- Theme settings (dark/light/auto)
+- Language settings (Chinese/English/auto)
+- Log level settings
+- Other advanced options
 
 ## Frequently Asked Questions ❓
+
+### Basic Usage Questions
 
 **Q: How do I confirm the module is working properly?**
 A: Check the `/data/adb/gpu_governor/log/gpu_gov.log` log file to confirm normal frequency adjustment records. Or view the module status and logs through the WebUI interface. When working normally, the logs should contain records of GPU load and frequency adjustments.
 
 **Q: How does game mode work?**
-A: Game mode has two activation methods: 1) It automatically applies when detecting applications listed in `games.conf` running; 2) It can be manually enabled through the `action.sh` script or WebUI. In game mode, a more aggressive frequency increase strategy is used (load thresholds at 5/20/60/85), entering high load areas faster to provide a better gaming experience.
+A: Game mode has two activation methods: 1) When detecting applications listed in `games.conf` running, it automatically applies game mode; Game mode uses a more aggressive frequency increase strategy (load thresholds at 5/20/60/85), entering high load areas faster to provide a better gaming experience.
 
 **Q: How do I add custom games to the list?**
 A: Edit the `/data/adb/gpu_governor/game/games.conf` file and add the game's package name. Or add it through the game list page in the WebUI interface. The module will automatically scan for installed games on the device during installation and generate an initial game list.
