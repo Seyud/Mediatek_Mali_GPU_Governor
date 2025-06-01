@@ -163,26 +163,30 @@
                             </div>
 
                             <div class="status-item">
-                                <span>语言设置:</span>
+                                <span data-i18n="settings_language">语言设置:</span>
                                 <div class="select-container">
                                     <div class="custom-select" id="languageContainer">
-                                        <div class="selected-option" id="selectedLanguage">跟随系统</div>
+                                        <div class="selected-option" id="selectedLanguage"
+                                            data-i18n="settings_language_follow">跟随系统</div>
                                         <div class="options-container" id="languageOptions">
-                                            <div class="option" data-value="system">跟随系统</div>
-                                            <div class="option" data-value="zh">中文</div>
-                                            <div class="option" data-value="en">English</div>
+                                            <div class="option" data-value="system"
+                                                data-i18n="settings_language_follow">跟随系统</div>
+                                            <div class="option" data-value="zh" data-i18n="settings_language_zh">中文
+                                            </div>
+                                            <div class="option" data-value="en" data-i18n="settings_language_en">English
+                                            </div>
                                         </div>
                                     </div>
                                     <select id="languageSelect" class="select" style="display: none;">
-                                        <option value="system">跟随系统</option>
-                                        <option value="zh">中文</option>
-                                        <option value="en">English</option>
+                                        <option value="system" data-i18n="settings_language_follow">跟随系统</option>
+                                        <option value="zh" data-i18n="settings_language_zh">中文</option>
+                                        <option value="en" data-i18n="settings_language_en">English</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="setting-description">
-                                <small>修改语言设置后实时生效</small>
-                                <small>跟随系统将自动检测系统语言设置</small>
+                                <small data-i18n="settings_language_desc1">修改语言设置后实时生效</small>
+                                <small data-i18n="settings_language_desc2">跟随系统将自动检测系统语言设置</small>
                             </div>
 
                             <div class="status-item">

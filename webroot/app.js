@@ -626,30 +626,8 @@ function applyTranslations() {
             themeFollowLabel.textContent = getTranslation('settings_theme_follow');
         }
 
-        // 语言设置
-        try {
-            const languageLabel = document.querySelector('#settingsCard .status-item:nth-child(2) > span:first-child');
-            if (languageLabel) {
-                languageLabel.textContent = getTranslation('settings_language');
-            }
-
-            const systemOption = document.querySelector('#languageOptions .option[data-value="system"]');
-            if (systemOption) {
-                systemOption.textContent = getTranslation('settings_language_follow');
-            }
-
-            const languageDesc1 = document.querySelector('#settingsCard .status-item:nth-child(2) + .setting-description small:nth-child(1)');
-            if (languageDesc1) {
-                languageDesc1.textContent = getTranslation('settings_language_desc1');
-            }
-
-            const languageDesc2 = document.querySelector('#settingsCard .status-item:nth-child(2) + .setting-description small:nth-child(2)');
-            if (languageDesc2) {
-                languageDesc2.textContent = getTranslation('settings_language_desc2');
-            }
-        } catch (e) {
-            console.error('更新语言设置翻译失败:', e);
-        }
+        // 语言设置 - 现在通过data-i18n属性和批量处理来更新
+        // 不再需要手动更新每个语言选项，因为它们都有data-i18n属性
 
         // 日志等级设置
         try {
@@ -933,28 +911,44 @@ async function initLanguage() {
     // 更新语言选择器显示
     languageSelect.value = savedLanguageSetting || 'system';
 
-    // 安全地获取选项文本
-    try {
-        const option = document.querySelector(`#languageOptions .option[data-value="${savedLanguageSetting || 'system'}"]`);
-        if (option) {
-            selectedLanguage.textContent = option.textContent;
-        } else {
-            // 如果找不到元素，使用默认文本
-            selectedLanguage.textContent = savedLanguageSetting === 'en' ? 'English' :
-                savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
-        }
-    } catch (e) {
-        console.error('获取语言选项文本失败:', e);
-        // 使用默认文本
-        selectedLanguage.textContent = savedLanguageSetting === 'en' ? 'English' :
-            savedLanguageSetting === 'zh' ? '中文' : '跟随系统';
-    }
-
-    // 应用翻译
+    // 先应用翻译，确保所有文本都被正确翻译
     applyTranslations();
+
+    // 然后更新选中的语言显示文本
+    updateSelectedLanguageText(savedLanguageSetting || 'system');
 
     // 设置语言选择器事件
     setupLanguageEvents();
+}
+
+// 更新选中的语言显示文本
+function updateSelectedLanguageText(languageSetting) {
+    try {
+        // 根据语言设置获取对应的翻译文本
+        let displayText;
+        if (languageSetting === 'system') {
+            displayText = getTranslation('settings_language_follow');
+        } else if (languageSetting === 'zh') {
+            displayText = getTranslation('settings_language_zh');
+        } else if (languageSetting === 'en') {
+            displayText = getTranslation('settings_language_en');
+        } else {
+            // 默认显示跟随系统
+            displayText = getTranslation('settings_language_follow');
+        }
+
+        // 更新显示文本
+        if (selectedLanguage) {
+            selectedLanguage.textContent = displayText;
+        }
+    } catch (e) {
+        console.error('更新语言显示文本失败:', e);
+        // 使用默认文本作为后备
+        if (selectedLanguage) {
+            selectedLanguage.textContent = languageSetting === 'en' ? 'English' :
+                languageSetting === 'zh' ? '中文' : '跟随系统';
+        }
+    }
 }
 
 // 设置语言选择器事件
@@ -975,9 +969,6 @@ function setupLanguageEvents() {
 
             // 为当前选项添加选中状态
             option.classList.add('selected');
-
-            // 更新显示的文本
-            selectedLanguage.textContent = option.textContent;
 
             // 更新隐藏的select元素的值
             const selectedValue = option.getAttribute('data-value');
@@ -1008,6 +999,9 @@ function setupLanguageEvents() {
 
             // 应用翻译
             applyTranslations();
+
+            // 更新选中的语言显示文本
+            updateSelectedLanguageText(selectedValue);
         });
     });
 }
