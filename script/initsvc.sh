@@ -147,25 +147,39 @@ sync
 # 读取当前DVFS状态并记录到初始化日志
 {
     echo "$(date) - Checking DVFS status"
-    dvfs_status=$(cat $DVFS | cut -f2 -d ' ')
 
-    # 检查DVFS状态
-    if [[ "$dvfs_status" != "0" ]]; then
-        # 显示警告信息
-        echo "Warning: DVFS is currently enabled (status=$dvfs_status), disabling now..."
-
-        # 关闭DVFS
-        echo 0 >$DVFS
-
-        # 确认DVFS已关闭
-        new_status=$(cat $DVFS | cut -f2 -d ' ')
-        if [[ "$new_status" == "0" ]]; then
-            echo "DVFS successfully disabled"
-        else
-            echo "Error: Failed to disable DVFS, current status is still $new_status"
-        fi
+    # 首先检查DVFS文件是否存在
+    if [ ! -f "$DVFS" ]; then
+        echo "DVFS control file does not exist: $DVFS"
+        echo "This is normal for some devices or kernel versions"
     else
-        echo "DVFS is already disabled"
+        # 文件存在，尝试读取状态
+        dvfs_status=$(cat "$DVFS" 2>/dev/null | cut -f2 -d ' ')
+
+        if [ -z "$dvfs_status" ]; then
+            echo "Unable to read DVFS status from $DVFS"
+        else
+            # 检查DVFS状态
+            if [[ "$dvfs_status" != "0" ]]; then
+                # 显示警告信息
+                echo "Warning: DVFS is currently enabled (status=$dvfs_status), disabling now..."
+
+                # 尝试关闭DVFS
+                if echo 0 >"$DVFS" 2>/dev/null; then
+                    # 确认DVFS已关闭
+                    new_status=$(cat "$DVFS" 2>/dev/null | cut -f2 -d ' ')
+                    if [[ "$new_status" == "0" ]]; then
+                        echo "DVFS successfully disabled"
+                    else
+                        echo "Warning: Failed to disable DVFS, current status is still $new_status"
+                    fi
+                else
+                    echo "Warning: Unable to write to DVFS control file, permission denied"
+                fi
+            else
+                echo "DVFS is already disabled"
+            fi
+        fi
     fi
 } >>"$INIT_LOG" 2>&1
 
@@ -192,7 +206,7 @@ enhanced_log() {
     local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
     local str
     [ "$language" = "en" ] && str="$timestamp $1" || str="$timestamp $2"
-    echo "$str" | tee -a "$INIT_LOG"
+    echo "$str"
 }
 
 # 更新模块描述
@@ -351,7 +365,7 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         enhanced_log "Starting GPU Governor with debug level" "以调试等级启动GPU调速器"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
-        killall gpugovernor
+        killall gpugovernor 2>/dev/null
         RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" >"$GPUGOV_LOGPATH" 2>&1 &
 
     else
@@ -361,7 +375,7 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         enhanced_log "Starting GPU Governor with $log_level level" "以 $log_level 等级启动GPU调速器"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
-        killall gpugovernor
+        killall gpugovernor 2>/dev/null
         RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" >"$GPUGOV_LOGPATH" 2>&1 &
     fi
 
