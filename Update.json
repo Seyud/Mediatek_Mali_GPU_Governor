@@ -1,6 +1,6 @@
 {
-    "versionCode": 20250519,
-    "version": "v2.5",
-    "zipUrl": "https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases/download/v2.4/Mediatek_Mali_GPU_Governor_v2.5.zip",
+    "versionCode": 20250601,
+    "version": "v2.6",
+    "zipUrl": "https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases/download/v2.6/Mediatek_Mali_GPU_Governor_v2.6.zip",
     "changelog": "https://raw.githubusercontent.com/Seyud/Mediatek_Mali_GPU_Governor/main/docs/CHANGELOG.md"
 }
