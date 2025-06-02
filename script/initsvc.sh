@@ -183,45 +183,59 @@ sync
     fi
 } >>"$INIT_LOG" 2>&1
 
-# 关闭DCS Policy并记录到初始化日志
+# 关闭DCS Policy并记录到初始化日志 (仅针对天玑9000)
 {
-    echo "$(date) - Checking DCS Policy status"
+    echo "$(date) - Checking DCS Policy status (Dimensity 9000 only)"
 
     DCS_MODE="/sys/kernel/ged/hal/dcs_mode"
 
-    # 检查DCS Policy文件是否存在
-    if [ ! -f "$DCS_MODE" ]; then
-        echo "DCS Policy control file does not exist: $DCS_MODE"
-        echo "This is normal for some devices or kernel versions"
-    else
-        # 文件存在，尝试读取状态
-        dcs_status=$(cat "$DCS_MODE" 2>/dev/null)
+    # 检测设备平台，判断是否为天玑9000 (mt6983)
+    platform="$(getprop ro.board.platform)"
+    if [ "$platform" = "mt6983" ]; then
+        # 进一步验证是否为真正的天玑9000，而非其他错误识别的mt6983设备
+        cpu7_freq="$(cat /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_max_freq 2>/dev/null || echo 0)"
+        if [ "$cpu7_freq" -ge 2700000 ]; then
+            echo "Detected Dimensity 9000 device (mt6983 with CPU7 >= 2.7GHz)"
 
-        if [ -z "$dcs_status" ]; then
-            echo "Unable to read DCS Policy status from $DCS_MODE"
-        else
-            # 检查DCS Policy状态
-            if echo "$dcs_status" | grep -q "disabled"; then
-                echo "DCS Policy is already disabled"
+            # 检查DCS Policy文件是否存在
+            if [ ! -f "$DCS_MODE" ]; then
+                echo "DCS Policy control file does not exist: $DCS_MODE"
+                echo "This is normal for some devices or kernel versions"
             else
-                # 显示信息
-                echo "DCS Policy is currently enabled (status=$dcs_status), disabling now..."
-                echo "DCS Policy can cause GPU frequency fluctuations between min/max, disabling for better performance"
+                # 文件存在，尝试读取状态
+                dcs_status=$(cat "$DCS_MODE" 2>/dev/null)
 
-                # 尝试关闭DCS Policy
-                if echo 0 >"$DCS_MODE" 2>/dev/null; then
-                    # 确认DCS Policy已关闭
-                    new_status=$(cat "$DCS_MODE" 2>/dev/null)
-                    if echo "$new_status" | grep -q "disabled"; then
-                        echo "DCS Policy successfully disabled"
-                    else
-                        echo "Warning: Failed to disable DCS Policy, current status is still $new_status"
-                    fi
+                if [ -z "$dcs_status" ]; then
+                    echo "Unable to read DCS Policy status from $DCS_MODE"
                 else
-                    echo "Warning: Unable to write to DCS Policy control file, permission denied"
+                    # 检查DCS Policy状态
+                    if echo "$dcs_status" | grep -q "disabled"; then
+                        echo "DCS Policy is already disabled"
+                    else
+                        # 显示信息
+                        echo "DCS Policy is currently enabled (status=$dcs_status), disabling now..."
+                        echo "DCS Policy can cause GPU frequency fluctuations between min/max, disabling for better performance on Dimensity 9000"
+
+                        # 尝试关闭DCS Policy
+                        if echo 0 >"$DCS_MODE" 2>/dev/null; then
+                            # 确认DCS Policy已关闭
+                            new_status=$(cat "$DCS_MODE" 2>/dev/null)
+                            if echo "$new_status" | grep -q "disabled"; then
+                                echo "DCS Policy successfully disabled on Dimensity 9000"
+                            else
+                                echo "Warning: Failed to disable DCS Policy, current status is still $new_status"
+                            fi
+                        else
+                            echo "Warning: Unable to write to DCS Policy control file, permission denied"
+                        fi
+                    fi
                 fi
             fi
+        else
+            echo "Detected mt6983 but CPU7 frequency is low ($cpu7_freq), not Dimensity 9000, skipping DCS Policy disable"
         fi
+    else
+        echo "Platform is $platform (not mt6983/Dimensity 9000), skipping DCS Policy disable"
     fi
 } >>"$INIT_LOG" 2>&1
 
