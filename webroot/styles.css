@@ -122,6 +122,27 @@ body {
     background-color: var(--border-color);
 }
 
+.theme-toggle svg {
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* 主题图标显示控制 */
+.light-icon {
+    display: inline-block;
+}
+
+.dark-icon {
+    display: none;
+}
+
+[data-theme="dark"] .light-icon {
+    display: none;
+}
+
+[data-theme="dark"] .dark-icon {
+    display: inline-block;
+}
+
 .container {
     max-width: 800px;
     margin: 24px auto;
@@ -138,10 +159,39 @@ body {
 }
 
 .card-title {
-    font-size: 16px;
-    font-weight: 500;
-    padding: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 18px 20px;
     border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+}
+
+.card-title .title-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.card-title .title-icon svg {
+    width: 22px;
+    height: 22px;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 1px 2px rgba(13, 132, 255, 0.3));
+}
+
+.card:hover .card-title .title-icon {
+    transform: scale(1.1);
+    color: var(--accent-hover);
+}
+
+.card:hover .card-title .title-icon svg {
+    filter: drop-shadow(0 2px 4px rgba(13, 132, 255, 0.4));
 }
 
 .card-content {
@@ -332,6 +382,15 @@ th {
     padding: 4px;
     border-radius: 4px;
     transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-delete-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s;
 }
 
 .game-delete-btn:hover {
@@ -390,6 +449,15 @@ th {
     font-size: 20px;
     margin-bottom: 4px;
     transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.log-tab-btn .tab-icon svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
 }
 
 .log-tab-btn .tab-text {
@@ -403,7 +471,15 @@ th {
     transform: scale(1.1);
 }
 
+.log-tab-btn:hover .tab-icon svg {
+    transform: scale(1.1);
+}
+
 .log-tab-btn.active .tab-icon {
+    animation: pulse 2s infinite;
+}
+
+.log-tab-btn.active .tab-icon svg {
     animation: pulse 2s infinite;
 }
 
@@ -443,10 +519,47 @@ th {
 .refresh-icon {
     font-size: 14px;
     transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.refresh-icon svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
 }
 
 .refresh-btn:hover .refresh-icon {
     transform: rotate(180deg);
+}
+
+.refresh-btn:hover .refresh-icon svg {
+    transform: rotate(180deg);
+}
+
+/* SVG图标通用样式 */
+svg {
+    vertical-align: middle;
+    color: inherit;
+    fill: currentColor;
+}
+
+/* 确保SVG图标在不同主题下都能正确显示 */
+.theme-toggle svg,
+.nav-icon svg,
+.tab-icon svg,
+.refresh-icon svg,
+.edit-btn svg,
+.delete-btn svg,
+.game-delete-btn svg {
+    color: inherit;
+    fill: currentColor;
+}
+
+/* 提升SVG图标的交互体验 */
+button:hover svg {
+    transition: transform 0.2s ease;
 }
 
 /* 响应式设计 */
@@ -795,6 +908,15 @@ th {
     transition: transform 0.3s;
     margin-top: 0;
     /* 移除顶部边距 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-icon svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s;
 }
 
 .nav-text {
@@ -808,6 +930,10 @@ th {
 }
 
 .nav-item.active .nav-icon {
+    transform: translateY(-4px);
+}
+
+.nav-item.active .nav-icon svg {
     transform: translateY(-4px);
 }
 
@@ -844,6 +970,17 @@ th {
     padding: 4px 8px;
     border-radius: 4px;
     transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn svg,
+.delete-btn svg,
+.game-delete-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s;
 }
 
 .edit-btn {
@@ -857,6 +994,12 @@ th {
 .edit-btn:hover,
 .delete-btn:hover {
     background-color: var(--border-color);
+}
+
+.edit-btn:hover svg,
+.delete-btn:hover svg,
+.game-delete-btn:hover svg {
+    transform: scale(1.1);
 }
 
 /* 模态对话框样式 */
