@@ -32,8 +32,6 @@ const gameModeStatus = document.getElementById('gameModeStatus');
 const moduleVersion = document.getElementById('moduleVersion');
 const followSystemThemeToggle = document.getElementById('followSystemThemeToggle');
 const logLevelContainer = document.getElementById('logLevelContainer');
-const selectedLogLevel = document.getElementById('selectedLogLevel');
-const logLevelOptions = document.getElementById('logLevelOptions');
 const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
 const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
@@ -45,8 +43,6 @@ const marginIncreaseBtn = document.getElementById('marginIncreaseBtn');
 // 语言设置相关DOM元素
 const htmlRoot = document.getElementById('htmlRoot');
 const languageContainer = document.getElementById('languageContainer');
-const selectedLanguage = document.getElementById('selectedLanguage');
-const languageOptions = document.getElementById('languageOptions');
 
 // 自定义电压和内存档位选择器DOM元素
 const selectedVolt = document.getElementById('selectedVolt');
@@ -651,12 +647,12 @@ function applyTranslations() {
                 errorOption.textContent = getTranslation('settings_log_level_error');
             }
 
-            const logLevelDesc1 = document.querySelector('#settingsCard .status-item:nth-child(3) + .setting-description small:nth-child(1)');
+            const logLevelDesc1 = document.querySelector('#logLevelContainer + .setting-description small:nth-child(1)');
             if (logLevelDesc1) {
                 logLevelDesc1.textContent = getTranslation('settings_log_level_desc1');
             }
 
-            const logLevelDesc2 = document.querySelector('#settingsCard .status-item:nth-child(3) + .setting-description small:nth-child(2)');
+            const logLevelDesc2 = document.querySelector('#logLevelContainer + .setting-description small:nth-child(2)');
             if (logLevelDesc2) {
                 logLevelDesc2.textContent = getTranslation('settings_log_level_desc2');
             }
@@ -900,60 +896,51 @@ async function initLanguage() {
     setupLanguageEvents();
 }
 
-// 更新选中的语言显示文本
+// 更新选中的语言按钮状态
 function updateSelectedLanguageText(languageSetting) {
     try {
-        // 根据语言设置获取对应的翻译文本
-        let displayText;
-        if (languageSetting === 'system') {
-            displayText = getTranslation('settings_language_follow');
-        } else if (languageSetting === 'zh') {
-            displayText = getTranslation('settings_language_zh');
-        } else if (languageSetting === 'en') {
-            displayText = getTranslation('settings_language_en');
-        } else {
-            // 默认显示跟随系统
-            displayText = getTranslation('settings_language_follow');
-        }
+        // 移除所有按钮的选中状态
+        const languageButtons = document.querySelectorAll('#languageContainer .settings-tab-btn');
+        languageButtons.forEach(btn => btn.classList.remove('active'));
 
-        // 更新显示文本
-        if (selectedLanguage) {
-            selectedLanguage.textContent = displayText;
+        // 根据语言设置选中对应的按钮
+        const selectedButton = document.querySelector(`#languageContainer .settings-tab-btn[data-value="${languageSetting}"]`);
+        if (selectedButton) {
+            selectedButton.classList.add('active');
+        } else {
+            // 默认选中跟随系统
+            const systemButton = document.querySelector('#languageContainer .settings-tab-btn[data-value="system"]');
+            if (systemButton) {
+                systemButton.classList.add('active');
+            }
         }
     } catch (e) {
-        console.error('更新语言显示文本失败:', e);
-        // 使用默认文本作为后备
-        if (selectedLanguage) {
-            selectedLanguage.textContent = languageSetting === 'en' ? 'English' :
-                languageSetting === 'zh' ? '中文' : '跟随系统';
+        console.error('更新语言按钮状态失败:', e);
+        // 默认选中跟随系统按钮
+        const systemButton = document.querySelector('#languageContainer .settings-tab-btn[data-value="system"]');
+        if (systemButton) {
+            systemButton.classList.add('active');
         }
     }
 }
 
 // 设置语言选择器事件
 function setupLanguageEvents() {
-    // 自定义语言选择事件
-    languageContainer.addEventListener('click', () => {
-        languageContainer.classList.toggle('open');
-    });
+    // 获取所有语言按钮
+    const languageButtons = document.querySelectorAll('#languageContainer .settings-tab-btn');
 
-    // 点击语言选项时
-    const languageOptionElements = document.querySelectorAll('#languageOptions .option');
-    languageOptionElements.forEach(option => {
-        option.addEventListener('click', async (e) => {
-            e.stopPropagation(); // 防止事件冒泡到container
+    languageButtons.forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
 
-            // 移除所有选项的选中状态
-            languageOptionElements.forEach(opt => opt.classList.remove('selected'));
+            // 移除所有按钮的选中状态
+            languageButtons.forEach(btn => btn.classList.remove('active'));
 
-            // 为当前选项添加选中状态
-            option.classList.add('selected');
-
-            // 关闭下拉菜单
-            languageContainer.classList.remove('open');
+            // 为当前按钮添加选中状态
+            button.classList.add('active');
 
             // 保存设置
-            const selectedValue = option.getAttribute('data-value');
+            const selectedValue = button.getAttribute('data-value');
             localStorage.setItem('languageSetting', selectedValue);
 
             // 如果选择了跟随系统
@@ -975,9 +962,6 @@ function setupLanguageEvents() {
 
             // 应用翻译
             applyTranslations();
-
-            // 更新选中的语言显示文本
-            updateSelectedLanguageText(selectedValue);
         });
     });
 }
@@ -1141,42 +1125,21 @@ function initTheme() {
         }
     });
 
-    // 自定义日志等级选择事件
-    logLevelContainer.addEventListener('click', () => {
-        logLevelContainer.classList.toggle('open');
-    });
+    // 日志等级选择器事件
+    const logLevelButtons = document.querySelectorAll('#logLevelContainer .settings-tab-btn');
+    logLevelButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
 
-    // 点击日志等级选项时
-    const logLevelOptionElements = document.querySelectorAll('#logLevelOptions .option');
-    logLevelOptionElements.forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.stopPropagation(); // 防止事件冒泡到container
+            // 移除所有按钮的选中状态
+            logLevelButtons.forEach(btn => btn.classList.remove('active'));
 
-            // 移除所有选项的选中状态
-            logLevelOptionElements.forEach(opt => opt.classList.remove('selected'));
-
-            // 为当前选项添加选中状态
-            option.classList.add('selected');
-
-            // 更新显示的文本
-            selectedLogLevel.textContent = option.textContent;
-
-            // 关闭下拉菜单
-            logLevelContainer.classList.remove('open');
+            // 为当前按钮添加选中状态
+            button.classList.add('active');
 
             // 保存设置
             saveLogLevel();
         });
-    });
-
-    // 点击页面其他地方关闭下拉菜单
-    document.addEventListener('click', (e) => {
-        if (!logLevelContainer.contains(e.target)) {
-            logLevelContainer.classList.remove('open');
-        }
-        if (!ddrContainer.contains(e.target)) {
-            ddrContainer.classList.remove('open');
-        }
     });
 
     // 自定义内存档位选择事件
@@ -2304,34 +2267,38 @@ async function loadLogLevel() {
             console.log('无法读取日志等级设置，使用默认值: info');
         }
 
-        // 更新自定义下拉菜单显示的文本
-        const options = document.querySelectorAll('#logLevelOptions .option');
-        options.forEach(option => {
-            if (option.getAttribute('data-value') === logLevel) {
-                selectedLogLevel.textContent = option.textContent;
-                option.classList.add('selected');
+        // 更新按钮选中状态
+        const logLevelButtons = document.querySelectorAll('#logLevelContainer .settings-tab-btn');
+        logLevelButtons.forEach(button => {
+            if (button.getAttribute('data-value') === logLevel) {
+                button.classList.add('active');
             } else {
-                option.classList.remove('selected');
+                button.classList.remove('active');
             }
         });
     } catch (error) {
         console.error('加载日志等级设置失败:', error);
-        // 出错时使用默认值
-        selectedLogLevel.textContent = 'Info (信息)';
+        // 出错时选中默认的info按钮
+        const infoButton = document.querySelector('#logLevelContainer .settings-tab-btn[data-value="info"]');
+        if (infoButton) {
+            const logLevelButtons = document.querySelectorAll('#logLevelContainer .settings-tab-btn');
+            logLevelButtons.forEach(btn => btn.classList.remove('active'));
+            infoButton.classList.add('active');
+        }
     }
 }
 
 // 保存日志等级设置
 async function saveLogLevel() {
     try {
-        // 从选中的选项获取日志等级
-        const selectedOption = document.querySelector('#logLevelOptions .option.selected');
-        if (!selectedOption) {
-            console.error('未找到选中的日志等级选项');
+        // 从选中的按钮获取日志等级
+        const selectedButton = document.querySelector('#logLevelContainer .settings-tab-btn.active');
+        if (!selectedButton) {
+            console.error('未找到选中的日志等级按钮');
             return;
         }
 
-        const selectedLevel = selectedOption.getAttribute('data-value');
+        const selectedLevel = selectedButton.getAttribute('data-value');
 
         // 保存到文件
         const { errno } = await exec(`echo "${selectedLevel}" > ${LOG_LEVEL_PATH}`);
