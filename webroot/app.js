@@ -36,13 +36,10 @@ const logLevelContainer = document.getElementById('logLevelContainer');
 const selectedLogLevel = document.getElementById('selectedLogLevel');
 const logLevelOptions = document.getElementById('logLevelOptions');
 const logFileSelect = document.getElementById('logFileSelect');
-const logFileContainer = document.getElementById('logFileContainer');
-const selectedLogFile = document.getElementById('selectedLogFile');
-const logFileOptions = document.getElementById('logFileOptions');
-const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
-const gamesList = document.getElementById('gamesList');
 const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
+const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
+const gamesList = document.getElementById('gamesList');
 const marginValue_elem = document.getElementById('marginValue');
 const marginDecreaseBtn = document.getElementById('marginDecreaseBtn');
 const marginIncreaseBtn = document.getElementById('marginIncreaseBtn');
@@ -595,19 +592,21 @@ function applyTranslations() {
             logTitle.textContent = getTranslation('log_title');
         }
 
-        const refreshLogBtn = document.getElementById('refreshLogBtn');
-        if (refreshLogBtn) {
-            refreshLogBtn.textContent = getTranslation('log_refresh');
+        // 更新标签页按钮文本
+        const mainLogTabText = document.querySelector('.log-tab-btn[data-log="gpu_gov.log"] .tab-text');
+        if (mainLogTabText) {
+            mainLogTabText.textContent = getTranslation('log_main');
         }
 
-        const mainLogOption = document.querySelector('#logFileOptions .option[data-value="gpu_gov.log"]');
-        if (mainLogOption) {
-            mainLogOption.textContent = getTranslation('log_main');
+        const initLogTabText = document.querySelector('.log-tab-btn[data-log="initsvc.log"] .tab-text');
+        if (initLogTabText) {
+            initLogTabText.textContent = getTranslation('log_init');
         }
 
-        const initLogOption = document.querySelector('#logFileOptions .option[data-value="initsvc.log"]');
-        if (initLogOption) {
-            initLogOption.textContent = getTranslation('log_init');
+        // 更新刷新按钮文本
+        const refreshLogBtnText = document.querySelector('#refreshLogBtn span:not(.refresh-icon)');
+        if (refreshLogBtnText) {
+            refreshLogBtnText.textContent = getTranslation('log_refresh');
         }
     } catch (e) {
         console.error('更新日志页面翻译失败:', e);
@@ -804,20 +803,6 @@ function applyTranslations() {
         }
     } catch (e) {
         console.error('更新当前日志等级文本失败:', e);
-    }
-
-    // 更新当前选中的日志文件文本
-    try {
-        if (logFileSelect && selectedLogFile) {
-            const currentLogFile = logFileSelect.value;
-            if (currentLogFile === 'gpu_gov.log') {
-                selectedLogFile.textContent = getTranslation('log_main');
-            } else if (currentLogFile === 'initsvc.log') {
-                selectedLogFile.textContent = getTranslation('log_init');
-            }
-        }
-    } catch (e) {
-        console.error('更新当前日志文件文本失败:', e);
     }
 
     // 新增：切换语言时刷新动态内容
@@ -1201,9 +1186,6 @@ function initTheme() {
         if (!logLevelContainer.contains(e.target)) {
             logLevelContainer.classList.remove('open');
         }
-        if (!logFileContainer.contains(e.target)) {
-            logFileContainer.classList.remove('open');
-        }
         if (!ddrContainer.contains(e.target)) {
             ddrContainer.classList.remove('open');
         }
@@ -1285,34 +1267,35 @@ function setupEventListeners() {
         loadLog();
     });
 
-    // 自定义日志文件选择事件
-    logFileContainer.addEventListener('click', () => {
-        logFileContainer.classList.toggle('open');
-    });
+    // 日志标签页按钮事件
+    const logTabBtns = document.querySelectorAll('.log-tab-btn');
+    logTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // 如果点击的是已经激活的标签，则不执行任何操作
+            if (btn.classList.contains('active')) {
+                return;
+            }
 
-    // 点击日志文件选项时
-    const logFileOptionElements = document.querySelectorAll('#logFileOptions .option');
-    logFileOptionElements.forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.stopPropagation(); // 防止事件冒泡到container
+            // 移除所有标签的active状态
+            logTabBtns.forEach(tab => tab.classList.remove('active'));
 
-            // 移除所有选项的选中状态
-            logFileOptionElements.forEach(opt => opt.classList.remove('selected'));
-
-            // 为当前选项添加选中状态
-            option.classList.add('selected');
-
-            // 更新显示的文本
-            selectedLogFile.textContent = option.textContent;
+            // 为当前标签添加active状态
+            btn.classList.add('active');
 
             // 更新隐藏的select元素的值
-            logFileSelect.value = option.getAttribute('data-value');
+            const logFile = btn.getAttribute('data-log');
+            logFileSelect.value = logFile;
 
-            // 关闭下拉菜单
-            logFileContainer.classList.remove('open');
+            // 添加淡入动画效果
+            logContent.style.opacity = '0.5';
+            logContent.textContent = getTranslation('log_loading');
 
-            // 加载选中的日志
-            loadLog();
+            // 延迟加载以显示过渡效果
+            setTimeout(() => {
+                loadLog().then(() => {
+                    logContent.style.opacity = '1';
+                });
+            }, 100);
         });
     });
 
@@ -2389,14 +2372,13 @@ function initLogFileSelect() {
     // 获取当前选中的日志文件
     const currentLogFile = logFileSelect.value;
 
-    // 更新自定义下拉菜单显示的文本和选中状态
-    const options = document.querySelectorAll('#logFileOptions .option');
-    options.forEach(option => {
-        if (option.getAttribute('data-value') === currentLogFile) {
-            selectedLogFile.textContent = option.textContent;
-            option.classList.add('selected');
+    // 更新标签页按钮的活动状态
+    const logTabBtns = document.querySelectorAll('.log-tab-btn');
+    logTabBtns.forEach(btn => {
+        if (btn.getAttribute('data-log') === currentLogFile) {
+            btn.classList.add('active');
         } else {
-            option.classList.remove('selected');
+            btn.classList.remove('active');
         }
     });
 }
@@ -2405,7 +2387,7 @@ function initLogFileSelect() {
 async function loadLog() {
     try {
         const selectedLog = logFileSelect.value;
-        logContent.textContent = '加载中...';
+        logContent.textContent = getTranslation('log_loading');
 
         // 检查日志文件大小
         const { errno: statErrno, stdout: statOutput } = await exec(`stat -c %s ${LOG_PATH}/${selectedLog} 2>/dev/null || echo "0"`);
@@ -2421,7 +2403,7 @@ async function loadLog() {
 
                 // 如果超过限制，显示警告
                 if (fileSize > maxSizeBytes) {
-                    logContent.textContent = `警告: 日志文件大小(${fileSizeMB}MB)已超过${MAX_LOG_SIZE_MB}MB的限制，将自动轮转。\n\n加载中...`;
+                    logContent.textContent = `${getTranslation('log_size_warning')}\n文件大小: ${fileSizeMB}MB / ${MAX_LOG_SIZE_MB}MB\n\n${getTranslation('log_loading')}`;
                 }
             }
         }

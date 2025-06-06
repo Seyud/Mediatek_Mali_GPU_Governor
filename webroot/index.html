@@ -127,23 +127,28 @@
                     <section class="card" id="logCard">
                         <h2 class="card-title">运行日志</h2>
                         <div class="card-content">
-                            <div class="log-actions">
-                                <button id="refreshLogBtn" class="btn">刷新</button>
-                                <div class="select-container">
-                                    <div class="custom-select" id="logFileContainer">
-                                        <div class="selected-option" id="selectedLogFile">主日志</div>
-                                        <div class="options-container" id="logFileOptions">
-                                            <div class="option" data-value="gpu_gov.log">主日志</div>
-                                            <div class="option" data-value="initsvc.log">初始化日志</div>
-                                        </div>
-                                    </div>
-                                    <select id="logFileSelect" class="select" style="display: none;">
-                                        <option value="gpu_gov.log">主日志</option>
-                                        <option value="initsvc.log">初始化日志</option>
-                                    </select>
+                            <div class="log-header">
+                                <div class="log-tabs-grid">
+                                    <button class="log-tab-btn active" data-log="gpu_gov.log">
+                                        <span class="tab-icon">📊</span>
+                                        <span class="tab-text" data-i18n="log_main">主日志</span>
+                                    </button>
+                                    <button class="log-tab-btn" data-log="initsvc.log">
+                                        <span class="tab-icon">🚀</span>
+                                        <span class="tab-text" data-i18n="log_init">初始化日志</span>
+                                    </button>
                                 </div>
+                                <button id="refreshLogBtn" class="btn refresh-btn">
+                                    <span class="refresh-icon">🔄</span>
+                                    <span data-i18n="log_refresh">刷新</span>
+                                </button>
                             </div>
-                            <pre id="logContent" class="log-content">加载中...</pre>
+                            <!-- 保留隐藏的select元素以兼容现有JavaScript -->
+                            <select id="logFileSelect" class="select" style="display: none;">
+                                <option value="gpu_gov.log" data-i18n="log_main">主日志</option>
+                                <option value="initsvc.log" data-i18n="log_init">初始化日志</option>
+                            </select>
+                            <pre id="logContent" class="log-content" data-i18n="log_loading">加载中...</pre>
                         </div>
                     </section>
                 </div>

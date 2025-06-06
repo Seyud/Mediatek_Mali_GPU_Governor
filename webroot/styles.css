@@ -7,7 +7,8 @@
     --border-color: #e0e0e0;
     --accent-color: #0d84ff;
     --accent-hover: #0a6edb;
-    --accent-bg: rgba(13, 132, 255, 0.1); /* 浅色模式下的强调背景色 */
+    --accent-bg: rgba(13, 132, 255, 0.1);
+    /* 浅色模式下的强调背景色 */
     --success-color: #4caf50;
     --warning-color: #ff9800;
     --error-color: #f44336;
@@ -26,7 +27,8 @@
     --border-color: #333333;
     --accent-color: #0d84ff;
     --accent-hover: #3a9bff;
-    --accent-bg: rgba(13, 132, 255, 0.2); /* 深色模式下的强调背景色 */
+    --accent-bg: rgba(13, 132, 255, 0.2);
+    /* 深色模式下的强调背景色 */
     --success-color: #66bb6a;
     --warning-color: #ffa726;
     --error-color: #ef5350;
@@ -48,7 +50,8 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     transition: background-color 0.3s, color 0.3s;
-    padding-bottom: 90px; /* 增加底部空间，适应更高的导航栏 */
+    padding-bottom: 90px;
+    /* 增加底部空间，适应更高的导航栏 */
 }
 
 #loading {
@@ -66,10 +69,21 @@ body {
 }
 
 @keyframes ellipsis {
-    0% { content: '.'; }
-    33% { content: '..'; }
-    66% { content: '...'; }
-    100% { content: '.'; }
+    0% {
+        content: '.';
+    }
+
+    33% {
+        content: '..';
+    }
+
+    66% {
+        content: '...';
+    }
+
+    100% {
+        content: '.';
+    }
 }
 
 .app-header {
@@ -93,7 +107,8 @@ body {
 .header-content h1 {
     font-size: 20px;
     font-weight: 500;
-    color: #0d84ff; /* 蓝色标题 */
+    color: #0d84ff;
+    /* 蓝色标题 */
 }
 
 .theme-toggle {
@@ -118,7 +133,8 @@ body {
     border-radius: 12px;
     box-shadow: var(--card-shadow);
     margin-bottom: 24px;
-    overflow: visible; /* 修改为visible，确保弹出内容不会被截断 */
+    overflow: visible;
+    /* 修改为visible，确保弹出内容不会被截断 */
 }
 
 .card-title {
@@ -130,7 +146,8 @@ body {
 
 .card-content {
     padding: 16px;
-    overflow: visible; /* 确保弹出内容不会被截断 */
+    overflow: visible;
+    /* 确保弹出内容不会被截断 */
 }
 
 .status-item {
@@ -138,14 +155,18 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
-    position: relative; /* 确保子元素的绝对定位是相对于它 */
-    overflow: visible; /* 确保弹出内容不会被截断 */
+    position: relative;
+    /* 确保子元素的绝对定位是相对于它 */
+    overflow: visible;
+    /* 确保弹出内容不会被截断 */
 }
 
 /* 设置页面中的选项间距更大 */
 #settingsCard .status-item {
-    margin-bottom: 24px; /* 增加间距 */
-    padding-bottom: 8px; /* 添加底部内边距 */
+    margin-bottom: 24px;
+    /* 增加间距 */
+    padding-bottom: 8px;
+    /* 添加底部内边距 */
 }
 
 .status-item:last-child {
@@ -154,20 +175,24 @@ body {
 
 .setting-description {
     margin-top: 8px;
-    margin-bottom: 16px; /* 添加底部间距 */
+    margin-bottom: 16px;
+    /* 添加底部间距 */
     color: var(--secondary-text-color);
     font-size: 12px;
 }
 
 /* 设置页面中的描述文本 */
 #settingsCard .setting-description {
-    margin-bottom: 24px; /* 增加底部间距 */
+    margin-bottom: 24px;
+    /* 增加底部间距 */
 }
 
 .select-container {
     min-width: 150px;
-    position: relative; /* 确保子元素的绝对定位是相对于它 */
-    overflow: visible; /* 确保弹出内容不会被截断 */
+    position: relative;
+    /* 确保子元素的绝对定位是相对于它 */
+    overflow: visible;
+    /* 确保弹出内容不会被截断 */
 }
 
 .status-badge {
@@ -232,15 +257,15 @@ body {
     transition: .4s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: var(--accent-color);
 }
 
-input:focus + .slider {
+input:focus+.slider {
     box-shadow: 0 0 1px var(--accent-color);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(24px);
 }
 
@@ -262,7 +287,8 @@ table {
     border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
@@ -313,6 +339,143 @@ th {
 }
 
 /* 日志样式 */
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 16px;
+}
+
+.log-tabs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    flex: 1;
+    max-width: 300px;
+}
+
+.log-tab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    background-color: transparent;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+    min-height: 70px;
+    position: relative;
+    overflow: hidden;
+}
+
+.log-tab-btn:hover {
+    border-color: var(--accent-color);
+    background-color: var(--accent-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.log-tab-btn.active {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(13, 132, 255, 0.3);
+}
+
+.log-tab-btn .tab-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+    transition: transform 0.3s ease;
+}
+
+.log-tab-btn .tab-text {
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.log-tab-btn:hover .tab-icon {
+    transform: scale(1.1);
+}
+
+.log-tab-btn.active .tab-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.refresh-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.refresh-btn:hover .refresh-icon {
+    transform: rotate(180deg);
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .log-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .log-tabs-grid {
+        max-width: none;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .log-tab-btn {
+        min-height: 60px;
+        padding: 10px 6px;
+    }
+
+    .log-tab-btn .tab-icon {
+        font-size: 18px;
+    }
+
+    .log-tab-btn .tab-text {
+        font-size: 11px;
+    }
+}
+
 .log-actions {
     display: flex;
     justify-content: space-between;
@@ -353,7 +516,8 @@ th {
     position: relative;
     width: 100%;
     cursor: pointer;
-    z-index: 10; /* 默认z-index */
+    z-index: 10;
+    /* 默认z-index */
 }
 
 /* 为语言选择器设置更高的z-index */
@@ -414,7 +578,8 @@ th {
     border-radius: 4px;
     margin-top: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 11; /* 默认比选择器高1 */
+    z-index: 11;
+    /* 默认比选择器高1 */
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
@@ -433,7 +598,8 @@ th {
 
 .custom-select.open .options-container {
     max-height: 200px;
-    overflow: visible; /* 确保内容不会被截断 */
+    overflow: visible;
+    /* 确保内容不会被截断 */
     opacity: 1;
 }
 
@@ -521,6 +687,8 @@ th {
     white-space: pre-wrap;
     max-height: 500px;
     overflow-y: auto;
+    transition: opacity 0.3s ease-in-out;
+    animation: slideIn 0.3s ease-out;
 }
 
 .loading-text {
@@ -533,13 +701,15 @@ th {
 .page-container {
     position: relative;
     min-height: calc(100vh - 200px);
-    overflow: visible; /* 确保弹出内容不会被截断 */
+    overflow: visible;
+    /* 确保弹出内容不会被截断 */
 }
 
 .page {
     display: none;
     animation: fadeIn 0.3s ease-in-out;
-    overflow: visible; /* 确保弹出内容不会被截断 */
+    overflow: visible;
+    /* 确保弹出内容不会被截断 */
 }
 
 .page.active {
@@ -547,36 +717,48 @@ th {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* 底部导航栏样式 */
 .nav-bar {
     display: flex;
     justify-content: space-around;
-    align-items: flex-start; /* 改为顶部对齐 */
+    align-items: flex-start;
+    /* 改为顶部对齐 */
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 80px; /* 进一步增加底栏高度 */
+    height: 80px;
+    /* 进一步增加底栏高度 */
     background-color: var(--card-background);
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 90;
     border-top: 1px solid var(--border-color);
-    padding-top: 10px; /* 顶部内边距，使内容整体上移 */
-    -webkit-tap-highlight-color: transparent; /* 移除点击时的高亮效果 */
-    user-select: none; /* 防止文本被选中 */
+    padding-top: 10px;
+    /* 顶部内边距，使内容整体上移 */
+    -webkit-tap-highlight-color: transparent;
+    /* 移除点击时的高亮效果 */
+    user-select: none;
+    /* 防止文本被选中 */
 }
 
 .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* 从顶部开始布局 */
+    justify-content: flex-start;
+    /* 从顶部开始布局 */
     width: 25%;
-    height: 60px; /* 限制高度 */
+    height: 60px;
+    /* 限制高度 */
     background: none;
     border: none;
     color: var(--secondary-text-color);
@@ -584,8 +766,10 @@ th {
     transition: all 0.3s;
     padding: 0;
     position: relative;
-    overflow: visible; /* 确保内容不被截断 */
-    -webkit-tap-highlight-color: transparent; /* 移除点击时的高亮效果 */
+    overflow: visible;
+    /* 确保内容不被截断 */
+    -webkit-tap-highlight-color: transparent;
+    /* 移除点击时的高亮效果 */
 }
 
 .nav-item.active {
@@ -597,7 +781,8 @@ th {
     position: absolute;
     top: 0;
     width: 70%;
-    height: 42px; /* 增加高度以容纳文字和图标 */
+    height: 42px;
+    /* 增加高度以容纳文字和图标 */
     background-color: var(--accent-bg);
     border-radius: 18px;
     z-index: -1;
@@ -608,7 +793,8 @@ th {
     font-size: 20px;
     margin-bottom: 4px;
     transition: transform 0.3s;
-    margin-top: 0; /* 移除顶部边距 */
+    margin-top: 0;
+    /* 移除顶部边距 */
 }
 
 .nav-text {
@@ -617,7 +803,8 @@ th {
     opacity: 0;
     overflow: hidden;
     transition: all 0.3s;
-    margin-top: 4px; /* 增加与图标的间距 */
+    margin-top: 4px;
+    /* 增加与图标的间距 */
 }
 
 .nav-item.active .nav-icon {
@@ -642,13 +829,15 @@ th {
 }
 
 /* 配置编辑相关样式 */
-.config-actions, .margin-actions {
+.config-actions,
+.margin-actions {
     display: flex;
     justify-content: space-between;
     margin-top: 16px;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
     background: none;
     border: none;
     cursor: pointer;
@@ -665,7 +854,8 @@ th {
     color: var(--error-color);
 }
 
-.edit-btn:hover, .delete-btn:hover {
+.edit-btn:hover,
+.delete-btn:hover {
     background-color: var(--border-color);
 }
 
@@ -673,7 +863,8 @@ th {
 .modal {
     display: none;
     position: fixed;
-    z-index: 2000; /* 增加z-index确保在最上层 */
+    z-index: 2000;
+    /* 增加z-index确保在最上层 */
     left: 0;
     top: 0;
     width: 100%;
@@ -691,7 +882,8 @@ th {
     width: 80%;
     max-width: 500px;
     position: relative;
-    z-index: 2001; /* 确保内容在模态框背景之上 */
+    z-index: 2001;
+    /* 确保内容在模态框背景之上 */
 }
 
 .close-modal {
@@ -716,7 +908,8 @@ th {
     font-weight: 500;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 8px;
     border: 1px solid var(--border-color);
@@ -752,7 +945,8 @@ th {
 .btn-danger {
     background-color: #e74c3c;
     color: white;
-    margin-left: auto; /* 将删除按钮推到右侧 */
+    margin-left: auto;
+    /* 将删除按钮推到右侧 */
 }
 
 .btn-danger:hover {
