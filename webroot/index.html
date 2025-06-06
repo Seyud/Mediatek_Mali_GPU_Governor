@@ -233,11 +233,7 @@
                                     <span data-i18n="log_refresh">刷新</span>
                                 </button>
                             </div>
-                            <!-- 保留隐藏的select元素以兼容现有JavaScript -->
-                            <select id="logFileSelect" class="select" style="display: none;">
-                                <option value="gpu_gov.log" data-i18n="log_main">主日志</option>
-                                <option value="initsvc.log" data-i18n="log_init">初始化日志</option>
-                            </select>
+
                             <pre id="logContent" class="log-content" data-i18n="log_loading">加载中...</pre>
                         </div>
                     </section>
@@ -280,11 +276,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <select id="languageSelect" class="select" style="display: none;">
-                                        <option value="system" data-i18n="settings_language_follow">跟随系统</option>
-                                        <option value="zh" data-i18n="settings_language_zh">中文</option>
-                                        <option value="en" data-i18n="settings_language_en">English</option>
-                                    </select>
                                 </div>
                             </div>
                             <div class="setting-description">
@@ -309,12 +300,6 @@
                                                 Error (错误)</div>
                                         </div>
                                     </div>
-                                    <select id="logLevelSelect" class="select" style="display: none;">
-                                        <option value="debug" data-i18n="settings_log_level_debug">Debug (详细)</option>
-                                        <option value="info" data-i18n="settings_log_level_info">Info (信息)</option>
-                                        <option value="warn" data-i18n="settings_log_level_warn">Warn (警告)</option>
-                                        <option value="error" data-i18n="settings_log_level_error">Error (错误)</option>
-                                    </select>
                                 </div>
                             </div>
                             <div class="setting-description">
@@ -349,7 +334,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="ddrSelect">内存档位:</label>
+                        <label>内存档位:</label>
                         <div class="select-container">
                             <div class="custom-select" id="ddrContainer">
                                 <div class="selected-option" id="selectedDdr">999 (不调整)</div>
@@ -361,13 +346,6 @@
                                     <div class="option" data-value="3">3 (最低)</div>
                                 </div>
                             </div>
-                            <select id="ddrSelect" class="select" style="display: none;">
-                                <option value="999">999 (不调整)</option>
-                                <option value="0">0 (最高)</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3 (最低)</option>
-                            </select>
                         </div>
                     </div>
                     <div class="form-actions">

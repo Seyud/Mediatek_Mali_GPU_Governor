@@ -31,11 +31,9 @@ const runningStatus = document.getElementById('runningStatus');
 const gameModeStatus = document.getElementById('gameModeStatus');
 const moduleVersion = document.getElementById('moduleVersion');
 const followSystemThemeToggle = document.getElementById('followSystemThemeToggle');
-const logLevelSelect = document.getElementById('logLevelSelect');
 const logLevelContainer = document.getElementById('logLevelContainer');
 const selectedLogLevel = document.getElementById('selectedLogLevel');
 const logLevelOptions = document.getElementById('logLevelOptions');
-const logFileSelect = document.getElementById('logFileSelect');
 const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
 const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
@@ -46,7 +44,6 @@ const marginIncreaseBtn = document.getElementById('marginIncreaseBtn');
 
 // 语言设置相关DOM元素
 const htmlRoot = document.getElementById('htmlRoot');
-const languageSelect = document.getElementById('languageSelect');
 const languageContainer = document.getElementById('languageContainer');
 const selectedLanguage = document.getElementById('selectedLanguage');
 const languageOptions = document.getElementById('languageOptions');
@@ -66,7 +63,6 @@ const editConfigModal = document.getElementById('editConfigModal');
 const closeModalBtn = document.querySelector('.close-modal');
 const freqInput = document.getElementById('freqInput');
 const voltSelect = document.getElementById('voltSelect');
-const ddrSelect = document.getElementById('ddrSelect');
 const saveItemBtn = document.getElementById('saveItemBtn');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const deleteItemBtn = document.getElementById('deleteItemBtn');
@@ -700,8 +696,8 @@ function applyTranslations() {
             }
 
             // 内存档位标签
-            const ddrLabel = document.querySelector('label[for="ddrSelect"]');
-            if (ddrLabel) {
+            const ddrLabel = document.querySelector('.form-group label');
+            if (ddrLabel && ddrLabel.textContent.includes('档位')) {
                 ddrLabel.textContent = getTranslation('edit_config_ddr');
             }
         } catch (e) {
@@ -789,15 +785,16 @@ function applyTranslations() {
 
     // 更新当前选中的日志等级文本
     try {
-        if (logLevelSelect && selectedLogLevel) {
-            const currentLogLevel = logLevelSelect.value;
-            if (currentLogLevel === 'debug') {
+        if (selectedLogLevel) {
+            const currentText = selectedLogLevel.textContent;
+            // 根据当前文本内容来判断日志等级并更新翻译
+            if (currentText.includes('Debug') || currentText.includes('详细')) {
                 selectedLogLevel.textContent = getTranslation('settings_log_level_debug');
-            } else if (currentLogLevel === 'info') {
+            } else if (currentText.includes('Info') || currentText.includes('信息')) {
                 selectedLogLevel.textContent = getTranslation('settings_log_level_info');
-            } else if (currentLogLevel === 'warn') {
+            } else if (currentText.includes('Warn') || currentText.includes('警告')) {
                 selectedLogLevel.textContent = getTranslation('settings_log_level_warn');
-            } else if (currentLogLevel === 'error') {
+            } else if (currentText.includes('Error') || currentText.includes('错误')) {
                 selectedLogLevel.textContent = getTranslation('settings_log_level_error');
             }
         }
@@ -893,9 +890,6 @@ async function initLanguage() {
         currentLanguage = savedLanguage;
     }
 
-    // 更新语言选择器显示
-    languageSelect.value = savedLanguageSetting || 'system';
-
     // 先应用翻译，确保所有文本都被正确翻译
     applyTranslations();
 
@@ -955,14 +949,11 @@ function setupLanguageEvents() {
             // 为当前选项添加选中状态
             option.classList.add('selected');
 
-            // 更新隐藏的select元素的值
-            const selectedValue = option.getAttribute('data-value');
-            languageSelect.value = selectedValue;
-
             // 关闭下拉菜单
             languageContainer.classList.remove('open');
 
             // 保存设置
+            const selectedValue = option.getAttribute('data-value');
             localStorage.setItem('languageSetting', selectedValue);
 
             // 如果选择了跟随系统
@@ -1170,9 +1161,6 @@ function initTheme() {
             // 更新显示的文本
             selectedLogLevel.textContent = option.textContent;
 
-            // 更新隐藏的select元素的值
-            logLevelSelect.value = option.getAttribute('data-value');
-
             // 关闭下拉菜单
             logLevelContainer.classList.remove('open');
 
@@ -1210,9 +1198,6 @@ function initTheme() {
 
             // 更新显示的文本
             selectedDdr.textContent = option.textContent;
-
-            // 更新隐藏的select元素的值
-            ddrSelect.value = option.getAttribute('data-value');
 
             // 关闭下拉菜单
             ddrContainer.classList.remove('open');
@@ -1281,10 +1266,6 @@ function setupEventListeners() {
 
             // 为当前标签添加active状态
             btn.classList.add('active');
-
-            // 更新隐藏的select元素的值
-            const logFile = btn.getAttribute('data-log');
-            logFileSelect.value = logFile;
 
             // 添加淡入动画效果
             logContent.style.opacity = '0.5';
@@ -1909,21 +1890,16 @@ function openEditModal(index = -1) {
         voltIncreaseBtn.disabled = voltValue >= MAX_VOLT;
 
         // 设置内存档位选择 - 第三个表单组
-        const ddrOption = Array.from(ddrSelect.options).find(option => parseInt(option.value) === config.ddr);
-        if (ddrOption) {
-            ddrSelect.value = ddrOption.value;
-
-            // 更新自定义下拉菜单的显示文本和选中状态
-            const ddrOptionElements = document.querySelectorAll('#ddrOptions .option');
-            ddrOptionElements.forEach(option => {
-                if (parseInt(option.getAttribute('data-value')) === config.ddr) {
-                    selectedDdr.textContent = option.textContent;
-                    option.classList.add('selected');
-                } else {
-                    option.classList.remove('selected');
-                }
-            });
-        }
+        // 更新自定义下拉菜单的显示文本和选中状态
+        const ddrOptionElements = document.querySelectorAll('#ddrOptions .option');
+        ddrOptionElements.forEach(option => {
+            if (parseInt(option.getAttribute('data-value')) === config.ddr) {
+                selectedDdr.textContent = option.textContent;
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
 
         // 显示删除按钮
         deleteItemBtn.style.display = 'block';
@@ -1942,7 +1918,6 @@ function openEditModal(index = -1) {
         voltIncreaseBtn.disabled = currentVoltValue >= MAX_VOLT;
 
         // 重置内存档位选择器 - 第三个表单组
-        ddrSelect.selectedIndex = 0;
         selectedDdr.textContent = '999 (不调整)';
 
         // 更新内存档位选中状态
@@ -1969,7 +1944,7 @@ function closeEditModal() {
 function saveConfigItem() {
     const freq = parseInt(freqInput.value);
     const volt = parseInt(voltSelect.value);
-    const ddr = parseInt(ddrSelect.value);
+    const ddr = parseInt(selectedDdr.textContent.split(' ')[0]);
 
     if (!freq || isNaN(freq)) {
         toast(getTranslation('toast_freq_invalid'));
@@ -2329,11 +2304,8 @@ async function loadLogLevel() {
             console.log('无法读取日志等级设置，使用默认值: info');
         }
 
-        // 设置隐藏的select元素值
-        logLevelSelect.value = logLevel;
-
         // 更新自定义下拉菜单显示的文本
-        const options = document.querySelectorAll('.option');
+        const options = document.querySelectorAll('#logLevelOptions .option');
         options.forEach(option => {
             if (option.getAttribute('data-value') === logLevel) {
                 selectedLogLevel.textContent = option.textContent;
@@ -2345,7 +2317,6 @@ async function loadLogLevel() {
     } catch (error) {
         console.error('加载日志等级设置失败:', error);
         // 出错时使用默认值
-        logLevelSelect.value = 'info';
         selectedLogLevel.textContent = 'Info (信息)';
     }
 }
@@ -2353,7 +2324,14 @@ async function loadLogLevel() {
 // 保存日志等级设置
 async function saveLogLevel() {
     try {
-        const selectedLevel = logLevelSelect.value;
+        // 从选中的选项获取日志等级
+        const selectedOption = document.querySelector('#logLevelOptions .option.selected');
+        if (!selectedOption) {
+            console.error('未找到选中的日志等级选项');
+            return;
+        }
+
+        const selectedLevel = selectedOption.getAttribute('data-value');
 
         // 保存到文件
         const { errno } = await exec(`echo "${selectedLevel}" > ${LOG_LEVEL_PATH}`);
@@ -2377,10 +2355,11 @@ async function saveLogLevel() {
 
 // 初始化日志文件选择器
 function initLogFileSelect() {
-    // 获取当前选中的日志文件
-    const currentLogFile = logFileSelect.value;
+    // 获取当前激活的日志标签页
+    const activeTab = document.querySelector('.log-tab-btn.active');
+    const currentLogFile = activeTab ? activeTab.getAttribute('data-log') : 'gpu_gov.log';
 
-    // 更新标签页按钮的活动状态
+    // 更新标签页按钮的活动状态（确保只有一个激活）
     const logTabBtns = document.querySelectorAll('.log-tab-btn');
     logTabBtns.forEach(btn => {
         if (btn.getAttribute('data-log') === currentLogFile) {
@@ -2394,7 +2373,9 @@ function initLogFileSelect() {
 // 加载日志
 async function loadLog() {
     try {
-        const selectedLog = logFileSelect.value;
+        // 获取当前激活的日志标签页
+        const activeTab = document.querySelector('.log-tab-btn.active');
+        const selectedLog = activeTab ? activeTab.getAttribute('data-log') : 'gpu_gov.log';
         logContent.textContent = getTranslation('log_loading');
 
         // 检查日志文件大小
