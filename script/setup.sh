@@ -311,6 +311,10 @@ echo "$(translate "👨‍💻 作者：" "👨‍💻 Author:") $module_author"
 echo "$(translate "📌 版本：" "📌 Version:") $module_version"
 echo ""
 
+# 重要警告提示
+echo "⚠️ $(translate "如果在使用过程中出现死机，异常卡顿，可能是电压过低导致，请自行修改电压至适合档位" "If you experience crashes or abnormal lag during usage, it may be caused by voltage being too low. Please adjust the voltage to appropriate levels yourself") ⚠️"
+echo ""
+
 echo "$(translate "🔄 正在安装..." "🔄 Installing...")"
 
 install_gov
