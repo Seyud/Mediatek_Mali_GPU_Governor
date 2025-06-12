@@ -1101,7 +1101,7 @@ function initTheme() {
     themeToggle.addEventListener('click', () => {
         // 添加切换动画类
         themeToggle.classList.add('switching');
-        
+
         // 如果设置了跟随系统主题，则先关闭跟随系统
         if (localStorage.getItem('followSystemTheme') === 'true') {
             localStorage.setItem('followSystemTheme', 'false');
@@ -1114,16 +1114,16 @@ function initTheme() {
 
         // 添加平滑过渡效果
         document.documentElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-        
+
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
-        
+
         // 移除切换动画类
         setTimeout(() => {
             themeToggle.classList.remove('switching');
             document.documentElement.style.transition = '';
         }, 600);
-        
+
         // 显示主题切换提示
         const themeKey = newTheme === 'dark' ? 'toast_theme_switched_dark' : 'toast_theme_switched_light';
         toast(getTranslation(themeKey));
@@ -1373,12 +1373,27 @@ async function checkModuleStatus() {
         // 使用简单命令检查服务是否运行
         const { errno, stdout } = await exec('pgrep -f gpugovernor || echo ""');
 
-        if (errno === 0 && stdout.trim()) {
-            runningStatus.textContent = getTranslation('status_running_active');
-            runningStatus.className = 'status-badge status-running';
-        } else {
-            runningStatus.textContent = getTranslation('status_running_inactive');
-            runningStatus.className = 'status-badge status-stopped';
+        const newStatus = errno === 0 && stdout.trim();
+        const currentStatus = runningStatus.classList.contains('status-running');
+
+        // 如果状态发生变化，添加动画效果
+        if (newStatus !== currentStatus) {
+            runningStatus.classList.add('status-changing');
+
+            setTimeout(() => {
+                if (newStatus) {
+                    runningStatus.textContent = getTranslation('status_running_active');
+                    runningStatus.className = 'status-badge status-running';
+                } else {
+                    runningStatus.textContent = getTranslation('status_running_inactive');
+                    runningStatus.className = 'status-badge status-stopped';
+                }
+
+                // 移除动画类
+                setTimeout(() => {
+                    runningStatus.classList.remove('status-changing');
+                }, 600);
+            }, 100);
         }
     } catch (error) {
         console.error('检查模块状态失败:', error);
@@ -1426,14 +1441,24 @@ async function checkGameModeStatus() {
             if (status !== lastGameModeStatus) {
                 console.log(`游戏模式状态变化: ${lastGameModeStatus ? '开启' : '关闭'} -> ${status ? '开启' : '关闭'}`);
 
-                // 更新游戏模式状态显示
-                if (status) {
-                    gameModeStatus.textContent = getTranslation('status_game_mode_on');
-                    gameModeStatus.className = 'status-badge status-running';
-                } else {
-                    gameModeStatus.textContent = getTranslation('status_game_mode_off');
-                    gameModeStatus.className = 'status-badge status-stopped';
-                }
+                // 添加状态变化动画
+                gameModeStatus.classList.add('status-changing');
+
+                setTimeout(() => {
+                    // 更新游戏模式状态显示
+                    if (status) {
+                        gameModeStatus.textContent = getTranslation('status_game_mode_on');
+                        gameModeStatus.className = 'status-badge status-running';
+                    } else {
+                        gameModeStatus.textContent = getTranslation('status_game_mode_off');
+                        gameModeStatus.className = 'status-badge status-stopped';
+                    }
+
+                    // 移除动画类
+                    setTimeout(() => {
+                        gameModeStatus.classList.remove('status-changing');
+                    }, 600);
+                }, 100);
 
                 lastGameModeStatus = status;
             }

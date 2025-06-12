@@ -17,28 +17,30 @@
                 <h1>天玑GPU调速器</h1>
                 <div class="theme-toggle" id="themeToggle">
                     <span class="light-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
                             <!-- 太阳中心圆 -->
-                            <circle cx="12" cy="12" r="4" fill="currentColor" opacity="0.9"/>
+                            <circle cx="12" cy="12" r="4" fill="currentColor" opacity="0.9" />
                             <!-- 太阳光线 -->
-                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 6.34L4.93 4.93M19.07 19.07l-1.41-1.41" 
-                                  stroke-linecap="round" opacity="0.8"/>
+                            <path
+                                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 6.34L4.93 4.93M19.07 19.07l-1.41-1.41"
+                                stroke-linecap="round" opacity="0.8" />
                             <!-- 内圈装饰光线 -->
-                            <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" 
-                                    stroke-width="0.5" opacity="0.3" stroke-dasharray="1,3"/>
+                            <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="0.5"
+                                opacity="0.3" stroke-dasharray="1,3" />
                         </svg>
                     </span>
                     <span class="dark-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <!-- 月亮主体 -->
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" opacity="0.9"/>
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" opacity="0.9" />
                             <!-- 月亮表面纹理 -->
-                            <circle cx="15" cy="8" r="1" opacity="0.4"/>
-                            <circle cx="17" cy="11" r="0.8" opacity="0.3"/>
-                            <circle cx="14.5" cy="13" r="0.6" opacity="0.4"/>
+                            <circle cx="15" cy="8" r="1" opacity="0.4" />
+                            <circle cx="17" cy="11" r="0.8" opacity="0.3" />
+                            <circle cx="14.5" cy="13" r="0.6" opacity="0.4" />
                             <!-- 星星装饰 -->
-                            <path d="M8 4l0.5 1.5L10 6l-1.5 0.5L8 8l-0.5-1.5L6 6l1.5-0.5z" opacity="0.6"/>
-                            <path d="M5 9l0.3 0.9L6.2 10l-0.9 0.3L5 11.2l-0.3-0.9L3.8 10l0.9-0.3z" opacity="0.5"/>
+                            <path d="M8 4l0.5 1.5L10 6l-1.5 0.5L8 8l-0.5-1.5L6 6l1.5-0.5z" opacity="0.6" />
+                            <path d="M5 9l0.3 0.9L6.2 10l-0.9 0.3L5 11.2l-0.3-0.9L3.8 10l0.9-0.3z" opacity="0.5" />
                         </svg>
                     </span>
                 </div>
@@ -88,15 +90,36 @@
                         </h2>
                         <div class="card-content">
                             <div class="status-item">
-                                <span>运行状态:</span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+                                        class="status-icon">
+                                        <path
+                                            d="M12 2l3.09 6.26L22 9l-5 4.74L18.18 21 12 17.77 5.82 21 7 13.74 2 9l6.91-1.74L12 2z" />
+                                    </svg>
+                                    运行状态:
+                                </span>
                                 <span id="runningStatus" class="status-badge">检查中...</span>
                             </div>
                             <div class="status-item">
-                                <span>游戏模式:</span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+                                        class="status-icon">
+                                        <path
+                                            d="M21,6H3A1,1 0 0,0 2,7V17A1,1 0 0,0 3,18H21A1,1 0 0,0 22,17V7A1,1 0 0,0 21,6M20,16H4V8H20V16M6,15A1,1 0 0,0 7,14A1,1 0 0,0 6,13A1,1 0 0,0 5,14A1,1 0 0,0 6,15M8,13A1,1 0 0,0 9,12A1,1 0 0,0 8,11A1,1 0 0,0 7,12A1,1 0 0,0 8,13M16,15A1,1 0 0,0 17,14A1,1 0 0,0 16,13A1,1 0 0,0 15,14A1,1 0 0,0 16,15M18,13A1,1 0 0,0 19,12A1,1 0 0,0 18,11A1,1 0 0,0 17,12A1,1 0 0,0 18,13Z" />
+                                    </svg>
+                                    游戏模式:
+                                </span>
                                 <span id="gameModeStatus" class="status-badge">检查中...</span>
                             </div>
                             <div class="status-item">
-                                <span>模块版本:</span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+                                        class="status-icon">
+                                        <path
+                                            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                    </svg>
+                                    模块版本:
+                                </span>
                                 <span id="moduleVersion" class="version-badge">加载中...</span>
                             </div>
                         </div>
