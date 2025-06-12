@@ -44,6 +44,22 @@
     box-sizing: border-box;
 }
 
+/* 移除默认的焦点轮廓，为自定义样式让路 */
+*:focus {
+    outline: none;
+}
+
+/* 为可点击元素添加统一的焦点样式 */
+button:focus,
+.card:focus {
+    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.3);
+}
+
+/* 移除底部导航栏按钮的焦点样式 */
+.nav-item:focus {
+    box-shadow: none;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: var(--background-color);
@@ -156,6 +172,13 @@ body {
     margin-bottom: 24px;
     overflow: visible;
     /* 修改为visible，确保弹出内容不会被截断 */
+    outline: none;
+    /* 移除默认焦点轮廓 */
+}
+
+/* 为一般卡片添加焦点样式 */
+.card:focus {
+    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.3), var(--card-shadow);
 }
 
 .card-title {
@@ -572,6 +595,21 @@ button:hover svg {
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    /* 移除默认的焦点轮廓 */
+    outline: none;
+    /* 确保可访问性的焦点指示 */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 自定义焦点样式，匹配圆角矩形设计 */
+#appIconCard:focus {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.3), 0 12px 32px rgba(13, 132, 255, 0.15);
+    border-color: var(--accent-hover);
+}
+
+/* 鼠标和焦点状态的组合 */
+#appIconCard:focus:hover {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.4), 0 12px 32px rgba(13, 132, 255, 0.2);
 }
 
 #appIconCard:hover {
@@ -717,6 +755,15 @@ button:hover svg {
     box-shadow: 0 12px 32px rgba(13, 132, 255, 0.25);
 }
 
+[data-theme="dark"] #appIconCard:focus {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.4), 0 12px 32px rgba(13, 132, 255, 0.25);
+    border-color: var(--accent-color);
+}
+
+[data-theme="dark"] #appIconCard:focus:hover {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.5), 0 12px 32px rgba(13, 132, 255, 0.3);
+}
+
 [data-theme="dark"] .icon-background {
     box-shadow: 0 8px 20px rgba(13, 132, 255, 0.4);
 }
@@ -842,10 +889,17 @@ button:hover svg {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
+    outline: none;
+    /* 移除默认焦点轮廓 */
 }
 
 .btn:hover {
     background-color: var(--accent-hover);
+}
+
+.btn:focus {
+    background-color: var(--accent-hover);
+    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.4);
 }
 
 .select {
@@ -1116,6 +1170,8 @@ button:hover svg {
     /* 确保内容不被截断 */
     -webkit-tap-highlight-color: transparent;
     /* 移除点击时的高亮效果 */
+    outline: none;
+    /* 移除默认焦点轮廓 */
 }
 
 .nav-item.active {
