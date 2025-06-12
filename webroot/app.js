@@ -206,6 +206,8 @@ const translations = {
         'toast_theme_follow_disabled': '已关闭跟随系统主题，现在可以手动切换主题',
         'toast_theme_follow_enabled': '已开启跟随系统主题',
         'toast_theme_follow_keep': '已关闭跟随系统主题，将保持当前主题',
+        'toast_theme_switched_dark': '已切换到深色模式',
+        'toast_theme_switched_light': '已切换到浅色模式',
         'toast_game_mode_on': '游戏模式已开启',
         'toast_game_mode_off': '游戏模式已关闭',
         'toast_game_mode_fail': '切换游戏模式失败，请检查权限',
@@ -326,6 +328,8 @@ const translations = {
         'toast_theme_follow_disabled': 'System theme following disabled, you can now switch themes manually',
         'toast_theme_follow_enabled': 'System theme following enabled',
         'toast_theme_follow_keep': 'System theme following disabled, current theme will be kept',
+        'toast_theme_switched_dark': 'Switched to dark mode',
+        'toast_theme_switched_light': 'Switched to light mode',
         'toast_game_mode_on': 'Game mode enabled',
         'toast_game_mode_off': 'Game mode disabled',
         'toast_game_mode_fail': 'Failed to toggle game mode, please check permissions',
@@ -1095,6 +1099,9 @@ function initTheme() {
 
     // 主题切换按钮点击事件
     themeToggle.addEventListener('click', () => {
+        // 添加切换动画类
+        themeToggle.classList.add('switching');
+        
         // 如果设置了跟随系统主题，则先关闭跟随系统
         if (localStorage.getItem('followSystemTheme') === 'true') {
             localStorage.setItem('followSystemTheme', 'false');
@@ -1105,8 +1112,21 @@ function initTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
 
+        // 添加平滑过渡效果
+        document.documentElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+        
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
+        
+        // 移除切换动画类
+        setTimeout(() => {
+            themeToggle.classList.remove('switching');
+            document.documentElement.style.transition = '';
+        }, 600);
+        
+        // 显示主题切换提示
+        const themeKey = newTheme === 'dark' ? 'toast_theme_switched_dark' : 'toast_theme_switched_light';
+        toast(getTranslation(themeKey));
     });
 
     // 跟随系统主题开关事件
