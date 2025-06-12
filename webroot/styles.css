@@ -455,29 +455,152 @@ body {
     color: var(--text-color);
 }
 
+/* 为所有卡片标题图标添加miuix风格 */
 .card-title .title-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent-color);
-    transition: all 0.3s ease;
-    flex-shrink: 0;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(13, 132, 255, 0.3) !important;
+    color: white !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    flex-shrink: 0 !important;
+    margin-right: 12px !important;
+}
+
+.card-title .title-icon::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .card-title .title-icon svg {
-    width: 22px;
-    height: 22px;
+    width: 18px !important;
+    height: 18px !important;
+    color: white !important;
+    fill: white !important;
     transition: all 0.3s ease;
-    filter: drop-shadow(0 1px 2px rgba(13, 132, 255, 0.3));
+    z-index: 1;
+    position: relative;
 }
 
 .card:hover .card-title .title-icon {
-    transform: scale(1.1);
-    color: var(--accent-hover);
+    transform: scale(1.15) rotate(3deg) !important;
+    box-shadow: 0 4px 16px rgba(13, 132, 255, 0.4) !important;
+}
+
+.card:hover .card-title .title-icon::before {
+    opacity: 1 !important;
 }
 
 .card:hover .card-title .title-icon svg {
-    filter: drop-shadow(0 2px 4px rgba(13, 132, 255, 0.4));
+    transform: scale(1.1) !important;
+}
+
+/* 深色模式支持 */
+[data-theme="dark"] .card-title .title-icon {
+    box-shadow: 0 3px 10px rgba(13, 132, 255, 0.4) !important;
+}
+
+[data-theme="dark"] .card:hover .card-title .title-icon {
+    box-shadow: 0 5px 20px rgba(13, 132, 255, 0.5) !important;
+}
+
+/* 移动设备适配 */
+@media (max-width: 480px) {
+    .card-title .title-icon {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 7px !important;
+        margin-right: 10px !important;
+    }
+    
+    .card-title .title-icon svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    .card:hover .card-title .title-icon {
+        transform: scale(1.1) rotate(2deg) !important;
+    }
+}
+
+/* 动画减少偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+    .card-title .title-icon,
+    .card-title .title-icon svg,
+    .card-title .title-icon::before {
+        animation: none !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+}
+
+#statusCard .card-title .title-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    /* 添加miuix风格样式 */
+    width: 32px !important;
+    height: 32px !important;
+    background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(13, 132, 255, 0.3) !important;
+    color: white !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    flex-shrink: 0 !important;
+    margin-right: 12px !important;
+}
+
+/* 添加玻璃光泽效果 */
+#statusCard .card-title .title-icon::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#statusCard .card-title .title-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+    color: white !important;
+    fill: white !important;
+    transition: all 0.3s ease;
+    z-index: 1;
+    position: relative;
+    filter: none; /* 移除drop-shadow，因为容器已有阴影 */
+}
+
+#statusCard .card:hover .card-title .title-icon {
+    transform: scale(1.15) rotate(3deg) !important;
+    box-shadow: 0 4px 16px rgba(13, 132, 255, 0.4) !important;
+}
+
+#statusCard .card:hover .card-title .title-icon::before {
+    opacity: 1 !important;
+}
+
+#statusCard .card:hover .card-title .title-icon svg {
+    transform: scale(1.1) !important;
 }
 
 .card-content {
@@ -519,19 +642,138 @@ body {
     gap: 8px;
 }
 
-.status-item>span:first-child .status-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--accent-color);
-    opacity: 0.8;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
+/* 确保miuix图标容器在文本前正确显示 */
+.status-item>span:first-child .miuix-status-icon {
+    width: 24px !important;
+    height: 24px !important;
+    background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%) !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(13, 132, 255, 0.3) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    margin-right: 8px !important;
 }
 
-.status-item:hover>span:first-child .status-icon {
-    opacity: 1;
-    transform: scale(1.1);
-    color: var(--accent-hover);
+/* 移除有问题的选择器规则，改为针对没有miuix图标的status-item使用默认图标样式 */
+
+/* Miuix风格状态图标容器的伪元素和内部SVG */
+.status-item>span:first-child .miuix-status-icon::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.status-item>span:first-child .miuix-status-icon svg.status-icon {
+    width: 14px !important;
+    height: 14px !important;
+    color: white !important;
+    fill: white !important;
+    opacity: 1 !important;
+    z-index: 1 !important;
+    position: relative !important;
+}
+
+/* 悬停效果 */
+.status-item:hover .miuix-status-icon {
+    transform: scale(1.1) rotate(2deg) !important;
+    box-shadow: 0 4px 12px rgba(13, 132, 255, 0.4) !important;
+}
+
+.status-item:hover .miuix-status-icon::before {
+    opacity: 1 !important;
+}
+
+.status-item:hover .miuix-status-icon svg.status-icon {
+    transform: scale(1.05) !important;
+}
+
+/* GPU状态图标特殊动画效果 */
+.status-item>span:first-child .miuix-status-icon svg.status-icon path:first-child {
+    animation: statusIconPulse 3s ease-in-out infinite;
+}
+
+.status-item>span:first-child .miuix-status-icon svg.status-icon circle {
+    animation: statusIconGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes statusIconPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes statusIconGlow {
+    0% {
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+/* 深色模式下的特殊效果 */
+[data-theme="dark"] .status-item>span:first-child .miuix-status-icon {
+    box-shadow: 0 3px 8px rgba(13, 132, 255, 0.4) !important;
+}
+
+[data-theme="dark"] .status-item:hover .miuix-status-icon {
+    box-shadow: 0 6px 16px rgba(13, 132, 255, 0.5) !important;
+}
+
+/* 移动设备响应式适配 */
+@media (max-width: 480px) {
+    .status-item>span:first-child .miuix-status-icon {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 5px !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+    }
+
+    .status-item>span:first-child .miuix-status-icon svg.status-icon {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .status-item:hover .miuix-status-icon {
+        transform: scale(1.05) !important;
+    }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+
+    .status-item>span:first-child .miuix-status-icon,
+    .status-item>span:first-child .miuix-status-icon svg.status-icon,
+    .status-item>span:first-child .miuix-status-icon svg.status-icon * {
+        animation: none !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
 }
 
 .status-item>span:first-child::before {
@@ -2120,5 +2362,43 @@ button:hover svg {
     .settings-tab-btn .tab-icon svg {
         width: 14px;
         height: 14px;
+    }
+}
+
+/* 深色模式下的卡片标题图标 */
+[data-theme="dark"] #statusCard .card-title .title-icon {
+    box-shadow: 0 3px 10px rgba(13, 132, 255, 0.4) !important;
+}
+
+[data-theme="dark"] #statusCard .card:hover .card-title .title-icon {
+    box-shadow: 0 5px 20px rgba(13, 132, 255, 0.5) !important;
+}
+
+/* 移动设备适配 */
+@media (max-width: 480px) {
+    #statusCard .card-title .title-icon {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 7px !important;
+        margin-right: 10px !important;
+    }
+    
+    #statusCard .card-title .title-icon svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    #statusCard .card:hover .card-title .title-icon {
+        transform: scale(1.1) rotate(2deg) !important;
+    }
+}
+
+/* 减少动画偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+    #statusCard .card-title .title-icon,
+    #statusCard .card-title .title-icon svg,
+    #statusCard .card-title .title-icon::before {
+        animation: none !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
     }
 }

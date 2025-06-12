@@ -430,17 +430,17 @@ function applyTranslations() {
             statusTitle.textContent = getTranslation('status_title');
         }
 
-        const runningLabel = document.querySelector('#statusCard .status-item:nth-child(1) > span:first-child');
+        const runningLabel = document.querySelector('#statusCard .status-item:nth-child(1) .status-text');
         if (runningLabel) {
             runningLabel.textContent = getTranslation('status_running');
         }
 
-        const gameModeLabel = document.querySelector('#statusCard .status-item:nth-child(2) > span:first-child');
+        const gameModeLabel = document.querySelector('#statusCard .status-item:nth-child(2) .status-text');
         if (gameModeLabel) {
             gameModeLabel.textContent = getTranslation('status_game_mode');
         }
 
-        const versionLabel = document.querySelector('#statusCard .status-item:nth-child(3) > span:first-child');
+        const versionLabel = document.querySelector('#statusCard .status-item:nth-child(3) .status-text');
         if (versionLabel) {
             versionLabel.textContent = getTranslation('status_module_version');
         }

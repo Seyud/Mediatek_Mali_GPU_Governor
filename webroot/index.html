@@ -91,34 +91,56 @@
                         <div class="card-content">
                             <div class="status-item">
                                 <span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
-                                        class="status-icon">
-                                        <path
-                                            d="M12 2l3.09 6.26L22 9l-5 4.74L18.18 21 12 17.77 5.82 21 7 13.74 2 9l6.91-1.74L12 2z" />
-                                    </svg>
-                                    运行状态:
+                                    <div class="miuix-status-icon">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                                            class="status-icon">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+                                                opacity="0.3" />
+                                            <path
+                                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2z" />
+                                            <circle cx="12" cy="12" r="3" fill="white" opacity="0.9" />
+                                            <path d="M12 8v8M8 12h8" stroke="white" stroke-width="1.2"
+                                                stroke-linecap="round" opacity="0.7" />
+                                        </svg>
+                                    </div>
+                                    <span class="status-text">运行状态:</span>
                                 </span>
                                 <span id="runningStatus" class="status-badge">检查中...</span>
                             </div>
                             <div class="status-item">
                                 <span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
-                                        class="status-icon">
-                                        <path
-                                            d="M21,6H3A1,1 0 0,0 2,7V17A1,1 0 0,0 3,18H21A1,1 0 0,0 22,17V7A1,1 0 0,0 21,6M20,16H4V8H20V16M6,15A1,1 0 0,0 7,14A1,1 0 0,0 6,13A1,1 0 0,0 5,14A1,1 0 0,0 6,15M8,13A1,1 0 0,0 9,12A1,1 0 0,0 8,11A1,1 0 0,0 7,12A1,1 0 0,0 8,13M16,15A1,1 0 0,0 17,14A1,1 0 0,0 16,13A1,1 0 0,0 15,14A1,1 0 0,0 16,15M18,13A1,1 0 0,0 19,12A1,1 0 0,0 18,11A1,1 0 0,0 17,12A1,1 0 0,0 18,13Z" />
-                                    </svg>
-                                    游戏模式:
+                                    <div class="miuix-status-icon">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                                            class="status-icon">
+                                            <path
+                                                d="M21,6H3A1,1 0 0,0 2,7V17A1,1 0 0,0 3,18H21A1,1 0 0,0 22,17V7A1,1 0 0,0 21,6Z"
+                                                opacity="0.3" />
+                                            <path
+                                                d="M21,6H3A1,1 0 0,0 2,7V17A1,1 0 0,0 3,18H21A1,1 0 0,0 22,17V7A1,1 0 0,0 21,6M20,16H4V8H20V16Z" />
+                                            <circle cx="6" cy="12" r="1.5" fill="white" opacity="0.8" />
+                                            <circle cx="18" cy="12" r="1.5" fill="white" opacity="0.8" />
+                                            <path d="M9 10h6v4H9z" fill="white" opacity="0.6" />
+                                        </svg>
+                                    </div>
+                                    <span class="status-text">游戏模式:</span>
                                 </span>
                                 <span id="gameModeStatus" class="status-badge">检查中...</span>
                             </div>
                             <div class="status-item">
                                 <span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
-                                        class="status-icon">
-                                        <path
-                                            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                                    </svg>
-                                    模块版本:
+                                    <div class="miuix-status-icon">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                                            class="status-icon">
+                                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2Z"
+                                                opacity="0.3" />
+                                            <path
+                                                d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                            <path d="M8 12h8M8 14h6M8 16h4" stroke="white" stroke-width="1"
+                                                opacity="0.7" />
+                                            <circle cx="15.5" cy="6.5" r="1" fill="white" opacity="0.8" />
+                                        </svg>
+                                    </div>
+                                    <span class="status-text">模块版本:</span>
                                 </span>
                                 <span id="moduleVersion" class="version-badge">加载中...</span>
                             </div>
