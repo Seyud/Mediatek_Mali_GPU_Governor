@@ -57,6 +57,12 @@ button:focus,
     box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.3);
 }
 
+/* 主题切换按钮的特殊圆形焦点样式 */
+.theme-toggle:focus {
+    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.4);
+    background-color: var(--accent-bg);
+}
+
 /* 移除底部导航栏按钮的焦点样式 */
 .nav-item:focus {
     box-shadow: none;
@@ -149,6 +155,12 @@ body {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .theme-toggle:hover {
@@ -158,6 +170,9 @@ body {
 
 .theme-toggle:active {
     transform: scale(0.95);
+    background-color: var(--accent-bg);
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .theme-toggle svg {
@@ -526,12 +541,12 @@ body {
         border-radius: 7px !important;
         margin-right: 10px !important;
     }
-    
+
     .card-title .title-icon svg {
         width: 16px !important;
         height: 16px !important;
     }
-    
+
     .card:hover .card-title .title-icon {
         transform: scale(1.1) rotate(2deg) !important;
     }
@@ -539,6 +554,7 @@ body {
 
 /* 动画减少偏好支持 */
 @media (prefers-reduced-motion: reduce) {
+
     .card-title .title-icon,
     .card-title .title-icon svg,
     .card-title .title-icon::before {
@@ -587,7 +603,8 @@ body {
     transition: all 0.3s ease;
     z-index: 1;
     position: relative;
-    filter: none; /* 移除drop-shadow，因为容器已有阴影 */
+    filter: none;
+    /* 移除drop-shadow，因为容器已有阴影 */
 }
 
 #statusCard .card:hover .card-title .title-icon {
@@ -1644,12 +1661,14 @@ button:hover svg {
 /* 移动设备和触摸优化 */
 @media (max-width: 480px) {
     .theme-toggle {
-        width: 36px;
-        height: 36px;
+        width: 44px;
+        height: 44px;
         padding: 8px;
         /* 增加触摸区域 */
         min-width: 44px;
         min-height: 44px;
+        border-radius: 50%;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .theme-toggle svg {
@@ -1675,6 +1694,8 @@ button:hover svg {
 @media (prefers-contrast: high) {
     .theme-toggle {
         border: 2px solid var(--text-color);
+        border-radius: 50%;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .theme-toggle svg {
@@ -1702,6 +1723,11 @@ button:hover svg {
         transition: opacity 0.2s ease, transform 0.2s ease !important;
     }
 
+    .theme-toggle {
+        border-radius: 50%;
+        -webkit-tap-highlight-color: transparent;
+    }
+
     .theme-toggle::before,
     .theme-toggle::after {
         display: none !important;
@@ -1720,6 +1746,25 @@ button:hover svg {
 
 [data-theme="dark"] .theme-toggle {
     border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* 彻底移除主题切换按钮的默认选中效果 */
+.theme-toggle::selection {
+    background: transparent;
+}
+
+.theme-toggle::-moz-selection {
+    background: transparent;
+}
+
+.theme-toggle,
+.theme-toggle * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .log-actions {
@@ -2382,12 +2427,12 @@ button:hover svg {
         border-radius: 7px !important;
         margin-right: 10px !important;
     }
-    
+
     #statusCard .card-title .title-icon svg {
         width: 16px !important;
         height: 16px !important;
     }
-    
+
     #statusCard .card:hover .card-title .title-icon {
         transform: scale(1.1) rotate(2deg) !important;
     }
@@ -2395,6 +2440,7 @@ button:hover svg {
 
 /* 减少动画偏好支持 */
 @media (prefers-reduced-motion: reduce) {
+
     #statusCard .card-title .title-icon,
     #statusCard .card-title .title-icon svg,
     #statusCard .card-title .title-icon::before {
