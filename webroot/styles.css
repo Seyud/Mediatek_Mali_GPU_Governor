@@ -213,10 +213,13 @@ body {
 
 /* 动画关键帧 */
 @keyframes sunPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.9;
         transform: scale(1);
     }
+
     50% {
         opacity: 1;
         transform: scale(1.1);
@@ -228,9 +231,11 @@ body {
         transform: rotate(0deg);
         opacity: 0.8;
     }
+
     50% {
         opacity: 1;
     }
+
     100% {
         transform: rotate(360deg);
         opacity: 0.8;
@@ -238,10 +243,13 @@ body {
 }
 
 @keyframes moonGlow {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.9;
         filter: brightness(1);
     }
+
     50% {
         opacity: 1;
         filter: brightness(1.1);
@@ -249,10 +257,13 @@ body {
 }
 
 @keyframes crater {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.3;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.5;
         transform: scale(1.05);
@@ -260,10 +271,13 @@ body {
 }
 
 @keyframes twinkle {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.5;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.8;
         transform: scale(1.2);
@@ -339,10 +353,10 @@ body {
 
 /* 主题切换时的全局过渡效果 */
 * {
-    transition: background-color 0.3s ease, 
-                color 0.3s ease, 
-                border-color 0.3s ease, 
-                box-shadow 0.3s ease;
+    transition: background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 /* 确保某些元素不受全局过渡影响 */
@@ -394,10 +408,12 @@ body {
         transform: translate(-50%, -50%) scale(0);
         opacity: 0.8;
     }
+
     50% {
         transform: translate(-50%, -50%) scale(1.5);
         opacity: 0.4;
     }
+
     100% {
         transform: translate(-50%, -50%) scale(2);
         opacity: 0;
@@ -1124,21 +1140,21 @@ button:hover svg {
         min-width: 44px;
         min-height: 44px;
     }
-    
+
     .theme-toggle svg {
         width: 16px;
         height: 16px;
     }
-    
+
     /* 减少动画强度以提升性能 */
     .theme-toggle .light-icon svg circle {
         animation: none;
     }
-    
+
     .theme-toggle .light-icon svg path {
         animation: sunRays 6s linear infinite;
     }
-    
+
     .theme-toggle .dark-icon svg path:first-child {
         animation: moonGlow 6s ease-in-out infinite;
     }
@@ -1149,15 +1165,15 @@ button:hover svg {
     .theme-toggle {
         border: 2px solid var(--text-color);
     }
-    
+
     .theme-toggle svg {
         filter: none;
     }
-    
+
     .theme-toggle:hover {
         background-color: var(--text-color);
     }
-    
+
     .theme-toggle:hover svg {
         color: var(--background-color);
     }
@@ -1165,6 +1181,7 @@ button:hover svg {
 
 /* 减少动画模式支持 */
 @media (prefers-reduced-motion: reduce) {
+
     .theme-toggle,
     .theme-toggle svg,
     .theme-toggle svg *,
@@ -1173,7 +1190,7 @@ button:hover svg {
         animation: none !important;
         transition: opacity 0.2s ease, transform 0.2s ease !important;
     }
-    
+
     .theme-toggle::before,
     .theme-toggle::after {
         display: none !important;
@@ -1525,6 +1542,8 @@ button:hover svg {
     display: flex;
     align-items: center;
     justify-content: center;
+    transform: translateY(12px);
+    /* 默认状态下图标向下移动更多，比选中状态低不少 */
 }
 
 .nav-icon svg {
@@ -1544,16 +1563,20 @@ button:hover svg {
 }
 
 .nav-item.active .nav-icon {
-    transform: translateY(-4px);
+    transform: translateY(8px);
+    /* 向下移动图标更多距离 */
 }
 
 .nav-item.active .nav-icon svg {
-    transform: translateY(-4px);
+    transform: translateY(0px);
+    /* 移除额外的向下移动 */
 }
 
 .nav-item.active .nav-text {
     height: 16px;
     opacity: 1;
+    transform: translateY(14px);
+    /* 选中状态文字向下移动更多 */
 }
 
 /* 版权信息样式 */
