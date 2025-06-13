@@ -139,7 +139,7 @@ const translations = {
         'status_module_version': '模块版本:',
         'status_unknown': '未知',
         // 配置页面
-        'config_gpu_title': 'GPU配置表',
+        'config_gpu_title': 'GPU频率表',
         'config_freq': '频率 (MHz)',
         'config_volt': '电压 (uV)',
         'config_ddr': '内存档位',
@@ -261,7 +261,7 @@ const translations = {
         'status_module_version': 'Module Version:',
         'status_unknown': 'Unknown',
         // Config page
-        'config_gpu_title': 'GPU Configuration',
+        'config_gpu_title': 'GPU Frequency Table',
         'config_freq': 'Frequency (MHz)',
         'config_volt': 'Voltage (uV)',
         'config_ddr': 'Memory Level',
@@ -520,12 +520,18 @@ function applyTranslations() {
         // 按钮
         const addConfigBtn = document.getElementById('addConfigBtn');
         if (addConfigBtn) {
-            addConfigBtn.textContent = getTranslation('config_add');
+            const btnText = addConfigBtn.querySelector('.btn-text');
+            if (btnText) {
+                btnText.textContent = getTranslation('config_add');
+            }
         }
 
         const saveConfigBtn = document.getElementById('saveConfigBtn');
         if (saveConfigBtn) {
-            saveConfigBtn.textContent = getTranslation('config_save');
+            const btnText = saveConfigBtn.querySelector('.btn-text');
+            if (btnText) {
+                btnText.textContent = getTranslation('config_save');
+            }
         }
 
         // 更新余量配置
