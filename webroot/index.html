@@ -326,12 +326,22 @@
                             设置
                         </h2>
                         <div class="card-content">
-                            <div class="status-item">
-                                <span>深色模式跟随系统:</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="followSystemThemeToggle">
-                                    <span class="slider round"></span>
-                                </label>
+                            <div class="miuix-super-switch" id="followSystemThemeSuperSwitch" aria-label="深色模式跟随系统设置开关"
+                                aria-describedby="theme-follow-description">
+                                <div class="miuix-super-switch-content">
+                                    <div class="miuix-super-switch-text">
+                                        <div class="miuix-super-switch-title" data-i18n="settings_theme_follow">深色模式跟随系统
+                                        </div>
+                                        <div class="miuix-super-switch-summary" id="theme-follow-description"
+                                            data-i18n="settings_theme_follow_summary">自动根据系统设置切换主题</div>
+                                    </div>
+                                    <div class="miuix-switch" id="followSystemThemeToggle">
+                                        <input type="checkbox" class="miuix-switch-input" aria-hidden="true">
+                                        <div class="miuix-switch-track">
+                                            <div class="miuix-switch-thumb"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="status-item">

@@ -30,7 +30,8 @@ const themeToggle = document.getElementById('themeToggle');
 const runningStatus = document.getElementById('runningStatus');
 const gameModeStatus = document.getElementById('gameModeStatus');
 const moduleVersion = document.getElementById('moduleVersion');
-const followSystemThemeToggle = document.getElementById('followSystemThemeToggle');
+const followSystemThemeToggle = document.querySelector('#followSystemThemeToggle .miuix-switch-input');
+const followSystemThemeSuperSwitch = document.getElementById('followSystemThemeSuperSwitch');
 const logLevelContainer = document.getElementById('logLevelContainer');
 const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
@@ -167,7 +168,8 @@ const translations = {
         'log_size_warning': '警告: 日志文件大小已超过限制，将自动轮转。',
         // 设置页面
         'settings_title': '设置',
-        'settings_theme_follow': '深色模式跟随系统:',
+        'settings_theme_follow': '深色模式跟随系统',
+        'settings_theme_follow_summary': '自动根据系统设置切换主题',
         'settings_language': '语言设置:',
         'settings_language_follow': '跟随系统',
         'settings_language_zh': '中文',
@@ -289,7 +291,8 @@ const translations = {
         'log_size_warning': 'Warning: Log file size exceeds limit, it will be rotated automatically.',
         // Settings page
         'settings_title': 'Settings',
-        'settings_theme_follow': 'Follow System Dark Mode:',
+        'settings_theme_follow': 'Follow System Dark Mode',
+        'settings_theme_follow_summary': 'Automatically switch theme based on system settings',
         'settings_language': 'Language:',
         'settings_language_follow': 'Follow System',
         'settings_language_zh': '中文',
@@ -1135,10 +1138,54 @@ function initTheme() {
         toast(getTranslation(themeKey));
     });
 
-    // 跟随系统主题开关事件
+    // 跟随系统主题SuperSwitch事件 - 支持点击整个区域
+    followSystemThemeSuperSwitch.addEventListener('click', (e) => {
+        // 如果点击的是switch输入框本身，让它正常处理
+        if (e.target === followSystemThemeToggle) {
+            return;
+        }
+
+        // 阻止事件冒泡并切换开关状态
+        e.preventDefault();
+
+        // 添加触觉反馈（如果支持）
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+
+        followSystemThemeToggle.checked = !followSystemThemeToggle.checked;
+
+        // 手动触发change事件
+        const changeEvent = new Event('change', { bubbles: true });
+        followSystemThemeToggle.dispatchEvent(changeEvent);
+    });
+
+    // 为SuperSwitch添加键盘导航支持
+    followSystemThemeSuperSwitch.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            followSystemThemeSuperSwitch.click();
+        }
+    });
+
+    // 使SuperSwitch可以通过Tab键聚焦
+    followSystemThemeSuperSwitch.setAttribute('tabindex', '0');
+    followSystemThemeSuperSwitch.setAttribute('role', 'switch');
+    followSystemThemeSuperSwitch.setAttribute('aria-checked', followSystemThemeToggle.checked);
+
+    // 跟随系统主题开关状态变化事件
     followSystemThemeToggle.addEventListener('change', () => {
         const isFollowSystem = followSystemThemeToggle.checked;
         localStorage.setItem('followSystemTheme', isFollowSystem.toString());
+
+        // 更新aria-checked属性
+        followSystemThemeSuperSwitch.setAttribute('aria-checked', isFollowSystem);
+
+        // 添加状态切换动画
+        followSystemThemeSuperSwitch.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+            followSystemThemeSuperSwitch.style.transform = '';
+        }, 150);
 
         if (isFollowSystem) {
             // 如果开启了跟随系统，则立即应用系统主题
