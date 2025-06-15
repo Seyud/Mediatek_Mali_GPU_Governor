@@ -324,14 +324,14 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         target="$(getprop ro.board.platform)"
         cfgname="$(get_config_name $target)"
 
-        # 特殊处理mt6983，可能是mt6891或mt6893
-        if [ "$target" = "mt6983" ]; then
+        # 特殊处理mt6893，可能是mt6891或mt6893
+        if [ "$target" = "mt6893" ]; then
             # 如果CPU7最大频率小于2700000，则是mt6891
             if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
-                echo "检测到mt6983但CPU7频率较低，判断为mt6891"
+                echo "检测到mt6893但CPU7频率较低，判断为mt6891"
                 cfgname="mtd1100"
             else
-                echo "检测到mt6983且CPU7频率正常，判断为mt6893"
+                echo "检测到mt6893且CPU7频率正常，判断为mt6893"
                 cfgname="mtd1200"
             fi
         fi

@@ -163,8 +163,8 @@ install_gov() {
     target="$(getprop ro.board.platform)"
     cfgname="$(get_config_name $target)"
 
-    # 特殊处理mt6983，可能是mt6891或mt6893
-    if [ "$target" = "mt6983" ]; then
+    # 特殊处理mt6893，可能是mt6891或mt6893
+    if [ "$target" = "mt6893" ]; then
         # 如果CPU7最大频率小于2700000，则是mt6891
         if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
             echo "$(translate "🔍 检测到mt6983但CPU7频率较低，判断为mt6891" "🔍 Detected mt6983 but CPU7 frequency is lower, identified as mt6891")"
