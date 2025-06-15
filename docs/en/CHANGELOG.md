@@ -1,43 +1,76 @@
-# 📋 MediaTek Mali GPU Governor Changelog
+# 📝 CHANGELOG
 
-## 🚀 v2.5 → v2.6 (2025-05-19 → 2025-06-01)
+## 🎯 v2.6 → v2.7 (June 15, 2025)
 
-### ✨ Core Feature Additions
+### ✨ New Features
 
-#### 🔧 V2 Driver Optimization Mechanism
-- ⚡ **Smart Frequency Writing**: When the same frequency is detected continuously, reduce unnecessary write operations through a counter mechanism
-- 🔄 **Forced Write Threshold**: Default set to 5 times, when the same frequency count reaches the threshold, force execution of write to ensure system stability
+#### 🎨 WebUI Interface Complete Redesign
+- **SVG Vector Icon System**
+  - Replaced simple emojis with exquisite SVG vector icons
+  - Sun icon features new ray animations and decorative rings
+  - Moon icon includes surface textures and star decorations
 
-#### 🚀 Startup System Refactoring
-- 🌐 **Enhanced Bilingual Support**: Initialization scripts now include complete Chinese-English bilingual support system
-- 📝 **Smart Logging Functions**: Added bilingual logging that automatically selects Chinese or English output based on system language
-- 🔄 **Dynamic Module Description**: Real-time update of module description status (Starting→Running→Error), providing better user feedback
-- 🆔 **PID Management Mechanism**: Added process ID management to prevent duplicate startup
-- 📊 **Status Description System**: Support for displaying running, stopped, error, starting and other status
-- 🔧 **Module Description Updates**: Dynamic update of module information
+- **Brand New Tab-style Log Level Selector**
+  - Four levels (Debug/Info/Warn/Error) each with dedicated SVG icons
+  - Supports real-time preview and visual feedback
 
-### 🔄 Feature Changes and Optimizations
+- **Multi-tab Log Viewer**
+  - Separate display of main log (gpu_gov.log) and initialization log (initsvc.log)
+  - Each tab equipped with dedicated icons and status indicators
+  - Support for quick switching between tabs
 
-#### 🎮 Interaction Control Simplification
-- ❌ **Removed Manual Game Mode Toggle**: `action.sh` script no longer supports manual enable/disable game mode functionality
-- 🎯 **Menu Streamlining**: Main menu reduced from 4 options to 3 (Governor Service Control, Log Level Settings, Exit)
-- 🤖 **Focus on Auto Detection**: Game mode completely relies on automatic detection of application package names in `games.conf`
+- **Responsive Grid Layout System**
+  - Interface layout adapted for different screen sizes
 
-#### 📚 Documentation System Expansion
-- 🌍 **Complete English Documentation**: Added `docs/en/README.md` providing complete English version documentation
-- 🔗 **Community Link Integration**: Added community badges at the top of documentation
-- 📖 **Structured Reorganization**: Reorganized documentation content by function type to improve readability
-- 🎯 **Feature Classification Optimization**: Categorized features into "Core Functions", "User Interface & Interaction", "Technical Features"
+- **User Safety Alert System** ⚠️
+  - Added important warning notification feature
+  - Reminds users to adjust voltage to prevent crashes and stuttering
+  - Enhanced user safety
 
-### 🛠️ Technical Improvements
+#### 📱 Chipset Support Expansion
+- **New Dimensity 720 Configuration** 🆕
+  - Added `mtd720.conf` configuration file, supporting 12 frequency levels
+  - Frequency range: 219MHz - 1068MHz
+  - Voltage range: 45000μV - 60625μV
+  - Optimized DDR setting strategy
+  - **Only configuration pre-adaptation, core support awaits future versions**
 
-#### 💻 Rust Core Code Optimization
-- 🎯 **V2 Driver Write Logic**: Added smart frequency write logic
-- 📊 **Counter Mechanism**: When the same frequency is detected, increment counter and force write when threshold is reached
-- 🔄 **DCS Mechanism Optimization**: Improved handling logic for standby restart issues
+### 🔧 Feature Improvements
 
-#### 📋 Script System Enhancement
-- 🌐 **Language Detection**: Initialization scripts added automatic language detection functionality
-- 📝 **Enhanced Logging**: All log outputs support Chinese-English bilingual display
+#### 🎯 GPU Frequency Scaling Optimization
+- **Warning Rate Limiter Optimization** ⏱️
+  - Extended rate limiting time from 30 seconds to 60 seconds
+  - Significantly reduced system false positive rate
+  - Improved user experience stability
 
----
+- **Log Display System Enhancement** 📋
+  - Optimized log output format and readability
+  - Enhanced effectiveness of debug information
+  - Improved developer diagnostic efficiency
+
+- **v2 Driver Frequency Writing Mechanism Optimization** ⚡
+  - Improved reliability of device frequency writing
+  - Enhanced responsiveness of frequency adjustments
+  - Increased system compatibility
+
+- **Debug System Improvement** 🔍
+  - Main program added `debug` level log support
+  - Enhanced usability of developer diagnostic tools
+
+- **Documentation Maintenance Optimization** 📚
+  - Removed deprecated Discord channel links from README
+  - Cleaned up outdated community contact information
+  - Maintained accuracy of documentation information
+
+### 🐛 Bug Fixes
+
+#### 🔄 Driver Compatibility Fixes
+- **v1 Driver Idle Mode Handling Fix** 🛠️
+  - Fixed device idle mode setting logic
+  - Properly restored dynamic frequency scaling functionality
+  - Ensured power management in low-load scenarios
+
+- **Dimensity 9000 Frequency Display Fix** 🔧
+  - Added DCS Policy status check and disable functionality
+  - Fixed stuttering issues caused by two-digit frequencies on Dimensity 9000
+  - Improved frequency scaling stability for high-end chipsets
