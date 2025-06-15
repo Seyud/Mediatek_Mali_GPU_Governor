@@ -814,15 +814,30 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Miuix风格模块状态卡片特殊样式 */
-#statusCard {
+/* Miuix风格卡片特殊样式 - 应用到所有主要卡片 */
+#statusCard,
+#gpuConfigCard,
+#marginCard,
+#gamesCard,
+#logCard,
+#settingsCard,
+#appIconCard,
+#copyrightCard {
     background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
     border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
     position: relative;
     overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#statusCard::before {
+#statusCard::before,
+#gpuConfigCard::before,
+#marginCard::before,
+#gamesCard::before,
+#logCard::before,
+#settingsCard::before,
+#appIconCard::before,
+#copyrightCard::before {
     content: "";
     position: absolute;
     top: 0;
@@ -833,19 +848,36 @@ body {
     pointer-events: none;
 }
 
-#statusCard:hover {
+#statusCard:hover,
+#gpuConfigCard:hover,
+#marginCard:hover,
+#gamesCard:hover,
+#logCard:hover,
+#settingsCard:hover,
+#appIconCard:hover,
+#copyrightCard:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
 }
 
-#statusCard .card-title {
+#statusCard .card-title,
+#gpuConfigCard .card-title,
+#marginCard .card-title,
+#gamesCard .card-title,
+#logCard .card-title,
+#settingsCard .card-title {
     background: linear-gradient(135deg, transparent 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
     border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
     position: relative;
 }
 
-#statusCard .card-title::after {
+#statusCard .card-title::after,
+#gpuConfigCard .card-title::after,
+#marginCard .card-title::after,
+#gamesCard .card-title::after,
+#logCard .card-title::after,
+#settingsCard .card-title::after {
     content: "";
     position: absolute;
     bottom: 0;
@@ -856,28 +888,59 @@ body {
     opacity: 0.3;
 }
 
-#statusCard .card-content {
+#statusCard .card-content,
+#gpuConfigCard .card-content,
+#marginCard .card-content,
+#gamesCard .card-content,
+#logCard .card-content,
+#settingsCard .card-content {
     position: relative;
     z-index: 1;
     padding: 20px;
 }
 
-/* 深色模式下的状态卡片样式 */
-[data-theme="dark"] #statusCard {
+/* 深色模式下的所有卡片样式 */
+[data-theme="dark"] #statusCard,
+[data-theme="dark"] #gpuConfigCard,
+[data-theme="dark"] #marginCard,
+[data-theme="dark"] #gamesCard,
+[data-theme="dark"] #logCard,
+[data-theme="dark"] #settingsCard,
+[data-theme="dark"] #appIconCard,
+[data-theme="dark"] #copyrightCard {
     background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
     border-color: rgba(13, 132, 255, 0.15);
 }
 
-[data-theme="dark"] #statusCard::before {
+[data-theme="dark"] #statusCard::before,
+[data-theme="dark"] #gpuConfigCard::before,
+[data-theme="dark"] #marginCard::before,
+[data-theme="dark"] #gamesCard::before,
+[data-theme="dark"] #logCard::before,
+[data-theme="dark"] #settingsCard::before,
+[data-theme="dark"] #appIconCard::before,
+[data-theme="dark"] #copyrightCard::before {
     background: radial-gradient(circle at top right, rgba(13, 132, 255, 0.08) 0%, transparent 70%);
 }
 
-[data-theme="dark"] #statusCard:hover {
+[data-theme="dark"] #statusCard:hover,
+[data-theme="dark"] #gpuConfigCard:hover,
+[data-theme="dark"] #marginCard:hover,
+[data-theme="dark"] #gamesCard:hover,
+[data-theme="dark"] #logCard:hover,
+[data-theme="dark"] #settingsCard:hover,
+[data-theme="dark"] #appIconCard:hover,
+[data-theme="dark"] #copyrightCard:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     border-color: rgba(13, 132, 255, 0.25);
 }
 
-[data-theme="dark"] #statusCard .card-title {
+[data-theme="dark"] #statusCard .card-title,
+[data-theme="dark"] #gpuConfigCard .card-title,
+[data-theme="dark"] #marginCard .card-title,
+[data-theme="dark"] #gamesCard .card-title,
+[data-theme="dark"] #logCard .card-title,
+[data-theme="dark"] #settingsCard .card-title {
     background: linear-gradient(135deg, transparent 0%, rgba(13, 132, 255, 0.08) 100%);
     border-bottom-color: rgba(13, 132, 255, 0.2);
 }
@@ -1139,74 +1202,160 @@ input:checked+.slider:before {
     border-radius: 50%;
 }
 
-/* 表格样式 */
+/* Miuix风格表格样式 */
 .table-container {
     overflow-x: auto;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    background: transparent;
 }
 
 th,
 td {
-    padding: 12px;
+    padding: 16px;
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    transition: background-color 0.3s ease;
 }
 
 th {
-    font-weight: 500;
-    color: var(--secondary-text-color);
+    font-weight: 600;
+    color: var(--text-color);
+    background: linear-gradient(135deg, transparent 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
+    font-size: 14px;
 }
 
-/* 游戏列表样式 */
+tbody tr {
+    transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+    transform: translateY(-1px);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 深色模式表格样式 */
+[data-theme="dark"] .table-container {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] th,
+[data-theme="dark"] td {
+    border-bottom-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] th {
+    background: linear-gradient(135deg, transparent 0%, rgba(13, 132, 255, 0.08) 100%);
+}
+
+[data-theme="dark"] tbody tr:hover {
+    background: rgba(13, 132, 255, 0.08);
+}
+
+/* Miuix风格游戏列表样式 */
 .games-list {
     list-style: none;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .games-list li {
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-color);
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    border-radius: 8px;
+    margin-bottom: 4px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.games-list li:hover {
+    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+    transform: translateX(4px);
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
 }
 
 .games-list li:last-child {
-    border-bottom: none;
+    border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    margin-bottom: 0;
 }
 
 .games-actions {
     display: flex;
     justify-content: space-between;
+    gap: 12px;
     margin-top: 16px;
 }
 
+/* Miuix风格删除按钮 */
 .game-delete-btn {
-    background: none;
-    border: none;
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(244, 67, 54, 0.1) 100%);
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    border-radius: 8px;
     cursor: pointer;
     color: var(--error-color);
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    padding: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.1);
 }
 
 .game-delete-btn svg {
     width: 16px;
     height: 16px;
-    transition: transform 0.2s;
+    transition: transform 0.3s ease;
 }
 
 .game-delete-btn:hover {
-    background-color: var(--border-color);
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(244, 67, 54, 0.15) 100%);
+    border-color: rgba(231, 76, 60, 0.4);
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+}
+
+.game-delete-btn:hover svg {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* 深色模式游戏列表样式 */
+[data-theme="dark"] .games-list {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .games-list li {
+    border-bottom-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .games-list li:hover {
+    background: rgba(13, 132, 255, 0.08);
+    border-color: rgba(13, 132, 255, 0.25);
+}
+
+[data-theme="dark"] .games-list li:last-child {
+    border-bottom-color: rgba(13, 132, 255, 0.15);
 }
 
 /* 日志样式 */
@@ -1226,35 +1375,59 @@ th {
     max-width: 300px;
 }
 
+/* Miuix风格日志标签按钮 */
 .log-tab-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 12px 8px;
-    background-color: transparent;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
+    padding: 16px 12px;
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    border-radius: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--text-color);
-    min-height: 70px;
+    min-height: 80px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.log-tab-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .log-tab-btn:hover {
-    border-color: var(--accent-color);
-    background-color: var(--accent-bg);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.08) 100%);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.log-tab-btn:hover::before {
+    opacity: 1;
 }
 
 .log-tab-btn.active {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
     border-color: var(--accent-color);
     color: white;
-    box-shadow: 0 4px 12px rgba(13, 132, 255, 0.3);
+    box-shadow: 0 6px 20px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+    transform: translateY(-2px);
+}
+
+.log-tab-btn.active::before {
+    opacity: 1;
 }
 
 .log-tab-btn .tab-icon {
@@ -1319,18 +1492,58 @@ th {
     }
 }
 
+/* Miuix风格刷新按钮 */
 .refresh-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 16px;
+    gap: 8px;
+    padding: 12px 20px;
     white-space: nowrap;
     flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb, 13, 132, 255), 0.1) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
+    border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
+    border-radius: 12px;
+    color: var(--accent-color);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.refresh-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb, 13, 132, 255), 0.15) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.08) 100%);
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
+}
+
+.refresh-btn:hover::before {
+    opacity: 1;
+}
+
+.refresh-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
 }
 
 .refresh-icon {
-    font-size: 14px;
-    transition: transform 0.3s ease;
+    font-size: 16px;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1339,15 +1552,26 @@ th {
 .refresh-icon svg {
     width: 16px;
     height: 16px;
-    transition: transform 0.3s ease;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .refresh-btn:hover .refresh-icon {
-    transform: rotate(180deg);
+    transform: rotate(360deg) scale(1.1);
 }
 
 .refresh-btn:hover .refresh-icon svg {
-    transform: rotate(180deg);
+    transform: rotate(360deg) scale(1.1);
+}
+
+/* 深色模式刷新按钮 */
+[data-theme="dark"] .refresh-btn {
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.15) 0%, rgba(13, 132, 255, 0.08) 100%);
+    border-color: rgba(13, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .refresh-btn:hover {
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.2) 0%, rgba(13, 132, 255, 0.12) 100%);
+    border-color: rgba(13, 132, 255, 0.5);
 }
 
 /* SVG图标通用样式 */
@@ -1778,26 +2002,82 @@ button:hover svg {
     min-width: 120px;
 }
 
+/* Miuix风格按钮 */
 .btn {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
     color: white;
     border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
+    border-radius: 12px;
+    padding: 12px 24px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     outline: none;
-    /* 移除默认焦点轮廓 */
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+    min-height: 44px;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .btn:hover {
-    background-color: var(--accent-hover);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+    background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+}
+
+.btn:hover::before {
+    opacity: 1;
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
 }
 
 .btn:focus {
-    background-color: var(--accent-hover);
-    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.4);
+    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3), 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+}
+
+/* 按钮图标样式 */
+.btn .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn .btn-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* 主要按钮样式 */
+.btn-primary {
+    background: linear-gradient(135deg, #00c853 0%, #4caf50 100%);
+    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #00e676 0%, #66bb6a 100%);
+    box-shadow: 0 6px 20px rgba(0, 200, 83, 0.4);
 }
 
 .select {
@@ -1922,71 +2202,144 @@ button:hover svg {
     color: white;
 }
 
-/* 数值选择器样式 */
+/* Miuix风格数值选择器样式 */
 .number-spinner {
     display: flex;
     align-items: center;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    border-radius: 12px;
     overflow: hidden;
-    background-color: var(--card-background);
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.number-spinner:hover {
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .spinner-btn {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
     color: white;
     border: none;
-    width: 40px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.spinner-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .spinner-btn:hover {
-    background-color: var(--accent-hover);
+    background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+}
+
+.spinner-btn:hover::before {
+    opacity: 1;
 }
 
 .spinner-btn:active {
-    background-color: var(--accent-hover);
     transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
 }
 
 .spinner-btn:disabled {
-    background-color: var(--border-color);
+    background: linear-gradient(135deg, var(--border-color) 0%, var(--secondary-text-color) 100%);
     cursor: not-allowed;
     opacity: 0.7;
     transform: none;
+    box-shadow: none;
+}
+
+.spinner-btn:disabled::before {
+    display: none;
 }
 
 .spinner-value {
     flex: 1;
     text-align: center;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--text-color);
-    background-color: var(--background-color);
-    border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
+    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+    border-left: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+    border-right: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+    transition: all 0.3s ease;
 }
 
+/* 深色模式数字旋转器样式 */
+[data-theme="dark"] .number-spinner {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .number-spinner:hover {
+    border-color: rgba(13, 132, 255, 0.25);
+}
+
+[data-theme="dark"] .spinner-value {
+    background: rgba(13, 132, 255, 0.08);
+    border-left-color: rgba(13, 132, 255, 0.2);
+    border-right-color: rgba(13, 132, 255, 0.2);
+}
+
+/* Miuix风格日志内容 */
 .log-content {
-    background-color: var(--background-color);
-    border-radius: 4px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 12px;
+    background: linear-gradient(135deg, var(--background-color) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
     white-space: pre-wrap;
     max-height: 500px;
     overflow-y: auto;
-    transition: opacity 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
     animation: slideIn 0.3s ease-out;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    color: var(--text-color);
+}
+
+.log-content:hover {
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 深色模式日志样式 */
+[data-theme="dark"] .log-content {
+    background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .log-content:hover {
+    border-color: rgba(13, 132, 255, 0.25);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .loading-text {
@@ -2135,16 +2488,37 @@ button:hover svg {
     /* 选中状态文字向下移动更多 */
 }
 
-/* 版权信息样式 */
+/* Miuix风格版权信息 */
 #copyrightCard {
     margin-top: 24px;
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
 }
 
 .copyright-content {
     text-align: center;
-    padding: 12px !important;
+    padding: 20px !important;
     color: var(--secondary-text-color);
-    font-size: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+.copyright-content p {
+    margin: 0;
+    font-weight: 500;
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+}
+
+/* 深色模式版权样式 */
+[data-theme="dark"] #copyrightCard {
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.08) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.2);
 }
 
 /* 配置编辑相关样式 */
@@ -2155,83 +2529,215 @@ button:hover svg {
     margin-top: 16px;
 }
 
+/* Miuix风格编辑和删除按钮 */
 .edit-btn,
 .delete-btn {
-    background: none;
-    border: none;
+    background: transparent;
+    border: 2px solid transparent;
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    padding: 8px;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-btn::before,
+.delete-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .edit-btn svg,
 .delete-btn svg,
 .game-delete-btn svg {
-    width: 16px;
-    height: 16px;
-    transition: transform 0.2s;
+    width: 18px;
+    height: 18px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
 }
 
 .edit-btn {
     color: var(--accent-color);
 }
 
+.edit-btn::before {
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb, 13, 132, 255), 0.1) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
+}
+
+.edit-btn:hover {
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
+}
+
+.edit-btn:hover::before {
+    opacity: 1;
+}
+
 .delete-btn {
     color: var(--error-color);
 }
 
-.edit-btn:hover,
+.delete-btn::before {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%);
+}
+
 .delete-btn:hover {
-    background-color: var(--border-color);
+    border-color: rgba(231, 76, 60, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+.delete-btn:hover::before {
+    opacity: 1;
 }
 
 .edit-btn:hover svg,
 .delete-btn:hover svg,
 .game-delete-btn:hover svg {
-    transform: scale(1.1);
+    transform: scale(1.15) rotate(5deg);
 }
 
-/* 模态对话框样式 */
+.edit-btn:active,
+.delete-btn:active {
+    transform: translateY(0) scale(0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色模式编辑删除按钮 */
+[data-theme="dark"] .edit-btn::before {
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.15) 0%, rgba(13, 132, 255, 0.08) 100%);
+}
+
+[data-theme="dark"] .delete-btn::before {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(244, 67, 54, 0.08) 100%);
+}
+
+/* Miuix风格模态对话框 */
 .modal {
     display: none;
     position: fixed;
     z-index: 2000;
-    /* 增加z-index确保在最上层 */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: modalFadeIn 0.3s ease-out;
 }
 
 .modal-content {
-    background-color: var(--card-background);
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
-    width: 80%;
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    margin: 10% auto;
+    padding: 32px;
+    border-radius: 20px;
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    width: 90%;
     max-width: 500px;
     position: relative;
     z-index: 2001;
-    /* 确保内容在模态框背景之上 */
+    animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center top;
+}
+
+.modal-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(var(--accent-color-rgb, 13, 132, 255), 0.03) 0%, transparent 70%);
+    border-radius: 20px;
+    pointer-events: none;
 }
 
 .close-modal {
     color: var(--secondary-text-color);
-    float: right;
+    position: absolute;
+    top: 16px;
+    right: 20px;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    background: transparent;
 }
 
 .close-modal:hover {
     color: var(--text-color);
+    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+    transform: scale(1.1);
+}
+
+.modal h3 {
+    margin: 0 0 24px 0;
+    color: var(--text-color);
+    font-size: 20px;
+    font-weight: 600;
+    padding-right: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 模态对话框动画 */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 深色模式模态对话框 */
+[data-theme="dark"] .modal {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .modal-content {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .modal-content::before {
+    background: radial-gradient(circle at top right, rgba(13, 132, 255, 0.08) 0%, transparent 70%);
 }
 
 .form-group {
@@ -2244,14 +2750,52 @@ button:hover svg {
     font-weight: 500;
 }
 
+/* Miuix风格表单输入框 */
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--background-color);
+    padding: 12px 16px;
+    border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--background-color) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
     color: var(--text-color);
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+    background: linear-gradient(135deg, var(--background-color) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
+    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2), 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 深色模式表单输入框 */
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select {
+    background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus {
+    border-color: rgba(13, 132, 255, 0.5);
+    background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.08) 100%);
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .form-group input:hover,
+[data-theme="dark"] .form-group select:hover {
+    border-color: rgba(13, 132, 255, 0.25);
 }
 
 .input-hint {
@@ -2268,25 +2812,30 @@ button:hover svg {
     margin-top: 16px;
 }
 
+/* 次要按钮样式 */
 .btn-secondary {
-    background-color: var(--border-color);
+    background: linear-gradient(135deg, var(--border-color) 0%, var(--secondary-text-color) 100%);
     color: var(--text-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary:hover {
-    background-color: var(--secondary-text-color);
+    background: linear-gradient(135deg, var(--secondary-text-color) 0%, var(--border-color) 100%);
     color: var(--card-background);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
+/* 危险按钮样式 */
 .btn-danger {
-    background-color: #e74c3c;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
     color: white;
     margin-left: auto;
-    /* 将删除按钮推到右侧 */
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
 .btn-danger:hover {
-    background-color: #c0392b;
+    background: linear-gradient(135deg, #ec7063 0%, #e74c3c 100%);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
 }
 
 /* 设置页面选择器的网格标签按钮样式 */
@@ -2298,38 +2847,62 @@ button:hover svg {
     max-width: 400px;
 }
 
+/* Miuix风格设置标签按钮 */
 .settings-tab-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 12px 8px;
-    background-color: transparent;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
+    padding: 14px 10px;
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--text-color);
-    min-height: 60px;
+    min-height: 70px;
     position: relative;
     overflow: hidden;
     font-size: 13px;
     line-height: 1.3;
     text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.settings-tab-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .settings-tab-btn:hover {
-    border-color: var(--accent-color);
-    background-color: var(--accent-bg);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.08) 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.settings-tab-btn:hover::before {
+    opacity: 1;
 }
 
 .settings-tab-btn.active {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
     border-color: var(--accent-color);
     color: white;
-    box-shadow: 0 2px 8px rgba(13, 132, 255, 0.25);
+    box-shadow: 0 4px 16px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+    transform: translateY(-1px);
+}
+
+.settings-tab-btn.active::before {
+    opacity: 1;
 }
 
 .settings-tab-btn .tab-icon {
