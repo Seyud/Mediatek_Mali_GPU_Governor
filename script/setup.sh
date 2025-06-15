@@ -167,10 +167,10 @@ install_gov() {
     if [ "$target" = "mt6893" ]; then
         # 如果CPU7最大频率小于2700000，则是mt6891
         if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
-            echo "$(translate "🔍 检测到mt6983但CPU7频率较低，判断为mt6891" "🔍 Detected mt6983 but CPU7 frequency is lower, identified as mt6891")"
+            echo "$(translate "🔍 检测到mt6893但CPU7频率较低，判断为mt6891" "🔍 Detected mt6893 but CPU7 frequency is lower, identified as mt6891")"
             cfgname="mtd1100"
         else
-            echo "$(translate "🔍 检测到mt6983且CPU7频率正常，判断为mt6893" "🔍 Detected mt6983 with normal CPU7 frequency, identified as mt6893")"
+            echo "$(translate "🔍 检测到mt6893且CPU7频率正常，判断为mt6893" "🔍 Detected mt6893 with normal CPU7 frequency, identified as mt6893")"
             cfgname="mtd1200"
         fi
     fi
