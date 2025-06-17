@@ -11,6 +11,7 @@ import datetime
 import sys
 import shutil
 import argparse
+import re
 from pathlib import Path
 
 # 7-Zip可执行文件路径
@@ -40,6 +41,26 @@ FILES_TO_PACK = [
     "uninstall.sh",
     "volt_list.txt"
 ]
+
+def fix_path_environment():
+    """修复环境变量Path中的双引号问题"""
+    current_path = os.environ.get('PATH', '')
+    
+    if '"' in current_path:
+        print("警告: 检测到环境变量Path中包含双引号字符")
+        print("这可能会导致Python扩展无法正确加载，正在自动修复...")
+        
+        # 移除不正确的双引号
+        fixed_path = re.sub(r'"([^"]*?)"', r'\1', current_path)
+        
+        # 设置修复后的环境变量
+        os.environ['PATH'] = fixed_path
+        
+        print("环境变量Path已临时修复（仅影响当前进程）")
+        print("如需永久修复，请运行fix_path.py或以管理员身份修改系统环境变量")
+        return True
+    
+    return False
 
 def check_7zip_exists():
     """检查7-Zip是否存在于指定路径"""
@@ -248,11 +269,16 @@ def main():
     parser.add_argument("-c", "--clean", action="store_true", help="打包前清理临时文件")
     parser.add_argument("-d", "--open-dir", action="store_true", help="打包完成后打开输出目录")
     parser.add_argument("--no-fix-eol", action="store_true", help="跳过换行符检查和修复")
+    parser.add_argument("--no-fix-path", action="store_true", help="跳过环境变量Path检查和修复")
     args = parser.parse_args()
 
     print("=" * 60)
     print("天玑GPU调速器模块打包工具")
     print("=" * 60)
+
+    # 检查并修复环境变量Path问题（除非明确指定跳过）
+    if not args.no_fix_path:
+        fix_path_environment()
 
     # 检查当前目录是否是模块根目录
     if not os.path.exists(os.path.join(WORK_DIR, "module.prop")):
