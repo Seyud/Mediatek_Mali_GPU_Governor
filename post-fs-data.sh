@@ -4,7 +4,7 @@ MODDIR=${0%/*}
 
 do_others() {
     # 创建日志目录
-    mkdir -p /data/adb/gpu_governor/log 2>/dev/null
+    mkdir -p /data/adb/gpu_governor/log 2> /dev/null
 
     # 记录操作
     echo "post-fs-data.sh: Execution started"
@@ -17,13 +17,13 @@ do_others() {
     DVFS=/proc/mali/dvfs_enable
     if [ -f "$DVFS" ]; then
         # 读取当前DVFS状态
-        dvfs_status=$(cat "$DVFS" 2>/dev/null | cut -f2 -d ' ')
+        dvfs_status=$(cat "$DVFS" 2> /dev/null | cut -f2 -d ' ')
         echo "post-fs-data.sh: Current DVFS status=$dvfs_status"
 
         # 尝试关闭DVFS
-        if echo 0 >"$DVFS" 2>/dev/null; then
+        if echo 0 > "$DVFS" 2> /dev/null; then
             # 确认DVFS已关闭
-            new_status=$(cat "$DVFS" 2>/dev/null | cut -f2 -d ' ')
+            new_status=$(cat "$DVFS" 2> /dev/null | cut -f2 -d ' ')
             if [[ "$new_status" == "0" ]]; then
                 echo "post-fs-data.sh: DVFS successfully disabled"
             else
@@ -46,7 +46,7 @@ do_others() {
 
         if [ -f "$DCS_MODE" ]; then
             # 读取当前DCS Policy状态
-            dcs_status=$(cat "$DCS_MODE" 2>/dev/null)
+            dcs_status=$(cat "$DCS_MODE" 2> /dev/null)
             echo "post-fs-data.sh: Current DCS Policy status=$dcs_status"
 
             # 检查是否已经禁用
@@ -54,9 +54,9 @@ do_others() {
                 echo "post-fs-data.sh: DCS Policy is already disabled"
             else
                 # 尝试关闭DCS Policy
-                if echo 0 >"$DCS_MODE" 2>/dev/null; then
+                if echo 0 > "$DCS_MODE" 2> /dev/null; then
                     # 确认DCS Policy已关闭
-                    new_status=$(cat "$DCS_MODE" 2>/dev/null)
+                    new_status=$(cat "$DCS_MODE" 2> /dev/null)
                     if echo "$new_status" | grep -q "disabled"; then
                         echo "post-fs-data.sh: DCS Policy successfully disabled on Dimensity 9000"
                     else

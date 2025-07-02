@@ -18,7 +18,7 @@ else
 fi
 
 # 创建初始化日志目录
-mkdir -p /data/adb/gpu_governor/log 2>/dev/null
+mkdir -p /data/adb/gpu_governor/log 2> /dev/null
 INIT_LOG="/data/adb/gpu_governor/log/initsvc.log"
 
 # 轮转初始化日志并备份旧的初始化日志
@@ -28,35 +28,35 @@ if [ -f "$INIT_LOG" ]; then
     INIT_LOG_BACKUP="${INIT_LOG}.${BACKUP_TIMESTAMP}.bak"
 
     # 备份旧的初始化日志
-    cp "$INIT_LOG" "$INIT_LOG_BACKUP" 2>/dev/null
+    cp "$INIT_LOG" "$INIT_LOG_BACKUP" 2> /dev/null
 
     # 清空原始日志文件
-    true >"$INIT_LOG"
+    true > "$INIT_LOG"
 
     # 设置正确的权限
     chmod 0666 "$INIT_LOG"
 
     # 记录轮转信息
-    echo "$(date) - Initialization log rotated, previous log backed up to ${INIT_LOG_BACKUP}" >"$INIT_LOG"
+    echo "$(date) - Initialization log rotated, previous log backed up to ${INIT_LOG_BACKUP}" > "$INIT_LOG"
 fi
 
 # 记录目录信息到初始化日志
-echo "$(date) - 🚀 Initialization started" >>"$INIT_LOG"
-echo "📁 SCRIPT_DIR=$SCRIPT_DIR" >>"$INIT_LOG"
-echo "📁 MODULE_DIR=$MODULE_DIR" >>"$INIT_LOG"
+echo "$(date) - 🚀 Initialization started" >> "$INIT_LOG"
+echo "📁 SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
+echo "📁 MODULE_DIR=$MODULE_DIR" >> "$INIT_LOG"
 
 # 确保路径信息正确加载
 if [ -f "$SCRIPT_DIR/pathinfo.sh" ]; then
     . "$SCRIPT_DIR/pathinfo.sh"
-    echo "✅ Successfully loaded pathinfo.sh" >>"$INIT_LOG"
+    echo "✅ Successfully loaded pathinfo.sh" >> "$INIT_LOG"
 else
     # 尝试其他可能的位置
     if [ -f "$MODULE_DIR/script/pathinfo.sh" ]; then
         . "$MODULE_DIR/script/pathinfo.sh"
-        echo "✅ Successfully loaded pathinfo.sh from module/script" >>"$INIT_LOG"
+        echo "✅ Successfully loaded pathinfo.sh from module/script" >> "$INIT_LOG"
     else
         # 由于pathinfo.sh未加载，log函数不可用，直接写入初始化日志
-        echo "❌ Error: pathinfo.sh not found in $SCRIPT_DIR or $MODULE_DIR/script" >>"$INIT_LOG"
+        echo "❌ Error: pathinfo.sh not found in $SCRIPT_DIR or $MODULE_DIR/script" >> "$INIT_LOG"
         exit 1
     fi
 fi
@@ -91,16 +91,16 @@ MAX_LOG_SIZE_MB=5
 wait_until_login
 
 # 确保日志目录和游戏目录存在并设置适当权限
-mkdir -p "$LOG_PATH" 2>/dev/null
-mkdir -p "$GAMES_PATH" 2>/dev/null
+mkdir -p "$LOG_PATH" 2> /dev/null
+mkdir -p "$GAMES_PATH" 2> /dev/null
 
 # 设置日志目录和游戏目录权限为777，确保任何进程都可以写入
-chmod 0777 "$LOG_PATH" 2>/dev/null
-chmod 0777 "$GAMES_PATH" 2>/dev/null
+chmod 0777 "$LOG_PATH" 2> /dev/null
+chmod 0777 "$GAMES_PATH" 2> /dev/null
 
 # 确保日志等级文件存在，默认为info级别
 if [ ! -f "$LOG_LEVEL_FILE" ]; then
-    echo "info" >"$LOG_LEVEL_FILE"
+    echo "info" > "$LOG_LEVEL_FILE"
     chmod 0666 "$LOG_LEVEL_FILE"
     log "Created log level file with default level: info"
 fi
@@ -109,10 +109,10 @@ fi
 # 先处理主日志文件
 if [ -f "$GPUGOV_LOGPATH" ]; then
     # 强制轮转主日志文件，确保启动时日志文件不会太大
-    cp "$GPUGOV_LOGPATH" "${GPUGOV_LOGPATH}.bak" 2>/dev/null
-    true >"$GPUGOV_LOGPATH"
+    cp "$GPUGOV_LOGPATH" "${GPUGOV_LOGPATH}.bak" 2> /dev/null
+    true > "$GPUGOV_LOGPATH"
     chmod 0666 "$GPUGOV_LOGPATH"
-    echo "$(date) - Forced log rotation at system startup, original log backed up to ${GPUGOV_LOGPATH}.bak" >>"$GPUGOV_LOGPATH"
+    echo "$(date) - Forced log rotation at system startup, original log backed up to ${GPUGOV_LOGPATH}.bak" >> "$GPUGOV_LOGPATH"
     sync
 fi
 
@@ -140,8 +140,8 @@ rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
     fi
 
     # 确保日志文件权限正确
-    chmod 0666 "$LOG_FILE" 2>/dev/null
-} >>"$INIT_LOG"
+    chmod 0666 "$LOG_FILE" 2> /dev/null
+} >> "$INIT_LOG"
 sync
 
 # 读取当前DVFS状态并记录到初始化日志
@@ -154,7 +154,7 @@ sync
         echo "This is normal for some devices or kernel versions"
     else
         # 文件存在，尝试读取状态
-        dvfs_status=$(cat "$DVFS" 2>/dev/null | cut -f2 -d ' ')
+        dvfs_status=$(cat "$DVFS" 2> /dev/null | cut -f2 -d ' ')
 
         if [ -z "$dvfs_status" ]; then
             echo "Unable to read DVFS status from $DVFS"
@@ -165,9 +165,9 @@ sync
                 echo "Warning: DVFS is currently enabled (status=$dvfs_status), disabling now..."
 
                 # 尝试关闭DVFS
-                if echo 0 >"$DVFS" 2>/dev/null; then
+                if echo 0 > "$DVFS" 2> /dev/null; then
                     # 确认DVFS已关闭
-                    new_status=$(cat "$DVFS" 2>/dev/null | cut -f2 -d ' ')
+                    new_status=$(cat "$DVFS" 2> /dev/null | cut -f2 -d ' ')
                     if [[ "$new_status" == "0" ]]; then
                         echo "DVFS successfully disabled"
                     else
@@ -181,7 +181,7 @@ sync
             fi
         fi
     fi
-} >>"$INIT_LOG" 2>&1
+} >> "$INIT_LOG" 2>&1
 
 # 关闭DCS Policy并记录到初始化日志 (仅针对天玑9000)
 {
@@ -200,7 +200,7 @@ sync
             echo "This is normal for some devices or kernel versions"
         else
             # 文件存在，尝试读取状态
-            dcs_status=$(cat "$DCS_MODE" 2>/dev/null)
+            dcs_status=$(cat "$DCS_MODE" 2> /dev/null)
 
             if [ -z "$dcs_status" ]; then
                 echo "Unable to read DCS Policy status from $DCS_MODE"
@@ -214,9 +214,9 @@ sync
                     echo "DCS Policy can cause GPU frequency fluctuations between min/max, disabling for better performance on Dimensity 9000"
 
                     # 尝试关闭DCS Policy
-                    if echo 0 >"$DCS_MODE" 2>/dev/null; then
+                    if echo 0 > "$DCS_MODE" 2> /dev/null; then
                         # 确认DCS Policy已关闭
-                        new_status=$(cat "$DCS_MODE" 2>/dev/null)
+                        new_status=$(cat "$DCS_MODE" 2> /dev/null)
                         if echo "$new_status" | grep -q "disabled"; then
                             echo "DCS Policy successfully disabled on Dimensity 9000"
                         else
@@ -231,7 +231,7 @@ sync
     else
         echo "Platform is $platform (not mt6983/Dimensity 9000), skipping DCS Policy disable"
     fi
-} >>"$INIT_LOG" 2>&1
+} >> "$INIT_LOG" 2>&1
 
 # ==================== ENHANCED GPU GOVERNOR STARTUP ====================
 
@@ -277,21 +277,21 @@ append_description() {
 get_status_description() {
     local status="$1"
     case "$status" in
-    "running")
-        [ "$language" = "en" ] && echo "🚀 Running" || echo "🚀 运行中"
-        ;;
-    "stopped")
-        [ "$language" = "en" ] && echo "❌ Stopped" || echo "❌ 已停止"
-        ;;
-    "error")
-        [ "$language" = "en" ] && echo "😭 Error occurred, check logs for details" || echo "😭 出现错误，请检查日志以获取详细信息"
-        ;;
-    "starting")
-        [ "$language" = "en" ] && echo "⚡ Starting" || echo "⚡ 启动中"
-        ;;
-    *)
-        [ "$language" = "en" ] && echo "❓ Unknown status" || echo "❓ 未知状态"
-        ;;
+        "running")
+            [ "$language" = "en" ] && echo "🚀 Running" || echo "🚀 运行中"
+            ;;
+        "stopped")
+            [ "$language" = "en" ] && echo "❌ Stopped" || echo "❌ 已停止"
+            ;;
+        "error")
+            [ "$language" = "en" ] && echo "😭 Error occurred, check logs for details" || echo "😭 出现错误，请检查日志以获取详细信息"
+            ;;
+        "starting")
+            [ "$language" = "en" ] && echo "⚡ Starting" || echo "⚡ 启动中"
+            ;;
+        *)
+            [ "$language" = "en" ] && echo "❓ Unknown status" || echo "❓ 未知状态"
+            ;;
     esac
 }
 
@@ -383,7 +383,7 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
     # 确保gpu_gov.log文件存在并设置正确权限
     if [ ! -f "$GPUGOV_LOGPATH" ]; then
         touch "$GPUGOV_LOGPATH"
-        echo "$(date) - GPU Governor log file created" >>"$INIT_LOG"
+        echo "$(date) - GPU Governor log file created" >> "$INIT_LOG"
     fi
     chmod 0666 "$GPUGOV_LOGPATH"
 
@@ -409,14 +409,14 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         # 启动进程，确保日志记录正常工作
         echo "Starting gpugovernor with debug level"
         # 确保日志目录和文件权限正确
-        chmod -R 0777 "$LOG_PATH" 2>/dev/null
+        chmod -R 0777 "$LOG_PATH" 2> /dev/null
 
         # 记录启动信息到主日志文件
         enhanced_log "Starting GPU Governor with debug level" "以调试等级启动GPU调速器"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
-        killall gpugovernor 2>/dev/null
-        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" >"$GPUGOV_LOGPATH" 2>&1 &
+        killall gpugovernor 2> /dev/null
+        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" > "$GPUGOV_LOGPATH" 2>&1 &
 
     else
         enhanced_log "Using log level: $log_level" "使用日志等级: $log_level"
@@ -425,8 +425,8 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         enhanced_log "Starting GPU Governor with $log_level level" "以 $log_level 等级启动GPU调速器"
 
         # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
-        killall gpugovernor 2>/dev/null
-        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" >"$GPUGOV_LOGPATH" 2>&1 &
+        killall gpugovernor 2> /dev/null
+        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" > "$GPUGOV_LOGPATH" 2>&1 &
     fi
 
     gov_pid=$!
@@ -435,16 +435,16 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
     sleep 2
 
     # 检查GPU调速器是否成功启动
-    if pgrep -f "gpugovernor" >/dev/null; then
+    if pgrep -f "gpugovernor" > /dev/null; then
         enhanced_log "🚀 GPU Governor started successfully" "🚀 GPU调速器启动成功"
         update_description "$(get_status_description "running")" "$(get_status_description "running")"
-        echo "$gov_pid" >"$PID_FILE"
+        echo "$gov_pid" > "$PID_FILE"
         enhanced_log "GPU Governor PID: $gov_pid" "GPU调速器 PID: $gov_pid"
         append_description " PID: $gov_pid" " PID: $gov_pid"
 
         # 检查配置信息并追加到描述
         if [ -f "$GPU_GOV_DIR/game/game_list.txt" ]; then
-            game_count=$(wc -l <"$GPU_GOV_DIR/game/game_list.txt" 2>/dev/null || echo "0")
+            game_count=$(wc -l < "$GPU_GOV_DIR/game/game_list.txt" 2> /dev/null || echo "0")
             [ "$language" = "en" ] && append_description " Games: $game_count" " 游戏数: $game_count"
         fi
 
@@ -459,7 +459,7 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
 
     # 再次检查日志大小
     rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
-} >>"$INIT_LOG" 2>&1
+} >> "$INIT_LOG" 2>&1
 
 # 检查并轮转GPU调速器主日志
 rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"

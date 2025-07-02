@@ -9,20 +9,20 @@
 lock_val() {
     for p in $2; do
         if [ -f "$p" ]; then
-            chmod 0666 "$p" 2>/dev/null
+            chmod 0666 "$p" 2> /dev/null
             #log "changing $p"
-            echo "$1" >"$p"
-            chmod 0444 "$p" 2>/dev/null
+            echo "$1" > "$p"
+            chmod 0444 "$p" 2> /dev/null
         fi
     done
 }
 # $1:filepaths $2:value
 hide_val() {
-    umount "$1" 2>/dev/null
+    umount "$1" 2> /dev/null
     if [[ ! -f "/cache/$1" ]]; then
         mkdir -p "/cache/$1"
         rm -r "/cache/$1"
-        cat "$1" >"/cache/$1"
+        cat "$1" > "/cache/$1"
     fi
     if [[ "$2" != "" ]]; then
         lock_val "$2" "$1"
@@ -36,7 +36,7 @@ mask_val() {
         if [ -f "$p" ]; then
             umount "$p"
             chmod 0666 "$p"
-            echo "$1" >"$p"
+            echo "$1" > "$p"
             mount --bind /data/local/tmp/mount_mask "$p"
         fi
     done
@@ -45,9 +45,9 @@ mask_val() {
 mutate() {
     for p in $2; do
         if [ -f "$p" ]; then
-            chmod 0666 "$p" 2>/dev/null
+            chmod 0666 "$p" 2> /dev/null
             #log "writing $p"
-            echo "$1" >"$p"
+            echo "$1" > "$p"
         fi
     done
 }
@@ -55,7 +55,7 @@ mutate() {
 # $1:file path
 lock() {
     if [ -f "$1" ]; then
-        chmod 0444 "$1" 2>/dev/null
+        chmod 0444 "$1" 2> /dev/null
         #log "locking $p"
     fi
 }
@@ -96,7 +96,7 @@ rotate_log() {
     local max_size_mb="${2:-5}"
     local max_size_bytes=$((max_size_mb * 1024 * 1024))
     # 设置轮转阈值为最大大小的80%，提前进行轮转
-    local threshold_bytes=$(( (max_size_bytes * 8) / 10 ))
+    local threshold_bytes=$(((max_size_bytes * 8) / 10))
 
     # 确保日志文件存在
     if [ ! -f "$log_file" ]; then
@@ -106,13 +106,13 @@ rotate_log() {
     fi
 
     # 获取文件大小（以字节为单位）
-    local file_size=$(stat -c %s "$log_file" 2>/dev/null || stat -f %z "$log_file" 2>/dev/null)
+    local file_size=$(stat -c %s "$log_file" 2> /dev/null || stat -f %z "$log_file" 2> /dev/null)
 
     # 如果获取文件大小失败或文件大小为0，确保文件存在并可写
     if [ -z "$file_size" ] || [ "$file_size" -eq 0 ]; then
         file_size=0
         # 确保文件权限正确
-        chmod 0666 "$log_file" 2>/dev/null
+        chmod 0666 "$log_file" 2> /dev/null
         return 0
     fi
 
@@ -121,7 +121,7 @@ rotate_log() {
         echo "Log file $log_file size($file_size bytes) exceeds threshold($threshold_bytes bytes), rotating"
 
         # 创建备份文件（如果已存在则覆盖）
-        cp "$log_file" "${log_file}.bak" 2>/dev/null
+        cp "$log_file" "${log_file}.bak" 2> /dev/null
 
         # 清空原日志文件
         true > "$log_file"
@@ -162,9 +162,9 @@ wait_until_login() {
 
     # we doesn't have the permission to rw "/sdcard" before the user unlocks the screen
     test_file="/sdcard/Android/.PERMISSION_TEST"
-    true >"$test_file"
+    true > "$test_file"
     while [ ! -f "$test_file" ]; do
-        true >"$test_file"
+        true > "$test_file"
         sleep 1
     done
     rm "$test_file"
@@ -177,5 +177,5 @@ grep_prop() {
     shift
     FILES="$@"
     [ -z "$FILES" ] && FILES='/system/build.prop'
-    cat $FILES 2>/dev/null | dos2unix | sed -n "$REGEX" | head -n 1
+    cat $FILES 2> /dev/null | dos2unix | sed -n "$REGEX" | head -n 1
 }

@@ -36,7 +36,7 @@ fi
 USER_PATH="/data"
 LOG_PATH="/data/adb/gpu_governor/log"
 LOG_FILE="$LOG_PATH/initsvc.log"
-GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log"  # 主日志文件路径
+GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log" # 主日志文件路径
 GAMES_PATH="/data/adb/gpu_governor/game"
 GAMES_FILE="$GAMES_PATH/games.conf"
 GAME_MODE_FILE="$GAMES_PATH/game_mode"
@@ -55,6 +55,6 @@ log() {
 }
 
 clear_log() {
-    true >"$LOG_FILE"
+    true > "$LOG_FILE"
     sync
 }

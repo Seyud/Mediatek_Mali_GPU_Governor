@@ -42,10 +42,10 @@ set_perm() {
 
 # $1:directory $2:owner $3:group $4:dir_permission $5:file_permission $6:secontext
 set_perm_recursive() {
-    find $1 -type d 2>/dev/null | while read dir; do
+    find $1 -type d 2> /dev/null | while read dir; do
         set_perm $dir $2 $3 $4 $6
     done
-    find $1 -type f -o -type l 2>/dev/null | while read file; do
+    find $1 -type f -o -type l 2> /dev/null | while read file; do
         set_perm $file $2 $3 $5 $6
     done
 }
@@ -126,7 +126,7 @@ com.netease.race
 
 com.activision.callofduty.warzone
 com.MadOut.BIG'
-    echo "$preset_games" >"$GAMES_FILE"
+    echo "$preset_games" > "$GAMES_FILE"
 
     echo "$(translate "🎯 正在搜索并添加基于Unity和UE4引擎的游戏" "🎯 Searching and adding Unity & UE4 engine based games")"
     pm list packages -3 | grep -v 'mobileqq' | cut -f2 -d ':' | while read package; do
@@ -137,7 +137,7 @@ com.MadOut.BIG'
             game_libs=$(ls $libs | grep -E '(libunity.so|libUE3.so|libUE4.so)')
             if [[ "$game_libs" != '' ]] && [[ $(echo "$preset_games" | grep $package) == '' ]]; then
                 echo " + $package"
-                echo $package >>"$GAMES_FILE"
+                echo $package >> "$GAMES_FILE"
             fi
         fi
     done
@@ -149,7 +149,7 @@ com.MadOut.BIG'
             r=$(grep $package "$GAMES_FILE")
             if [[ "$r" == '' ]]; then
                 echo " + $package"
-                echo $package >>"$GAMES_FILE"
+                echo $package >> "$GAMES_FILE"
             fi
         done
     fi
@@ -214,21 +214,21 @@ install_gov() {
 
         # 创建临时目录用于存储按键事件
         TMPDIR="/data/local/tmp"
-        mkdir -p "$TMPDIR" 2>/dev/null
+        mkdir -p "$TMPDIR" 2> /dev/null
 
         START_TIME=$(date +%s)
         while true; do
             NOW_TIME=$(date +%s)
-            timeout 1 getevent -lc 1 2>&1 | grep KEY_VOLUME >"$TMPDIR/events"
+            timeout 1 getevent -lc 1 2>&1 | grep KEY_VOLUME > "$TMPDIR/events"
             if [ $((NOW_TIME - START_TIME)) -gt 9 ]; then
                 echo "$(translate "⏰ 10秒无输入，默认保留旧配置。" "⏰ No input detected after 10 秒之前, defaulting to keep old configuration.")"
                 # 保留旧配置，不做任何操作
                 break
-            elif $(cat $TMPDIR/events 2>/dev/null | grep -q KEY_VOLUMEUP); then
+            elif $(cat $TMPDIR/events 2> /dev/null | grep -q KEY_VOLUMEUP); then
                 echo "$(translate "🔼 检测到音量上键，保留旧配置。" "🔼 Volume Up detected, keeping old configuration.")"
                 # 保留旧配置，不做任何操作
                 break
-            elif $(cat $TMPDIR/events 2>/dev/null | grep -q KEY_VOLUMEDOWN); then
+            elif $(cat $TMPDIR/events 2> /dev/null | grep -q KEY_VOLUMEDOWN); then
                 echo "$(translate "🔽 检测到音量下键，替换旧配置。" "🔽 Volume Down detected, replacing old configuration.")"
                 # 备份旧配置
                 cp -f "$USER_PATH"/gpu_freq_table.conf "$USER_PATH"/gpu_freq_table.conf.bak
@@ -263,7 +263,7 @@ install_gov() {
 
     # 创建游戏模式文件，初始值为0（关闭），如果已存在则不创建
     if [ ! -f "$GAME_MODE_FILE" ]; then
-        echo "0" >"$GAME_MODE_FILE"
+        echo "0" > "$GAME_MODE_FILE"
         chmod 0666 "$GAME_MODE_FILE"
         echo "$(translate "🎮 游戏模式文件已创建于" "🎮 Game mode file created at") $GAME_MODE_FILE"
     else
@@ -272,7 +272,7 @@ install_gov() {
 
     # 创建日志等级文件，默认为info级别，如果已存在则不创建
     if [ ! -f "$LOG_LEVEL_FILE" ]; then
-        echo "info" >"$LOG_LEVEL_FILE"
+        echo "info" > "$LOG_LEVEL_FILE"
         chmod 0666 "$LOG_LEVEL_FILE"
         echo "$(translate "📝 日志等级文件已创建于" "📝 Log level file created at") $LOG_LEVEL_FILE $(translate "（默认：info）" "(default: info)")"
     else
@@ -293,7 +293,7 @@ grep_prop() {
     shift
     FILES="$@"
     [ -z "$FILES" ] && FILES='/system/build.prop'
-    cat $FILES 2>/dev/null | dos2unix | sed -n "$REGEX" | head -n 1
+    cat $FILES 2> /dev/null | dos2unix | sed -n "$REGEX" | head -n 1
 }
 
 # get module version
