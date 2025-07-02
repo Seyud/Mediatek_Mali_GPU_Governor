@@ -320,4 +320,7 @@ echo "$(translate "🔄 正在安装..." "🔄 Installing...")"
 install_gov
 set_permissions
 
+echo ""
+echo "$(translate "👉 欢迎加入调速器测试QQ群：719872309 或 TG频道：https://t.me/Mediatek_Mali_GPU_Governor" "👉 Join our Telegram channel: https://t.me/Mediatek_Mali_GPU_Governor")"
+echo ""
 echo "$(translate "✅ 安装完成！" "✅ Installation completed!")"
