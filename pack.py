@@ -5,13 +5,13 @@
 使用D:\7-Zip\7z.exe进行压缩
 """
 
-import os
-import subprocess
-import datetime
-import sys
-import shutil
 import argparse
+import datetime
+import os
 import re
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 # 7-Zip可执行文件路径
@@ -21,14 +21,7 @@ SEVEN_ZIP_PATH = r"D:\7-Zip\7z.exe"
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 需要打包的文件夹
-FOLDERS_TO_PACK = [
-    "bin",
-    "config",
-    "docs",
-    "META-INF",
-    "script",
-    "webroot"
-]
+FOLDERS_TO_PACK = ["bin", "config", "docs", "META-INF", "script", "webroot"]
 
 # 需要打包的文件
 FILES_TO_PACK = [
@@ -39,28 +32,30 @@ FILES_TO_PACK = [
     "post-fs-data.sh",
     "service.sh",
     "uninstall.sh",
-    "volt_list.txt"
+    "volt_list.txt",
 ]
+
 
 def fix_path_environment():
     """修复环境变量Path中的双引号问题"""
-    current_path = os.environ.get('PATH', '')
-    
+    current_path = os.environ.get("PATH", "")
+
     if '"' in current_path:
         print("警告: 检测到环境变量Path中包含双引号字符")
         print("这可能会导致Python扩展无法正确加载，正在自动修复...")
-        
+
         # 移除不正确的双引号
-        fixed_path = re.sub(r'"([^"]*?)"', r'\1', current_path)
-        
+        fixed_path = re.sub(r'"([^"]*?)"', r"\1", current_path)
+
         # 设置修复后的环境变量
-        os.environ['PATH'] = fixed_path
-        
+        os.environ["PATH"] = fixed_path
+
         print("环境变量Path已临时修复（仅影响当前进程）")
         print("如需永久修复，请运行fix_path.py或以管理员身份修改系统环境变量")
         return True
-    
+
     return False
+
 
 def check_7zip_exists():
     """检查7-Zip是否存在于指定路径"""
@@ -69,12 +64,10 @@ def check_7zip_exists():
         return False
     return True
 
+
 def get_module_info():
     """从module.prop文件中获取模块信息"""
-    module_info = {
-        "name": "天玑GPU调速器",
-        "version": "unknown"
-    }
+    module_info = {"name": "天玑GPU调速器", "version": "unknown"}
 
     module_prop_path = os.path.join(WORK_DIR, "module.prop")
     if os.path.exists(module_prop_path):
@@ -86,6 +79,7 @@ def get_module_info():
                     module_info["version"] = line.strip().split("=", 1)[1]
 
     return module_info
+
 
 def create_zip_package(custom_output_filename=None):
     """创建ZIP压缩包"""
@@ -99,8 +93,8 @@ def create_zip_package(custom_output_filename=None):
     # 生成输出文件名
     if custom_output_filename:
         output_filename = custom_output_filename
-        if not output_filename.endswith('.zip'):
-            output_filename += '.zip'
+        if not output_filename.endswith(".zip"):
+            output_filename += ".zip"
     else:
         # 默认使用固定名称 Mediatek_Mali_GPU_Governor.zip
         output_filename = "Mediatek_Mali_GPU_Governor.zip"
@@ -122,7 +116,7 @@ def create_zip_package(custom_output_filename=None):
             print(f"  - {item}")
 
         user_input = input("是否继续打包? (y/n): ")
-        if user_input.lower() != 'y':
+        if user_input.lower() != "y":
             print("打包已取消")
             return False
 
@@ -141,17 +135,13 @@ def create_zip_package(custom_output_filename=None):
     try:
         # 执行7-Zip命令
         process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            cwd=WORK_DIR
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=WORK_DIR
         )
 
         # 实时输出7-Zip的进度信息
         while True:
             output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
+            if output == "" and process.poll() is not None:
                 break
             if output:
                 print(output.strip())
@@ -173,6 +163,7 @@ def create_zip_package(custom_output_filename=None):
         print(f"打包过程中发生错误: {str(e)}")
         return False
 
+
 def clean_temp_files():
     """清理临时文件"""
     temp_dirs = [
@@ -180,12 +171,10 @@ def clean_temp_files():
         os.path.join(WORK_DIR, ".idea"),
         os.path.join(WORK_DIR, ".vscode"),
         os.path.join(WORK_DIR, "build"),
-        os.path.join(WORK_DIR, "dist")
+        os.path.join(WORK_DIR, "dist"),
     ]
 
-    temp_files = [
-        "*.pyc", "*.pyo", "*.bak", "*.swp", "*.tmp", "*.log"
-    ]
+    temp_files = ["*.pyc", "*.pyo", "*.bak", "*.swp", "*.tmp", "*.log"]
 
     print("正在清理临时文件...")
 
@@ -209,6 +198,7 @@ def clean_temp_files():
 
     print("临时文件清理完成")
 
+
 def ensure_lf_line_endings():
     """确保所有脚本文件使用LF换行符"""
     # 需要检查的文件类型
@@ -231,24 +221,29 @@ def ensure_lf_line_endings():
 
             # 读取文件内容（二进制模式）
             try:
-                with open(file_path, 'rb') as f:
+                with open(file_path, "rb") as f:
                     content = f.read()
 
                 # 检查是否包含CRLF
-                if b'\r\n' in content:
+                if b"\r\n" in content:
                     # 转换CRLF为LF
-                    content = content.replace(b'\r\n', b'\n')
+                    content = content.replace(b"\r\n", b"\n")
 
                     # 写回文件（二进制模式）
-                    with open(file_path, 'wb') as f:
+                    with open(file_path, "wb") as f:
                         f.write(content)
 
                     print(f"  已转换: {file_path.relative_to(WORK_DIR)} (CRLF -> LF)")
                     converted_files += 1
             except Exception as e:
-                print(f"  处理文件失败: {file_path.relative_to(WORK_DIR)}, 错误: {str(e)}")
+                print(
+                    f"  处理文件失败: {file_path.relative_to(WORK_DIR)}, 错误: {str(e)}"
+                )
 
-    print(f"换行符检查完成! 共检查 {total_files} 个文件，转换了 {converted_files} 个文件。")
+    print(
+        f"换行符检查完成! 共检查 {total_files} 个文件，转换了 {converted_files} 个文件。"
+    )
+
 
 def open_output_directory(output_path):
     """打开输出文件所在目录"""
@@ -261,15 +256,22 @@ def open_output_directory(output_path):
     except Exception as e:
         print(f"打开输出目录失败: {str(e)}")
 
+
 def main():
     """主函数"""
     # 解析命令行参数
     parser = argparse.ArgumentParser(description="天玑GPU调速器模块打包工具")
     parser.add_argument("-o", "--output", help="指定输出文件名")
     parser.add_argument("-c", "--clean", action="store_true", help="打包前清理临时文件")
-    parser.add_argument("-d", "--open-dir", action="store_true", help="打包完成后打开输出目录")
-    parser.add_argument("--no-fix-eol", action="store_true", help="跳过换行符检查和修复")
-    parser.add_argument("--no-fix-path", action="store_true", help="跳过环境变量Path检查和修复")
+    parser.add_argument(
+        "-d", "--open-dir", action="store_true", help="打包完成后打开输出目录"
+    )
+    parser.add_argument(
+        "--no-fix-eol", action="store_true", help="跳过换行符检查和修复"
+    )
+    parser.add_argument(
+        "--no-fix-path", action="store_true", help="跳过环境变量Path检查和修复"
+    )
     args = parser.parse_args()
 
     print("=" * 60)
@@ -307,8 +309,8 @@ def main():
             # 生成输出文件名
             if args.output:
                 output_filename = args.output
-                if not output_filename.endswith('.zip'):
-                    output_filename += '.zip'
+                if not output_filename.endswith(".zip"):
+                    output_filename += ".zip"
             else:
                 # 默认使用固定名称 Mediatek_Mali_GPU_Governor.zip
                 output_filename = "Mediatek_Mali_GPU_Governor.zip"
@@ -319,6 +321,7 @@ def main():
         print("打包过程失败!")
 
     print("=" * 60)
+
 
 if __name__ == "__main__":
     main()
