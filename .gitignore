@@ -6,7 +6,7 @@
 
 # 忽略miuix-main文件夹中的所有内容，避免与miuix-main项目冲突
 /miuix-main/
-/js/
+/KernelSUjs/
 
 # 忽略编译生成的文件
 /target/
