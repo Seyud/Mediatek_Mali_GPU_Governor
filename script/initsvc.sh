@@ -351,12 +351,8 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
     fi
 
 
-    # 确保gpu_gov.log文件存在并设置正确权限
-    if [ ! -f "$GPUGOV_LOGPATH" ]; then
-        touch "$GPUGOV_LOGPATH"
-        echo "$(date) - GPU Governor log file created" >> "$INIT_LOG"
-    fi
-    chmod 0666 "$GPUGOV_LOGPATH"
+    # GPU Governor日志文件现在由Rust程序自己创建和管理
+    enhanced_log "GPU Governor will create and manage its own log file" "GPU调速器将自己创建和管理日志文件"
 
     enhanced_log "Starting gpu governor" "启动GPU调速器"
     sync
@@ -376,7 +372,7 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
 
     # 根据日志等级决定是否启用调试输出
     if [ "$log_level" = "debug" ]; then
-        enhanced_log "Debug level enabled, console output will be shown" "启用调试等级，将显示控制台输出"
+        enhanced_log "Debug level enabled, Rust program will handle its own logging" "启用调试等级，Rust程序将自己处理日志记录"
         # 启动进程，确保日志记录正常工作
         echo "Starting gpugovernor with debug level"
         # 确保日志目录和文件权限正确
@@ -385,9 +381,9 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         # 记录启动信息到主日志文件
         enhanced_log "Starting GPU Governor with debug level" "以调试等级启动GPU调速器"
 
-        # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
+        # 启动进程
         killall gpugovernor 2> /dev/null
-        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" > "$GPUGOV_LOGPATH" 2>&1 &
+        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" > /dev/null 2>&1 &
 
     else
         enhanced_log "Using log level: $log_level" "使用日志等级: $log_level"
@@ -395,9 +391,9 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         # 记录启动信息到主日志文件
         enhanced_log "Starting GPU Governor with $log_level level" "以 $log_level 等级启动GPU调速器"
 
-        # 启动进程，使用绝对路径确保正确执行，确保输出重定向到主日志文件
+        # 启动进程
         killall gpugovernor 2> /dev/null
-        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" > "$GPUGOV_LOGPATH" 2>&1 &
+        RUST_BACKTRACE=1 nohup "$BIN_PATH/gpugovernor" > /dev/null 2>&1 &
     fi
 
     gov_pid=$!

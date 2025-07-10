@@ -186,9 +186,9 @@ start_governor() {
 
     echo "$(log_prefix) $(translate "正在以$log_level级别启动GPU调速器服务..." "Starting GPU Governor service with $log_level level...")"
 
-    # 启动服务
-    echo "$(log_prefix) $(translate "执行命令" "Executing command"): nohup $GPUGOVERNOR_BIN >> $GPU_GOV_LOG_FILE 2>&1 &"
-    nohup "$GPUGOVERNOR_BIN" >> "$GPU_GOV_LOG_FILE" 2>&1 &
+    # 启动服务，让Rust程序自己处理日志文件写入
+    echo "$(log_prefix) $(translate "执行命令" "Executing command"): nohup $GPUGOVERNOR_BIN > /dev/null 2>&1 &"
+    nohup "$GPUGOVERNOR_BIN" > /dev/null 2>&1 &
 
     # 等待服务启动
     sleep 2
