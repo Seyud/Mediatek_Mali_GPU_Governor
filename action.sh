@@ -23,7 +23,6 @@ GPU_GOVERNOR_GAME_DIR="$GPU_GOVERNOR_DIR/game"
 GAME_MODE_FILE="$GPU_GOVERNOR_GAME_DIR/game_mode"
 LOG_LEVEL_FILE="$GPU_GOVERNOR_LOG_DIR/log_level"
 GPU_GOV_LOG_FILE="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log"
-MAX_LOG_SIZE_MB=5 # 日志文件最大大小，单位MB
 BIN_PATH="$SCRIPT_DIR/bin"
 GPUGOVERNOR_BIN="$BIN_PATH/gpugovernor"
 
@@ -65,53 +64,6 @@ log_prefix() {
     echo "[$(date "+%Y-%m-%d %H:%M:%S")]"
 }
 
-# 日志轮转函数
-# $1:log_file - 日志文件路径
-# $2:max_size_mb - 最大日志大小(MB)，默认为5MB
-rotate_log() {
-    local log_file="$1"
-    local max_size_mb="${2:-5}"
-    local max_size_bytes=$((max_size_mb * 1024 * 1024))
-    # 设置轮转阈值为最大大小的80%，提前进行轮转
-    local threshold_bytes=$(((max_size_bytes * 8) / 10))
-
-    # 确保日志文件存在
-    if [ ! -f "$log_file" ]; then
-        touch "$log_file"
-        chmod 0666 "$log_file"
-        return 0
-    fi
-
-    # 获取文件大小（以字节为单位）
-    local file_size=$(stat -c %s "$log_file" 2> /dev/null || stat -f %z "$log_file" 2> /dev/null)
-
-    # 如果获取文件大小失败或文件大小为0，确保文件存在并可写
-    if [ -z "$file_size" ] || [ "$file_size" -eq 0 ]; then
-        file_size=0
-        # 确保文件权限正确
-        chmod 0666 "$log_file" 2> /dev/null
-        return 0
-    fi
-
-    # 如果文件大小超过阈值（80%的限制），进行轮转
-    if [ "$file_size" -gt "$threshold_bytes" ]; then
-        echo "$(log_prefix) 日志文件 $log_file 大小($file_size 字节)超过阈值($threshold_bytes 字节)，进行轮转"
-
-        # 创建备份文件（如果已存在则覆盖）
-        cp "$log_file" "${log_file}.bak" 2> /dev/null
-
-        # 清空原日志文件
-        true > "$log_file"
-        chmod 0666 "$log_file"
-
-        # 记录轮转信息
-        echo "$(date) - Log rotated, original log backed up to ${log_file}.bak" >> "$log_file"
-        sync
-        return 1
-    fi
-
-    return 0
-}
 
 # 确保目录存在并设置适当权限
 mkdir -p "$GPU_GOVERNOR_DIR"
@@ -122,8 +74,6 @@ chmod 0777 "$GPU_GOVERNOR_DIR"
 chmod 0777 "$GPU_GOVERNOR_LOG_DIR"
 chmod 0777 "$GPU_GOVERNOR_GAME_DIR"
 
-# 检查并轮转主日志文件
-rotate_log "$GPU_GOV_LOG_FILE" "$MAX_LOG_SIZE_MB"
 
 # 确保文件存在
 if [ ! -f "$GAME_MODE_FILE" ]; then

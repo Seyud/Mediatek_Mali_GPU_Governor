@@ -21,23 +21,10 @@ fi
 mkdir -p /data/adb/gpu_governor/log 2> /dev/null
 INIT_LOG="/data/adb/gpu_governor/log/initsvc.log"
 
-# 轮转初始化日志并备份旧的初始化日志
-if [ -f "$INIT_LOG" ]; then
-    # 创建带时间戳的备份文件名
-    BACKUP_TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-    INIT_LOG_BACKUP="${INIT_LOG}.${BACKUP_TIMESTAMP}.bak"
-
-    # 备份旧的初始化日志
-    cp "$INIT_LOG" "$INIT_LOG_BACKUP" 2> /dev/null
-
-    # 清空原始日志文件
-    true > "$INIT_LOG"
-
-    # 设置正确的权限
+# 确保初始化日志文件存在
+if [ ! -f "$INIT_LOG" ]; then
+    touch "$INIT_LOG"
     chmod 0666 "$INIT_LOG"
-
-    # 记录轮转信息
-    echo "$(date) - Initialization log rotated, previous log backed up to ${INIT_LOG_BACKUP}" > "$INIT_LOG"
 fi
 
 # 记录目录信息到初始化日志
@@ -84,8 +71,6 @@ else
     exit 1
 fi
 
-# 设置日志文件最大大小（单位MB）
-MAX_LOG_SIZE_MB=5
 
 # 等待系统启动完成
 wait_until_login
@@ -105,19 +90,11 @@ if [ ! -f "$LOG_LEVEL_FILE" ]; then
     log "Created log level file with default level: info"
 fi
 
-# 检查并轮转所有日志文件
-# 先处理主日志文件
-if [ -f "$GPUGOV_LOGPATH" ]; then
-    # 强制轮转主日志文件，确保启动时日志文件不会太大
-    cp "$GPUGOV_LOGPATH" "${GPUGOV_LOGPATH}.bak" 2> /dev/null
-    true > "$GPUGOV_LOGPATH"
+# 确保主日志文件存在
+if [ ! -f "$GPUGOV_LOGPATH" ]; then
+    touch "$GPUGOV_LOGPATH"
     chmod 0666 "$GPUGOV_LOGPATH"
-    echo "$(date) - Forced log rotation at system startup, original log backed up to ${GPUGOV_LOGPATH}.bak" >> "$GPUGOV_LOGPATH"
-    sync
 fi
-
-# 使用统一的日志轮转函数处理初始化日志
-rotate_log "$LOG_FILE" "$MAX_LOG_SIZE_MB"
 
 # 记录基本信息到日志
 {
@@ -310,8 +287,6 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
 
 # 内联gpugov_testconf函数的内容，避免函数调用问题
 {
-    # 使用统一的日志轮转函数
-    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
 
     enhanced_log "🚀 Starting gpu governor" "🚀 启动GPU调速器"
 
@@ -362,8 +337,6 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
 
     enhanced_log "⚙️ Using config $GPUGOV_CONFPATH" "⚙️ 使用配置 $GPUGOV_CONFPATH"
 
-    # 再次检查日志大小
-    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
 
     # 启动GPU调速器
     # 直接使用 BIN_PATH
@@ -377,8 +350,6 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         fi
     fi
 
-    # 使用统一的日志轮转函数
-    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
 
     # 确保gpu_gov.log文件存在并设置正确权限
     if [ ! -f "$GPUGOV_LOGPATH" ]; then
@@ -457,9 +428,5 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         exit 1
     fi
 
-    # 再次检查日志大小
-    rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"
 } >> "$INIT_LOG" 2>&1
 
-# 检查并轮转GPU调速器主日志
-rotate_log "$GPUGOV_LOGPATH" "$MAX_LOG_SIZE_MB"

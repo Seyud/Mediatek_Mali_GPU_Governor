@@ -84,7 +84,6 @@ const GAMES_PATH = '/data/adb/gpu_governor/game'; // 游戏目录路径
 const GAMES_FILE = '/data/adb/gpu_governor/game/games.conf'; // 游戏列表文件路径
 const GAME_MODE_PATH = '/data/adb/gpu_governor/game/game_mode';
 const LOG_LEVEL_PATH = '/data/adb/gpu_governor/log/log_level';
-const MAX_LOG_SIZE_MB = 5; // 日志文件最大大小，单位MB
 
 // 电压列表
 const VOLT_LIST = [
@@ -165,7 +164,7 @@ const translations = {
         'log_loading': '加载中...',
         'log_empty': '日志为空',
         'log_not_found': '未找到日志',
-        'log_size_warning': '警告: 日志文件大小已超过限制，将自动轮转。',
+        'log_size_warning': '警告: 日志文件较大',
         // 设置页面
         'settings_title': '设置',
         'settings_theme_follow': '深色模式跟随系统',
@@ -2443,24 +2442,7 @@ async function loadLog() {
         const selectedLog = activeTab ? activeTab.getAttribute('data-log') : 'gpu_gov.log';
         logContent.textContent = getTranslation('log_loading');
 
-        // 检查日志文件大小
-        const { errno: statErrno, stdout: statOutput } = await exec(`stat -c %s ${LOG_PATH}/${selectedLog} 2>/dev/null || echo "0"`);
-
-        if (statErrno === 0 && statOutput.trim() !== "0" && statOutput.trim() !== getTranslation('log_not_found')) {
-            const fileSize = parseInt(statOutput.trim());
-            const maxSizeBytes = MAX_LOG_SIZE_MB * 1024 * 1024;
-
-            // 如果文件大小接近限制，显示提示
-            if (fileSize > maxSizeBytes * 0.8) {
-                const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
-                console.log(`日志文件大小: ${fileSizeMB}MB，接近${MAX_LOG_SIZE_MB}MB的限制`);
-
-                // 如果超过限制，显示警告
-                if (fileSize > maxSizeBytes) {
-                    logContent.textContent = `${getTranslation('log_size_warning')}\n文件大小: ${fileSizeMB}MB / ${MAX_LOG_SIZE_MB}MB\n\n${getTranslation('log_loading')}`;
-                }
-            }
-        }
+        // 日志轮转已由Rust程序处理，移除大小检查逻辑
 
         // 使用cat而不是tail，某些设备可能没有tail命令
         const { errno, stdout } = await exec(`cat ${LOG_PATH}/${selectedLog} 2>/dev/null || echo "日志文件不存在"`);
@@ -2476,26 +2458,8 @@ async function loadLog() {
             const lines = stdout.trim().split('\n');
             const lastLines = lines.slice(-100).join('\n');
 
-            // 如果日志文件大小接近限制，添加提示信息
-            if (statErrno === 0 && statOutput.trim() !== "0" && statOutput.trim() !== "日志文件不存在") {
-                const fileSize = parseInt(statOutput.trim());
-                const maxSizeBytes = MAX_LOG_SIZE_MB * 1024 * 1024;
-
-                if (fileSize > maxSizeBytes * 0.8) {
-                    const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
-                    const sizeInfo = `[日志文件大小: ${fileSizeMB}MB / ${MAX_LOG_SIZE_MB}MB]\n`;
-
-                    if (fileSize > maxSizeBytes) {
-                        logContent.textContent = `警告: 日志文件大小已超过限制，将自动轮转。\n${sizeInfo}\n${lastLines || getTranslation('log_empty')}`;
-                    } else {
-                        logContent.textContent = `${sizeInfo}\n${lastLines || getTranslation('log_empty')}`;
-                    }
-                } else {
-                    logContent.textContent = lastLines || getTranslation('log_empty');
-                }
-            } else {
-                logContent.textContent = lastLines || getTranslation('log_empty');
-            }
+            // 日志轮转已由Rust程序处理，直接显示日志内容
+            logContent.textContent = lastLines || getTranslation('log_empty');
 
             // 滚动到底部
             logContent.scrollTop = logContent.scrollHeight;
