@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-# 使用更可靠的方式获取脚本目录
+# 获取脚本目录
 MODDIR=${0%/*}
 if [ "$MODDIR" = "$0" ]; then
     MODDIR=$(pwd)
@@ -285,7 +285,6 @@ fi
 # 更新状态为启动中
 update_description "$(get_status_description "starting")" "$(get_status_description "starting")"
 
-# 内联gpugov_testconf函数的内容，避免函数调用问题
 {
 
     enhanced_log "🚀 Starting gpu governor" "🚀 启动GPU调速器"
@@ -412,7 +411,7 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         # 检查配置信息并追加到描述
         if [ -f "$GPU_GOV_DIR/game/game_list.txt" ]; then
             game_count=$(wc -l < "$GPU_GOV_DIR/game/game_list.txt" 2> /dev/null || echo "0")
-            [ "$language" = "en" ] && append_description " Games: $game_count" " 游戏数: $game_count"
+            append_description " Games: $game_count" " 游戏数: $game_count"
         fi
 
         rebuild_process_scan_cache
