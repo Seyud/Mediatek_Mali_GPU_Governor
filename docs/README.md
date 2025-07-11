@@ -1,6 +1,6 @@
 # 天玑 GPU 调速器 🚀
 
-[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/Mediatek_Mali_GPU_Governor)
+[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/MTK_GPU)
 [![Version](https://img.shields.io/badge/Version-v2.7-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
 [![Language](https://img.shields.io/badge/Language-Rust-orange)](https://www.rust-lang.org/)
 [![QQ群](https://img.shields.io/badge/QQ群-719872309-12B7F5?logo=tencentqq&logoColor=white)](https://qun.qq.com/universal-share/share?ac=1&authKey=zwOHClW5YTIZobOTsqvF6lBaACPvS7%2F2Y0s%2FpQadAMss5d2nxcr46fmsm%2FFreVjt&busi_data=eyJncm91cENvZGUiOiI3MTk4NzIzMDkiLCJ0b2tlbiI6IjhQNUhYM1M4NUs4bFVwQmNsODRrUU1Xc0phR3dra1RUYnE0S0tMVFNzV3JUU2s3elgvSFRyUXJQdWtEQ1NVYSsiLCJ1aW4iOiIxMTA1NzgzMDMzIn0%3D&data=VgJU9DuiAPqB3ocg4Zlh8UShvQmDEgEfH4wvqCVXWOD8qcBSzYDPQuwUKVgLOIzZ-CWhtV69fyTHD4Q0GqWWKw&svctype=4&tempid=h5_group_info)
@@ -8,17 +8,15 @@
 ## 简介 📝
 **简体中文** | [English](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/en/README.md)
 
-天玑 GPU 调速器（Mediatek Mali GPU Governor）是一个专为联发科处理器设计的先进 GPU 调速器。采用 **Rust 语言** 开发的高性能核心引擎，通过智能监控 GPU 负载并动态调整频率，在游戏体验和功耗平衡之间达到最佳平衡。模块集成了现代化的 **WebUI 管理界面**、**多级负载阈值系统**、**自适应调频算法** 和 **完整的游戏模式检测**，为用户提供专业级的 GPU 调速解决方案。
+天玑 GPU 调速器（Mediatek Mali GPU Governor）是一个专为联发科处理器设计的先进 GPU 调速器。采用 **Rust 语言** 开发的高性能核心引擎，通过智能监控 GPU 负载并动态调整频率，在游戏体验和功耗平衡之间达到最佳平衡。模块集成了现代化的 **WebUI 管理界面** 和 **完整的游戏模式检测**，为用户提供优秀的 GPU 调速解决方案。
 
 ## 特性 ✨
 
 ### 核心功能
 - 🎮 **智能游戏模式**：自动检测 `games.conf` 中配置的游戏应用，应用性能优化的 GPU 频率策略
 - 📊 **实时负载监控**：基于 Rust 高性能实现，实时监控 GPU 负载
-- ⚡ **多级负载阈值**：支持极低(5-10%)、低(20-30%)、中(60-70%)、高(85-90%)、极高(90%+)五个负载区域
 - 🔄 **自适应调频算法**：游戏模式使用激进升频策略，普通模式使用节能降频策略
 - 🎯 **精确频率控制**：完全支持 GPUFreq v1/v2 驱动，自动检测驱动版本并适配
-- 🧠 **负载趋势分析**：基于历史负载数据分析趋势，预测性调整频率
 - ⚙️ **智能频率写入**：V2 驱动优化机制，减少不必要的频率写入操作
 - 🎛️ **电压与内存联动**：支持 DDR 频率档位调节，电压与频率精确对应
 
@@ -35,8 +33,6 @@
 - 📱 **广泛设备兼容**：支持 Dimensity、Helio、MT6xxx 等多系列联发科处理器
 - 📝 **专业日志系统**：支持 debug/info/warn/error 四级日志
 - 🔄 **自动设备适配**：安装时自动检测设备型号并应用最佳配置文件
-- ⚡ **滞后与去抖动**：实现频率调整的滞后阈值和去抖动机制，避免频繁跳频。默认采用“超简化90%阈值策略”，即负载高于90%自动升频，低于90%自动降频，用户可通过配置文件和WebUI自定义更细致的多级阈值。
-- 🎯 **余量调节系统**：支持 0-100% 的频率计算余量调节，平衡性能与功耗
 
 ## 安装要求 📋
 
@@ -51,7 +47,7 @@
   - **KernelSU/APatch 用户**：直接在管理器中点击模块的"打开 WebUI"功能
   - **Magisk 用户**：需要安装以下应用之一
     - [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) - 独立的 WebUI 应用
-    - [MMRL](https://github.com/MMRLApp/MMRL) - 模块管理器应用
+    - [SSU](https://ssu.oom-wg.dev/base/install) - SSU模块管理器应用
 
 ## 配置文件 ⚙️
 
@@ -83,12 +79,11 @@ Margin=5
 - **Margin**: 频率计算余量百分比（可通过 WebUI 或直接编辑配置文件调整）
 
 **预设配置文件**：
-- `config/mtd720.conf` - Dimensity 720 系列
 - `config/mtd1000.conf` - Dimensity 1000 系列
-- `config/mtd1100.conf` - Dimensity 1100 系列
-- `config/mtd1200.conf` - Dimensity 1200 系列
-- `config/mtd8100.conf` - Dimensity 8100 系列
-- `config/mtd8200.conf` - Dimensity 8200 系列
+- `config/mtd1100.conf` - Dimensity 1100 
+- `config/mtd1200.conf` - Dimensity 1200 
+- `config/mtd8100.conf` - Dimensity 8100 
+- `config/mtd8200.conf` - Dimensity 8200 
 - `config/mtd9000.conf` - Dimensity 9000 系列
 
 ### 游戏列表配置
@@ -105,9 +100,6 @@ Margin=5
 - **控制调速器服务**：启动或停止 GPU 调速器服务
 - **设置日志等级**：选择 debug、info、warn 或 error 级别
 - **查看模块状态**：显示模块版本、运行状态等信息
-- **日志管理**：自动日志轮转，防止日志文件过大
-
-**重要变更**：从 v2.7 版本开始，`action.sh` 脚本不再支持手动游戏模式切换功能。游戏模式完全依赖自动检测 `games.conf` 中配置的应用包名。
 
 **操作方式**：
 - 音量上键：向上选择选项
@@ -131,31 +123,6 @@ Margin=5
 
 修改日志等级后立即生效，无需重启模块。
 
-### 负载阈值设置
-
-模块内部实现了智能多级负载阈值系统，用于精确调整 GPU 频率。系统会根据当前模式自动调整阈值：
-
-**普通模式**（默认负载阈值：10/30/70/90）：
-- **极低负载**: 10% 以下，降低频率以节省电量，支持深度节能
-- **低负载**: 10-30%，适当降低频率，保持基础性能
-- **中等负载**: 30-70%，保持平衡的频率，日常使用最佳
-- **高负载**: 70-90%，提高频率以提供更好性能
-- **极高负载**: 90% 以上，使用最高频率，全力输出
-
-**游戏模式**（性能负载阈值：5/20/60/85）：
-- **极低负载**: 5% 以下，最低频率，节省待机功耗
-- **低负载**: 5-20%，较低频率，游戏菜单界面
-- **中等负载**: 20-60%，中等频率，轻度游戏负载
-- **高负载**: 60-85%，高频率，中重度游戏场景
-- **极高负载**: 85% 以上，最高频率，极限游戏性能
-
-**高级调速参数**：
-- **滞后阈值机制**：游戏模式 65%/40%，普通模式 75%/30%，防止频率抖动
-- **去抖动时间控制**：游戏模式 10ms/30ms，普通模式 20ms/50ms，确保调频稳定
-- **自适应采样算法**：基础间隔 16ms（约 60Hz），根据负载动态调整 8-100ms
-- **负载趋势分析**：检测负载上升/下降趋势，实现预测性频率调整
-- **余量调节系统**：支持 0-100% 的频率计算余量
-
 ## 日志系统 📊
 
 日志文件存储在 `/data/adb/gpu_governor/log/` 目录下，主要包括：
@@ -167,7 +134,7 @@ Margin=5
 
 ### 日志等级
 
-模块支持四个日志等级，可以通过 `action.sh` 脚本或 WebUI 界面进行设置：
+模块支持四个日志等级，可以通过 `action.sh` 脚本或 WebUI 界面等进行设置：
 
 - **debug**: 调试级别，记录所有详细信息，包括频率调整、负载监控等
 - **info**: 信息级别，记录正常运行信息，默认级别
@@ -220,7 +187,6 @@ WebUI 支持配置文件热更新、日志实时查看、游戏列表和频率�
 - **GPU 频率配置**：查看和编辑当前 GPU 频率表配置，支持调整频率、电压和内存档位
 - **游戏列表管理**：查看和编辑已配置的游戏列表，支持添加/删除游戏
 - **日志查看**：实时查看模块运行日志，支持选择不同日志文件和日志等级
-- **余量设置**：支持调整 GPU 频率计算的余量百分比
 
 #### 界面特性
 - **深色模式支持**：自动适应系统深色/浅色模式，也可手动切换
@@ -236,18 +202,15 @@ WebUI 采用多页面布局，通过底部导航栏进行页面切换：
 #### 📊 状态页面
 - 显示模块运行状态和版本信息
 - 游戏模式开关控制
-- 当前 GPU 频率和负载显示
 
 #### ⚙️ 配置页面
 - GPU 频率表配置编辑
 - 电压和内存频率档位调整
 - 游戏列表管理
-- 余量设置调整
 
 #### 📝 日志页面
 - 实时日志查看
 - 日志文件选择（gpu_gov.log、initsvc.log）
-- 日志等级筛选
 
 #### 🔧 设置页面
 - 主题设置（深色/浅色/自动）
@@ -272,10 +235,7 @@ A: 编辑 `/data/adb/gpu_governor/game/games.conf` 文件，添加游戏的包�
 A: 有三种方式：1) 使用交互式菜单 `./action.sh` 选择日志等级；2) 通过 WebUI 界面的设置页面进行调整；3) 直接编辑 `/data/adb/gpu_governor/log/log_level` 文件。调整后会立即生效，无需重启模块。
 
 **Q: 如何使用 WebUI？**
-A: KernelSU/APatch 用户可在root管理器中点击本模块，选择"打开 WebUI"。Magisk 用户可安装 [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) 或 [MMRL](https://github.com/MMRLApp/MMRL) 应用来访问模块的 WebUI。
-
-**Q: 如何调整GPU频率计算的余量？**
-A: 在 `/data/gpu_freq_table.conf` 文件中添加或修改 `Margin=数值` 行，数值表示余量百分比。也可以通过 WebUI 界面的配置页面进行调整。余量越大，实际频率越高，性能越好但功耗也越高。
+A: KernelSU/APatch 用户可在root管理器中点击本模块，选择"打开 WebUI"。Magisk 用户可安装 [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) 或 [SSU](https://ssu.oom-wg.dev/base/install) 应用来访问模块的 WebUI。
 
 **Q: 配置文件和参数修改后需要重启模块吗？**
 A: 不需要。模块支持配置文件热更新和多线程监控，所有更改（如频率表、游戏列表、日志等级等）均可实时生效，无需重启。
