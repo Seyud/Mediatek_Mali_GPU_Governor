@@ -1,6 +1,6 @@
 # 📝 更新日志 (CHANGELOG)
 
-[English Version](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/en/CHANGELOG.md)
+[Latest English CHANGELOG](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/en/CHANGELOG.md)
 
 ## 🚀 v2.7 → v2.8 (2025年7月12日)
 
