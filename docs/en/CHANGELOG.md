@@ -1,76 +1,38 @@
 # 📝 CHANGELOG
 
-## 🎯 v2.6 → v2.7 (June 15, 2025)
+## 🚀 v2.7 → v2.8 (July 12, 2025)
 
 ### ✨ New Features
 
-#### 🎨 WebUI Interface Complete Redesign
-- **SVG Vector Icon System**
-  - Replaced simple emojis with exquisite SVG vector icons
-  - Sun icon features new ray animations and decorative rings
-  - Moon icon includes surface textures and star decorations
+- **Show channel link during module installation** 🎉
+  - Added official channel link prompt during installation, making it easier for users to get support and feedback. 📢
 
-- **Brand New Tab-style Log Level Selector**
-  - Four levels (Debug/Info/Warn/Error) each with dedicated SVG icons
-  - Supports real-time preview and visual feedback
+### 🔧 Improvements
 
-- **Multi-tab Log Viewer**
-  - Separate display of main log (gpu_gov.log) and initialization log (initsvc.log)
-  - Each tab equipped with dedicated icons and status indicators
-  - Support for quick switching between tabs
-
-- **Responsive Grid Layout System**
-  - Interface layout adapted for different screen sizes
-
-- **User Safety Alert System** ⚠️
-  - Added important warning notification feature
-  - Reminds users to adjust voltage to prevent crashes and stuttering
-  - Enhanced user safety
-
-#### 📱 Chipset Support Expansion
-- **New Dimensity 720 Configuration** 🆕
-  - Added `mtd720.conf` configuration file, supporting 12 frequency levels
-  - Frequency range: 219MHz - 1068MHz
-  - Voltage range: 45000μV - 60625μV
-  - Optimized DDR setting strategy
-  - **Only configuration pre-adaptation, core support awaits future versions**
-
-### 🔧 Feature Improvements
-
-#### 🎯 GPU Frequency Scaling Optimization
-- **Warning Rate Limiter Optimization** ⏱️
-  - Extended rate limiting time from 30 seconds to 60 seconds
-  - Significantly reduced system false positive rate
-  - Improved user experience stability
-
-- **Log Display System Enhancement** 📋
-  - Optimized log output format and readability
-  - Enhanced effectiveness of debug information
-  - Improved developer diagnostic efficiency
-
-- **v2 Driver Frequency Writing Mechanism Optimization** ⚡
-  - Improved reliability of device frequency writing
-  - Enhanced responsiveness of frequency adjustments
-  - Increased system compatibility
-
-- **Debug System Improvement** 🔍
-  - Main program added `debug` level log support
-  - Enhanced usability of developer diagnostic tools
-
-- **Documentation Maintenance Optimization** 📚
-  - Removed deprecated Discord channel links from README
-  - Cleaned up outdated community contact information
-  - Maintained accuracy of documentation information
+- **Core code refactored to modular architecture** 🧩
+  - Optimized core code structure for better maintainability and scalability.
+- **Simplified GPU frequency scaling strategy** ⚡
+  - Uses a 90% load threshold, removes complex logic, and improves frequency response efficiency.
+- **Optimized thread management of the governor core process** 🤖
+  - Improved thread scheduling and resource release for better runtime stability.
+- **Refactored core logging system** 📒
+  - Added real-time log rotation, improving log management capability.
+  - Optimized log initialization process and some log display effects.
 
 ### 🐛 Bug Fixes
 
-#### 🔄 Driver Compatibility Fixes
-- **v1 Driver Idle Mode Handling Fix** 🛠️
-  - Fixed device idle mode setting logic
-  - Properly restored dynamic frequency scaling functionality
-  - Ensured power management in low-load scenarios
+- **Fixed Dimensity 9000 misidentification and wrong frequency table assignment** 🔍
+  - Resolved issue where Dimensity 9000 was misidentified as Dimensity 1200 and loaded the wrong frequency table.
+- **Fixed frequency scaling issues for Dimensity 1x00 series** 🛠️
+  - Fixed abnormal frequency scaling for Dimensity 1000/1100/1200 chips.
+- **Fixed initialization script updating game count in module description** 🎮
+  - Ensured the game count in the module description matches the actual number.
 
-- **Dimensity 9000 Frequency Display Fix** 🔧
-  - Added DCS Policy status check and disable functionality
-  - Fixed stuttering issues caused by two-digit frequencies on Dimensity 9000
-  - Improved frequency scaling stability for high-end chipsets
+### 🗑️ Removals/Adjustments
+
+- **Removed log rotation at module script startup, now handled by the governor core** 🔄
+  - Log rotation moved from module script to core program for better efficiency and consistency.
+- **Removed main log redirection in module script, now handled by the governor core** ➡️
+  - Log redirection logic is now managed by the core code, simplifying script complexity.
+- **Margin logic temporarily deprecated due to 90% load-based frequency scaling** 📴
+  - Margin-related logic is suspended for now; future optimizations will be announced separately.
