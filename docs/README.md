@@ -3,6 +3,7 @@
 [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/Mediatek_Mali_GPU_Governor)
 [![Version](https://img.shields.io/badge/Version-v2.7-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
 [![Language](https://img.shields.io/badge/Language-Rust-orange)](https://www.rust-lang.org/)
+[![QQ群](https://img.shields.io/badge/QQ群-719872309-12B7F5?logo=tencentqq&logoColor=white)](https://qun.qq.com/universal-share/share?ac=1&authKey=zwOHClW5YTIZobOTsqvF6lBaACPvS7%2F2Y0s%2FpQadAMss5d2nxcr46fmsm%2FFreVjt&busi_data=eyJncm91cENvZGUiOiI3MTk4NzIzMDkiLCJ0b2tlbiI6IjhQNUhYM1M4NUs4bFVwQmNsODRrUU1Xc0phR3dra1RUYnE0S0tMVFNzV3JUU2s3elgvSFRyUXJQdWtEQ1NVYSsiLCJ1aW4iOiIxMTA1NzgzMDMzIn0%3D&data=VgJU9DuiAPqB3ocg4Zlh8UShvQmDEgEfH4wvqCVXWOD8qcBSzYDPQuwUKVgLOIzZ-CWhtV69fyTHD4Q0GqWWKw&svctype=4&tempid=h5_group_info)
 
 ## 简介 📝
 **简体中文** | [English](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/en/README.md)
@@ -29,12 +30,12 @@
 - 🔧 **交互式控制脚本**：提供 `action.sh` 音量键控制脚本，支持服务管理和日志等级设置
 
 ### 技术特性
-- 🦀 **Rust 核心引擎**：使用 Rust 语言开发，保证内存安全、零成本抽象和极致性能
+- 🦀 **Rust 核心引擎与多线程监控**：使用 Rust 语言开发，保证内存安全、零成本抽象和极致性能。主程序采用多线程架构，分别负责GPU负载监控、前台应用监控、配置文件热更新、游戏模式监控、日志等级监控等，确保调速器实时响应系统状态变化。
 - 🔧 **高度可定制化**：通过配置文件自定义 GPU 频率、电压和内存频率档位
 - 📱 **广泛设备兼容**：支持 Dimensity、Helio、MT6xxx 等多系列联发科处理器
 - 📝 **专业日志系统**：支持 debug/info/warn/error 四级日志
 - 🔄 **自动设备适配**：安装时自动检测设备型号并应用最佳配置文件
-- ⚡ **滞后与去抖动**：实现频率调整的滞后阈值和去抖动机制，避免频繁跳频
+- ⚡ **滞后与去抖动**：实现频率调整的滞后阈值和去抖动机制，避免频繁跳频。默认采用“超简化90%阈值策略”，即负载高于90%自动升频，低于90%自动降频，用户可通过配置文件和WebUI自定义更细致的多级阈值。
 - 🎯 **余量调节系统**：支持 0-100% 的频率计算余量调节，平衡性能与功耗
 
 ## 安装要求 📋
@@ -159,8 +160,8 @@ Margin=5
 
 日志文件存储在 `/data/adb/gpu_governor/log/` 目录下，主要包括：
 
-- **gpu_gov.log**: 主日志文件，记录 GPU 调速器的运行状态和频率调整记录
-- **initsvc.log**: 初始化服务日志，记录模块启动过程
+- **gpu_gov.log**: 主日志文件，由 Rust 核心统一管理，记录 GPU 调速器的运行状态
+- **initsvc.log**: 初始化服务日志，记录模块启动过程和脚本初始化信息
 
 日志内容可以通过WebUI界面查看，也可以通过文件管理器直接查看。
 
@@ -177,7 +178,7 @@ Margin=5
 
 ### 日志管理
 
-模块的日志管理功能已完全由Rust核心统一实现，包括：
+模块的主日志已完全由Rust核心统一实现，包括：
 - 日志文件的创建和写入
 - 自动日志轮转和大小控制
 - 日志等级的实时监控和响应
@@ -191,7 +192,7 @@ Margin=5
 - MT6xxx 系列
 
 模块会自动检测设备型号并应用适合的配置。
-如果您的设备不在支持列表中，模块会使用默认配置。您也可以手动编辑配置文件来适配您的设备。
+如果您的设备不在支持列表中，模块会使用默认配置
 
 ## 致谢 🙏
 
@@ -210,6 +211,7 @@ Margin=5
 ## WebUI 界面 🖥️
 
 本模块提供了基于 KernelSU API 的现代化 WebUI 界面，基于 Miuix 风格设计，为用户提供直观的 GPU 调速器管理和监控体验。
+WebUI 支持配置文件热更新、日志实时查看、游戏列表和频率表可视化编辑，所有更改即时生效。
 
 ### 功能特性
 
@@ -275,3 +277,5 @@ A: KernelSU/APatch 用户可在root管理器中点击本模块，选择"打开 W
 **Q: 如何调整GPU频率计算的余量？**
 A: 在 `/data/gpu_freq_table.conf` 文件中添加或修改 `Margin=数值` 行，数值表示余量百分比。也可以通过 WebUI 界面的配置页面进行调整。余量越大，实际频率越高，性能越好但功耗也越高。
 
+**Q: 配置文件和参数修改后需要重启模块吗？**
+A: 不需要。模块支持配置文件热更新和多线程监控，所有更改（如频率表、游戏列表、日志等级等）均可实时生效，无需重启。
