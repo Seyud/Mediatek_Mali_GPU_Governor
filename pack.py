@@ -210,11 +210,31 @@ def ensure_lf_line_endings():
 
     print("正在检查文件换行符...")
 
-    # 遍历所有文件
+    # 优先处理 META-INF 目录下的所有文件
+    meta_inf_dir = Path(WORK_DIR) / "META-INF"
+    if meta_inf_dir.exists() and meta_inf_dir.is_dir():
+        for file_path in meta_inf_dir.rglob("*"):
+            if file_path.is_file():
+                try:
+                    with open(file_path, "rb") as f:
+                        content = f.read()
+                    if b"\r\n" in content:
+                        content = content.replace(b"\r\n", b"\n")
+                        with open(file_path, "wb") as f:
+                            f.write(content)
+                        print(f"  已转换: {file_path.relative_to(WORK_DIR)} (CRLF -> LF)")
+                        converted_files += 1
+                    total_files += 1
+                except Exception as e:
+                    print(f"  处理文件失败: {file_path.relative_to(WORK_DIR)}, 错误: {str(e)}")
+
+    # 继续处理其他文件（排除META-INF目录）
     for file_type in file_types:
         for file_path in Path(WORK_DIR).glob(f"**/*{file_type}"):
-            # 排除某些目录
+            # 排除某些目录和已处理的META-INF
             if any(part.startswith(".") for part in file_path.parts):
+                continue
+            if meta_inf_dir in file_path.parents:
                 continue
 
             total_files += 1
