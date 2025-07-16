@@ -27,8 +27,8 @@ if [ ! -f "$INIT_LOG" ]; then
     chmod 0666 "$INIT_LOG"
 fi
 
-# 记录目录信息到初始化日志
-echo "$(date) - 🚀 Initialization started" >> "$INIT_LOG"
+# 记录目录信息到初始化日志（首次写入，覆盖旧内容）
+echo "$(date) - 🚀 Initialization started" > "$INIT_LOG"
 echo "📁 SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
 echo "📁 MODULE_DIR=$MODULE_DIR" >> "$INIT_LOG"
 
