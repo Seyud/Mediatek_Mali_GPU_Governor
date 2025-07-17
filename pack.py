@@ -27,7 +27,7 @@ FOLDERS_TO_PACK = ["bin", "config", "docs", "META-INF", "script", "webroot"]
 FILES_TO_PACK = [
     "action.sh",
     "customize.sh",
-    "gpu_freq_table.conf",
+    "gpu_freq_table.toml",
     "module.prop",
     "post-fs-data.sh",
     "service.sh",
@@ -65,30 +65,11 @@ def check_7zip_exists():
     return True
 
 
-def get_module_info():
-    """从module.prop文件中获取模块信息"""
-    module_info = {"name": "天玑GPU调速器", "version": "unknown"}
-
-    module_prop_path = os.path.join(WORK_DIR, "module.prop")
-    if os.path.exists(module_prop_path):
-        with open(module_prop_path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.startswith("name="):
-                    module_info["name"] = line.strip().split("=", 1)[1]
-                elif line.startswith("version="):
-                    module_info["version"] = line.strip().split("=", 1)[1]
-
-    return module_info
-
-
 def create_zip_package(custom_output_filename=None):
     """创建ZIP压缩包"""
     # 检查7-Zip是否存在
     if not check_7zip_exists():
         return False
-
-    # 获取模块信息 - 在固定文件名的情况下不需要使用
-    get_module_info()
 
     # 生成输出文件名
     if custom_output_filename:
@@ -323,9 +304,6 @@ def main():
 
         # 如果指定了打开输出目录
         if args.open_dir:
-            # 获取模块信息 - 在固定文件名的情况下不需要使用
-            get_module_info()
-
             # 生成输出文件名
             if args.output:
                 output_filename = args.output
