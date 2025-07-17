@@ -1,0 +1,59 @@
+# GPU 频率表
+# freq 单位: kHz
+# volt 单位: uV
+# ddr_opp: DDR OPP 档位
+
+[[freq_table]]
+freq = 218000
+volt = 45000
+ddr_opp = 999
+
+[[freq_table]]
+freq = 280000
+volt = 46875
+ddr_opp = 999
+
+[[freq_table]]
+freq = 350000
+volt = 48750
+ddr_opp = 999
+
+[[freq_table]]
+freq = 431000
+volt = 49375
+ddr_opp = 999
+
+[[freq_table]]
+freq = 471000
+volt = 50625
+ddr_opp = 999
+
+[[freq_table]]
+freq = 532000
+volt = 51875
+ddr_opp = 999
+
+[[freq_table]]
+freq = 573000
+volt = 53125
+ddr_opp = 3
+
+[[freq_table]]
+freq = 634000
+volt = 55000
+ddr_opp = 3
+
+[[freq_table]]
+freq = 685000
+volt = 56875
+ddr_opp = 0
+
+[[freq_table]]
+freq = 755000
+volt = 59375
+ddr_opp = 0
+
+[[freq_table]]
+freq = 853000
+volt = 60625
+ddr_opp = 0 

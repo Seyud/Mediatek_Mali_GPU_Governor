@@ -1,0 +1,44 @@
+# GPU调速器配置文件
+
+[global]
+# 全局模式设置: powersave, balance, performance, fast
+mode = "balance"
+# 空闲阈值（百分比）
+idle_threshold = 10
+
+# 省电模式 - 更高的升频阈值，更激进的降频
+[powersave]
+# 极高负载阈值（百分比）- 达到此阈值时升频
+very_high_load_threshold = 95
+# 频率计算的余量百分比
+margin = 5
+# 降频阈值
+down_threshold = 2
+# 是否使用激进降频策略
+aggressive_down = true
+# 采样间隔（毫秒）
+sampling_interval = 16
+
+# 平衡模式 - 默认设置
+[balance]
+very_high_load_threshold = 90
+margin = 5
+down_threshold = 1
+aggressive_down = true
+sampling_interval = 8
+
+# 性能模式 - 更低的升频阈值，更保守的降频
+[performance]
+very_high_load_threshold = 85
+margin = 3
+down_threshold = 1
+aggressive_down = false
+sampling_interval = 4
+
+# 极速模式 - 最低的升频阈值，最保守的降频
+[fast]
+very_high_load_threshold = 80
+margin = 0
+down_threshold = 1
+aggressive_down = false
+sampling_interval = 2

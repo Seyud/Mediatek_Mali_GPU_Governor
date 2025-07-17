@@ -1,0 +1,13 @@
+freq_table = [
+    { freq = 214000, volt = 0, ddr_opp = 999 },
+    { freq = 290000, volt = 50000, ddr_opp = 999 },
+    { freq = 366000, volt = 50000, ddr_opp = 999 },
+    { freq = 417000, volt = 50000, ddr_opp = 999 },
+    { freq = 484000, volt = 50000, ddr_opp = 3 },
+    { freq = 552000, volt = 53125, ddr_opp = 3 },
+    { freq = 612000, volt = 55000, ddr_opp = 3 },
+    { freq = 665000, volt = 56250, ddr_opp = 3 },
+    { freq = 717000, volt = 56875, ddr_opp = 3 },
+    { freq = 803000, volt = 57500, ddr_opp = 3 },
+    { freq = 848000, volt = 58750, ddr_opp = 3 }
+]
