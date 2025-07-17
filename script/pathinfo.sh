@@ -41,6 +41,9 @@ GAMES_PATH="/data/adb/gpu_governor/game"
 GAMES_FILE="$GAMES_PATH/games.conf"
 GAME_MODE_FILE="$GAMES_PATH/game_mode"
 LOG_LEVEL_FILE="$LOG_PATH/log_level"
+CONFIG_PATH="/data/adb/gpu_governor/config"
+CONFIG_TOML_FILE="$CONFIG_PATH/config.toml"
+GPU_FREQ_TABLE_TOML_FILE="$CONFIG_PATH/gpu_freq_table.toml"
 DVFS=/proc/mali/dvfs_enable
 
 ###############################
