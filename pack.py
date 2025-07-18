@@ -27,7 +27,6 @@ FOLDERS_TO_PACK = ["bin", "config", "docs", "META-INF", "script", "webroot"]
 FILES_TO_PACK = [
     "action.sh",
     "customize.sh",
-    "gpu_freq_table.toml",
     "module.prop",
     "post-fs-data.sh",
     "service.sh",
