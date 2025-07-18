@@ -289,52 +289,16 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
 
     enhanced_log "🚀 Starting gpu governor" "🚀 启动GPU调速器"
 
-    # 检查用户配置文件
-    if [ -f "$USER_PATH/gpu_freq_table.conf" ]; then
-        enhanced_log "📄 Found user config at $USER_PATH/gpu_freq_table.conf" "📄 在 $USER_PATH/gpu_freq_table.conf 找到用户配置"
-        GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
+    # 检查频率表是否存在
+    DEFAULT_GPUGOV_DIR="/data/adb/gpu_governor/config"
+    GPUGOV_FREQ_TABLE="gpu_freq_table.toml"
+    if [ -f "$DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE" ]; then
+        enhanced_log "📄 Found gpu_freq_table.toml at $DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE" "📄 在 $DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE 找到 gpu_freq_table.toml"
+        GPUGOV_CONFPATH="$DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE"
+        enhanced_log "⚙️ Using config $GPUGOV_CONFPATH" "⚙️ 使用配置 $GPUGOV_CONFPATH"
     else
-        # 获取设备平台信息
-        target="$(getprop ro.board.platform)"
-        cfgname="$(get_config_name $target)"
-
-        # 特殊处理mt6893，可能是mt6891或mt6893
-        if [ "$target" = "mt6893" ]; then
-            # 如果CPU7最大频率小于2700000，则是mt6891
-            if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
-                echo "检测到mt6893但CPU7频率较低，判断为mt6891"
-                cfgname="mtd1100"
-            else
-                echo "检测到mt6893且CPU7频率正常，判断为mt6893"
-                cfgname="mtd1200"
-            fi
-        fi
-
-        # 特殊处理mt6895，可能是mt6896
-        if [ "$target" = "mt6895" ]; then
-            if [[ $(getprop ro.soc.model | grep 6896) != '' ]]; then
-                echo "检测到mt6895但ro.soc.model包含6896，判断为mt6896"
-                cfgname="mtd8200"
-            fi
-        fi
-
-        if [ "$cfgname" = "unsupported" ]; then
-            target="$(getprop ro.product.board)"
-            cfgname="$(get_config_name "$target")"
-        fi
-
-        # 如果平台支持，使用平台特定配置，否则使用默认配置
-        if [ "$cfgname" != "unsupported" ] && [ -f "$MODULE_PATH/config/$cfgname.conf" ]; then
-            cp -f "$MODULE_PATH/config/$cfgname.conf" "$USER_PATH/gpu_freq_table.conf"
-            enhanced_log "Created platform-specific config from $cfgname.conf" "从 $cfgname.conf 创建平台特定配置"
-        else
-            cp -f "$MODULE_PATH/gpu_freq_table.conf" "$USER_PATH/gpu_freq_table.conf"
-            enhanced_log "Created default config from gpu_freq_table.conf" "从 gpu_freq_table.conf 创建默认配置"
-        fi
-        GPUGOV_CONFPATH="$USER_PATH/gpu_freq_table.conf"
+        enhanced_log "Error: gpu_freq_table.toml not found at $DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE, please reinstall the module." "错误: 在 $DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE 未找到 gpu_freq_table.toml，请重新安装模块。"
     fi
-
-    enhanced_log "⚙️ Using config $GPUGOV_CONFPATH" "⚙️ 使用配置 $GPUGOV_CONFPATH"
 
 
     # 启动GPU调速器
