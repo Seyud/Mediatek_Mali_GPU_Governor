@@ -238,8 +238,8 @@ install_gov() {
                     cp -f "$MODULE_PATH/config/$cfgname.toml" "$CONFIG_PATH/gpu_freq_table.toml"
                     chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
                     echo "$(translate "📊 GPU频率表TOML配置文件已创建于" "📊 GPU frequency table TOML config file created at") $CONFIG_PATH/gpu_freq_table.toml"
-                elif [ -f "$MODULE_PATH/gpu_freq_table.toml" ]; then
-                    cp -f "$MODULE_PATH/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml"
+                elif [ -f "$MODULE_PATH/config/gpu_freq_table.toml" ]; then
+    cp -f "$MODULE_PATH/config/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml"
                     chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
                     echo "$(translate "📊 GPU频率表TOML配置文件已创建于" "📊 GPU frequency table TOML config file created at") $CONFIG_PATH/gpu_freq_table.toml"
                 else
@@ -254,8 +254,8 @@ install_gov() {
             cp -f "$MODULE_PATH/config/$cfgname.toml" "$CONFIG_PATH/gpu_freq_table.toml"
             chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
             echo "$(translate "📊 GPU频率表TOML配置文件已创建于" "📊 GPU frequency table TOML config file created at") $CONFIG_PATH/gpu_freq_table.toml"
-        elif [ -f "$MODULE_PATH/gpu_freq_table.toml" ]; then
-            cp -f "$MODULE_PATH/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml"
+        elif [ -f "$MODULE_PATH/config/gpu_freq_table.toml" ]; then
+    cp -f "$MODULE_PATH/config/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml"
             chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
             echo "$(translate "📊 GPU频率表TOML配置文件已创建于" "📊 GPU frequency table TOML config file created at") $CONFIG_PATH/gpu_freq_table.toml"
         else
@@ -308,8 +308,8 @@ install_gov() {
             cp -f "$MODULE_PATH/config/$cfgname.toml" "$CONFIG_PATH/gpu_freq_table.toml"
             chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
             echo "$(translate "📊 GPU频率表TOML配置文件已创建于" "📊 GPU frequency table TOML config file created at") $CONFIG_PATH/gpu_freq_table.toml"
-        elif [ -f "$MODULE_PATH/gpu_freq_table.toml" ]; then
-            cp -f "$MODULE_PATH/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml"
+        elif [ -f "$MODULE_PATH/config/gpu_freq_table.toml" ]; then
+            cp -f "$MODULE_PATH/config/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml"
             chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
             echo "$(translate "📊 GPU频率表TOML配置文件已创建于" "📊 GPU frequency table TOML config file created at") $CONFIG_PATH/gpu_freq_table.toml"
         else
