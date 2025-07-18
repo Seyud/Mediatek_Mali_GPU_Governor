@@ -4,7 +4,7 @@
 # 全局模式设置: powersave, balance, performance, fast
 mode = "balance"
 # 空闲阈值（百分比）
-idle_threshold = 10
+idle_threshold = 5
 
 # 省电模式 - 更高的升频阈值，更激进的降频
 [powersave]
@@ -23,7 +23,7 @@ sampling_interval = 16
 [balance]
 very_high_load_threshold = 90
 margin = 5
-down_threshold = 1
+down_threshold = 10
 aggressive_down = true
 sampling_interval = 8
 
