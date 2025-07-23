@@ -28,7 +28,7 @@ const app = document.getElementById('app');
 const loading = document.getElementById('loading');
 const themeToggle = document.getElementById('themeToggle');
 const runningStatus = document.getElementById('runningStatus');
-const gameModeStatus = document.getElementById('gameModeStatus');
+
 const moduleVersion = document.getElementById('moduleVersion');
 const followSystemThemeToggle = document.querySelector('#followSystemThemeToggle .miuix-switch-input');
 const followSystemThemeSuperSwitch = document.getElementById('followSystemThemeSuperSwitch');
@@ -80,9 +80,9 @@ const navItems = document.querySelectorAll('.nav-item');
 // 路径常量
 const LOG_PATH = '/data/adb/gpu_governor/log';
 const CONFIG_PATH = '/data/gpu_freq_table.conf';
-const GAMES_PATH = '/data/adb/gpu_governor/game'; // 游戏目录路径
+
 const GAMES_FILE = '/data/adb/gpu_governor/game/games.conf'; // 游戏列表文件路径
-const GAME_MODE_PATH = '/data/adb/gpu_governor/game/game_mode';
+
 const LOG_LEVEL_PATH = '/data/adb/gpu_governor/log/log_level';
 
 // 电压列表
@@ -100,7 +100,7 @@ let gamesList_data = []; // 存储当前的游戏列表
 let currentVoltIndex = 0; // 当前电压选择器的索引
 let marginValue = 20; // 默认余量值
 let currentLanguage = 'zh'; // 当前语言，默认中文
-let lastGameModeStatus = false; // 上一次检测到的游戏模式状态
+
 
 // 电压调整相关全局变量
 const VOLT_STEP = 625; // 电压调整步长
@@ -133,9 +133,7 @@ const translations = {
         'status_running_active': '运行中',
         'status_running_inactive': '未运行',
         'status_checking': '检查中...',
-        'status_game_mode': '游戏模式:',
-        'status_game_mode_on': '开启',
-        'status_game_mode_off': '关闭',
+
         'status_module_version': '模块版本:',
         'status_unknown': '未知',
         // 配置页面
@@ -209,9 +207,7 @@ const translations = {
         'toast_theme_follow_keep': '已关闭跟随系统主题，将保持当前主题',
         'toast_theme_switched_dark': '已切换到深色模式',
         'toast_theme_switched_light': '已切换到浅色模式',
-        'toast_game_mode_on': '游戏模式已开启',
-        'toast_game_mode_off': '游戏模式已关闭',
-        'toast_game_mode_fail': '切换游戏模式失败，请检查权限',
+
         'toast_config_updated': '配置已更新，请点击"保存配置"按钮保存到文件',
         'toast_config_deleted': '配置已删除，请点击"保存配置"按钮保存到文件',
         'toast_config_saved': '配置已成功保存',
@@ -256,9 +252,7 @@ const translations = {
         'status_running_active': 'Running',
         'status_running_inactive': 'Not Running',
         'status_checking': 'Checking...',
-        'status_game_mode': 'Game Mode:',
-        'status_game_mode_on': 'Enabled',
-        'status_game_mode_off': 'Disabled',
+
         'status_module_version': 'Module Version:',
         'status_unknown': 'Unknown',
         // Config page
@@ -332,9 +326,7 @@ const translations = {
         'toast_theme_follow_keep': 'System theme following disabled, current theme will be kept',
         'toast_theme_switched_dark': 'Switched to dark mode',
         'toast_theme_switched_light': 'Switched to light mode',
-        'toast_game_mode_on': 'Game mode enabled',
-        'toast_game_mode_off': 'Game mode disabled',
-        'toast_game_mode_fail': 'Failed to toggle game mode, please check permissions',
+
         'toast_config_updated': 'Configuration updated, please click "Save Config" to save to file',
         'toast_config_deleted': 'Configuration deleted, please click "Save Config" to save to file',
         'toast_config_saved': 'Configuration saved successfully',
@@ -437,12 +429,7 @@ function applyTranslations() {
             runningLabel.textContent = getTranslation('status_running');
         }
 
-        const gameModeLabel = document.querySelector('#statusCard .status-item:nth-child(2) .status-text');
-        if (gameModeLabel) {
-            gameModeLabel.textContent = getTranslation('status_game_mode');
-        }
-
-        const versionLabel = document.querySelector('#statusCard .status-item:nth-child(3) .status-text');
+        const versionLabel = document.querySelector('#statusCard .status-item:nth-child(2) .status-text');
         if (versionLabel) {
             versionLabel.textContent = getTranslation('status_module_version');
         }
@@ -453,17 +440,7 @@ function applyTranslations() {
             versionValue.textContent = getTranslation('status_unknown');
         }
 
-        // 更新游戏模式状态文本（新增，保证切换语言时状态同步）
-        const gameModeStatus = document.getElementById('gameModeStatus');
-        if (gameModeStatus) {
-            if (gameModeStatus.classList.contains('status-running')) {
-                gameModeStatus.textContent = getTranslation('status_game_mode_on');
-            } else if (gameModeStatus.classList.contains('status-stopped')) {
-                gameModeStatus.textContent = getTranslation('status_game_mode_off');
-            } else {
-                gameModeStatus.textContent = getTranslation('status_checking');
-            }
-        }
+
 
         // 更新版权信息
         const copyrightText = document.querySelector('#copyrightCard .copyright-content p');
@@ -1025,7 +1002,7 @@ async function initializeApp() {
         // 逐个加载数据，每个函数都有自己的错误处理
         await safeExecute(checkModuleStatus, '检查模块状态失败');
         await safeExecute(loadModuleVersion, '加载模块版本失败');
-        await safeExecute(loadGameModeStatus, '加载游戏模式状态失败');
+
         await safeExecute(loadGpuConfig, '加载GPU配置失败');
         await safeExecute(loadGamesList, '加载游戏列表失败');
         await safeExecute(initLogFileSelect, '初始化日志文件选择器失败');
@@ -1038,9 +1015,7 @@ async function initializeApp() {
         // 初始化页面显示
         switchPage('page-status'); // 默认显示状态页面
 
-        // 设置定时器，每秒检测一次游戏模式状态
-        console.log('设置游戏模式状态检测定时器');
-        setInterval(checkGameModeStatus, 1000);
+
 
         // 加载完成后显示提示
         try {
@@ -1480,92 +1455,9 @@ async function loadModuleVersion() {
     }
 }
 
-// 检查游戏模式状态（每秒调用一次）
-async function checkGameModeStatus() {
-    try {
-        // 读取游戏模式状态
-        const { errno, stdout, stderr } = await exec(`cat ${GAME_MODE_PATH} 2>/dev/null || echo 0`);
 
-        if (errno === 0) {
-            const status = stdout.trim() === '1';
 
-            // 如果状态发生变化，更新UI
-            if (status !== lastGameModeStatus) {
-                console.log(`游戏模式状态变化: ${lastGameModeStatus ? '开启' : '关闭'} -> ${status ? '开启' : '关闭'}`);
 
-                // 添加状态变化动画
-                gameModeStatus.classList.add('status-changing');
-
-                setTimeout(() => {
-                    // 更新游戏模式状态显示
-                    if (status) {
-                        gameModeStatus.textContent = getTranslation('status_game_mode_on');
-                        gameModeStatus.className = 'status-badge status-running';
-                    } else {
-                        gameModeStatus.textContent = getTranslation('status_game_mode_off');
-                        gameModeStatus.className = 'status-badge status-stopped';
-                    }
-
-                    // 移除动画类
-                    setTimeout(() => {
-                        gameModeStatus.classList.remove('status-changing');
-                    }, 600);
-                }, 100);
-
-                lastGameModeStatus = status;
-            }
-        } else {
-            console.error('读取游戏模式状态失败:', stderr);
-        }
-    } catch (error) {
-        console.error('检查游戏模式状态失败:', error);
-    }
-}
-
-// 加载游戏模式状态
-async function loadGameModeStatus() {
-    try {
-        // 确保目录和文件存在
-        await exec(`mkdir -p ${GAMES_PATH}`);
-
-        // 检查文件是否存在，如果不存在则创建
-        const { errno: checkErrno, stdout: checkResult } = await exec(`[ -f "${GAME_MODE_PATH}" ] && echo "exists" || echo "not_exists"`);
-
-        if (checkErrno === 0 && checkResult.trim() === "not_exists") {
-            console.log("游戏模式文件不存在，创建默认文件");
-            await exec(`echo "0" > ${GAME_MODE_PATH}`);
-        }
-
-        // 读取游戏模式状态
-        const { errno, stdout, stderr } = await exec(`cat ${GAME_MODE_PATH} 2>/dev/null || echo 0`);
-
-        if (errno === 0) {
-            const status = stdout.trim() === '1';
-
-            // 更新游戏模式状态显示
-            if (status) {
-                gameModeStatus.textContent = getTranslation('status_game_mode_on');
-                gameModeStatus.className = 'status-badge status-running';
-            } else {
-                gameModeStatus.textContent = getTranslation('status_game_mode_off');
-                gameModeStatus.className = 'status-badge status-stopped';
-            }
-
-            lastGameModeStatus = status; // 更新上一次状态
-            console.log(`当前游戏模式状态: ${status ? '开启' : '关闭'}`);
-        } else {
-            console.error('读取游戏模式状态失败:', stderr);
-            gameModeStatus.textContent = getTranslation('status_checking');
-            gameModeStatus.className = 'status-badge status-stopped';
-            lastGameModeStatus = false; // 默认为关闭
-        }
-    } catch (error) {
-        console.error('加载游戏模式状态失败:', error);
-        gameModeStatus.textContent = getTranslation('status_checking');
-        gameModeStatus.className = 'status-badge status-stopped';
-        lastGameModeStatus = false; // 默认为关闭
-    }
-}
 
 // 加载GPU配置
 async function loadGpuConfig() {
