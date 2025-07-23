@@ -109,7 +109,6 @@ Margin=5
 脚本会自动检测当前系统语言，并显示相应的中文或英文界面。
 
 **模块文件**：
-- 游戏模式状态：`/data/adb/gpu_governor/game/game_mode`（1=开启，0=关闭）
 - 日志等级设置：`/data/adb/gpu_governor/log/log_level`
 - 游戏列表配置：`/data/adb/gpu_governor/game/games.conf`
 - 进程ID管理：`/data/adb/gpu_governor/gpu_governor.pid`

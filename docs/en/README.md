@@ -108,7 +108,6 @@ The module provides the `action.sh` script, supporting interactive operations vi
 The script will automatically detect the current system language and display the corresponding Chinese or English interface.
 
 **Module Files**:
-- Game mode status: `/data/adb/gpu_governor/game/game_mode` (1=on, 0=off)
 - Log level setting: `/data/adb/gpu_governor/log/log_level`
 - Game list config: `/data/adb/gpu_governor/game/games.conf`
 - PID management: `/data/adb/gpu_governor/gpu_governor.pid`
