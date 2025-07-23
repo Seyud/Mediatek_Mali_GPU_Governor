@@ -8,37 +8,69 @@ idle_threshold = 5
 
 # 省电模式 - 更高的升频阈值，更激进的降频
 [powersave]
-# 极高负载阈值（百分比）- 达到此阈值时升频
-very_high_load_threshold = 95
-# 频率计算的余量百分比
-margin = 5
-# 降频阈值
-down_threshold = 2
+# 极简阈值（百分比）- 达到此阈值时升频
+ultra_simple_threshold = 95
+# 余量
+# 当设置为0时使用原调频策略
+# 当设置为N时，降频阈值为(100-N)%
+margin = 10
+# 降频计数器配置值（0=禁用降频计数器功能）
+down_counter_threshold = 5
 # 是否使用激进降频策略
 aggressive_down = true
 # 采样间隔（毫秒）
 sampling_interval = 16
+# 游戏模式 - 启用游戏特殊内存优化
+gaming_mode = false
+# 自适应采样
+adaptive_sampling = true
+# 自适应采样最小间隔（毫秒）
+min_adaptive_interval = 4
+# 自适应采样最大间隔（毫秒）
+max_adaptive_interval = 20
+# 升频延迟（毫秒）
+up_rate_delay = 1000
+# 降频延迟（毫秒）
+down_rate_delay = 5000
 
 # 平衡模式 - 默认设置
 [balance]
-very_high_load_threshold = 90
+ultra_simple_threshold = 90
 margin = 5
-down_threshold = 10
+down_counter_threshold = 10
 aggressive_down = true
 sampling_interval = 8
+gaming_mode = false
+adaptive_sampling = true
+min_adaptive_interval = 8
+max_adaptive_interval = 33
+up_rate_delay = 50
+down_rate_delay = 0
 
 # 性能模式 - 更低的升频阈值，更保守的降频
 [performance]
-very_high_load_threshold = 85
-margin = 3
-down_threshold = 1
+ultra_simple_threshold = 85
+margin = 35
+down_counter_threshold = 27
 aggressive_down = false
-sampling_interval = 4
+sampling_interval = 8
+gaming_mode = true
+adaptive_sampling = true
+min_adaptive_interval = 8
+max_adaptive_interval = 16
+up_rate_delay = 20
+down_rate_delay = 50
 
 # 极速模式 - 最低的升频阈值，最保守的降频
 [fast]
-very_high_load_threshold = 80
-margin = 0
-down_threshold = 1
+ultra_simple_threshold = 80
+margin = 60
+down_counter_threshold = 2
 aggressive_down = false
 sampling_interval = 2
+gaming_mode = true
+adaptive_sampling = true
+min_adaptive_interval = 1
+max_adaptive_interval = 8
+up_rate_delay = 100
+down_rate_delay = 1000
