@@ -129,6 +129,12 @@ const translations = {
         'status_running_active': '运行中',
         'status_running_inactive': '未运行',
         'status_checking': '检查中...',
+        'status_current_mode': '当前模式:',
+        'status_mode_powersave': '省电',
+        'status_mode_balance': '均衡',
+        'status_mode_performance': '性能',
+        'status_mode_fast': '极速',
+        'status_mode_unknown': '未知',
 
         'status_module_version': '模块版本:',
         'status_unknown': '未知',
@@ -241,6 +247,12 @@ const translations = {
         'status_running_active': 'Running',
         'status_running_inactive': 'Not Running',
         'status_checking': 'Checking...',
+        'status_current_mode': 'Current Mode:',
+        'status_mode_powersave': 'Power Saving',
+        'status_mode_balance': 'Balance',
+        'status_mode_performance': 'Performance',
+        'status_mode_fast': 'Fast',
+        'status_mode_unknown': 'Unknown',
 
         'status_module_version': 'Module Version:',
         'status_unknown': 'Unknown',
@@ -416,13 +428,17 @@ function applyTranslations() {
             versionLabel.textContent = getTranslation('status_module_version');
         }
 
+        // 更新当前模式标签
+        const currentModeLabel = document.querySelector('#statusCard .status-item:nth-child(3) .status-text');
+        if (currentModeLabel) {
+            currentModeLabel.textContent = getTranslation('status_current_mode');
+        }
+
         // 更新模块版本文本，如果是"未知"或"Unknown"，则使用翻译
         const versionValue = document.getElementById('moduleVersion');
         if (versionValue && (versionValue.textContent === '未知' || versionValue.textContent === 'Unknown')) {
             versionValue.textContent = getTranslation('status_unknown');
         }
-
-
 
         // 更新版权信息
         const copyrightText = document.querySelector('#copyrightCard .copyright-content p');
@@ -2321,14 +2337,14 @@ async function loadCurrentMode() {
         // 更新显示
         if (currentMode) {
             const modeText = {
-                'powersave': '省电模式',
-                'balance': '平衡模式', 
-                'performance': '性能模式',
-                'fast': '极速模式',
-                'unknown': '未知'
+                'powersave': getTranslation('status_mode_powersave'),
+                'balance': getTranslation('status_mode_balance'), 
+                'performance': getTranslation('status_mode_performance'),
+                'fast': getTranslation('status_mode_fast'),
+                'unknown': getTranslation('status_mode_unknown')
             };
             
-            currentMode.textContent = modeText[mode] || '未知';
+            currentMode.textContent = modeText[mode] || getTranslation('status_mode_unknown');
             currentMode.className = `mode-badge ${mode}`;
         }
         
@@ -2336,8 +2352,9 @@ async function loadCurrentMode() {
     } catch (error) {
         console.error('加载当前模式失败:', error);
         if (currentMode) {
-            currentMode.textContent = '未知';
+            currentMode.textContent = getTranslation('status_mode_unknown');
             currentMode.className = 'mode-badge default';
         }
     }
 }
+
