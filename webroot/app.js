@@ -32,7 +32,6 @@ const runningStatus = document.getElementById('runningStatus');
 const moduleVersion = document.getElementById('moduleVersion');
 const followSystemThemeToggle = document.querySelector('#followSystemThemeToggle .miuix-switch-input');
 const followSystemThemeSuperSwitch = document.getElementById('followSystemThemeSuperSwitch');
-const logLevelContainer = document.getElementById('logLevelContainer');
 const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
 const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
@@ -43,7 +42,7 @@ const marginIncreaseBtn = document.getElementById('marginIncreaseBtn');
 
 // 语言设置相关DOM元素
 const htmlRoot = document.getElementById('htmlRoot');
-const languageContainer = document.getElementById('languageContainer');
+const selectedLogLevel = document.querySelector('#logLevelContainer .selected-value');
 
 // 自定义电压和内存档位选择器DOM元素
 const selectedVolt = document.getElementById('selectedVolt');
@@ -51,7 +50,6 @@ const voltDecreaseBtn = document.getElementById('voltDecreaseBtn');
 const voltIncreaseBtn = document.getElementById('voltIncreaseBtn');
 const ddrContainer = document.getElementById('ddrContainer');
 const selectedDdr = document.getElementById('selectedDdr');
-const ddrOptions = document.getElementById('ddrOptions');
 
 // 配置编辑相关DOM元素
 const addConfigBtn = document.getElementById('addConfigBtn');
@@ -783,8 +781,8 @@ function applyTranslations() {
                 selectedLogLevel.textContent = getTranslation('settings_log_level_error');
             }
         }
-    } catch (e) {
-        console.error('更新当前日志等级文本失败:', e);
+    } catch {
+        console.error('更新当前日志等级文本失败');
     }
 
     // 新增：切换语言时刷新动态内容
@@ -792,15 +790,15 @@ function applyTranslations() {
         if (typeof refreshGpuTable === 'function') {
             refreshGpuTable();
         }
-    } catch (e) {
-        console.error('刷新GPU配置表格失败:', e);
+    } catch {
+        console.error('刷新GPU配置表格失败');
     }
     try {
         if (typeof refreshGamesList === 'function') {
             refreshGamesList();
         }
-    } catch (e) {
-        console.error('刷新游戏列表失败:', e);
+    } catch {
+        console.error('刷新游戏列表失败');
     }
 
     // 新增：批量应用data-i18n国际化（适用于主日志等级等静态文本）
@@ -811,8 +809,8 @@ function applyTranslations() {
                 el.textContent = getTranslation(key);
             }
         });
-    } catch (e) {
-        console.error('批量应用data-i18n国际化失败:', e);
+    } catch {
+        console.error('批量应用data-i18n国际化失败');
     }
 }
 
@@ -838,7 +836,7 @@ async function detectSystemLanguage() {
                     return 'zh';
                 }
             }
-        } catch (e) {
+        } catch {
             console.log('无法通过系统属性检测语言，将使用浏览器语言');
         }
 
@@ -975,12 +973,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeApp();
 
         // 注意：initMarginSetting()会在loadGpuConfig()完成后自动调用
-    } catch (e) {
-        console.error('初始化失败:', e);
-        // 确保界面显示
-        if (loading) loading.style.display = 'none';
-        if (app) app.style.display = 'block';
-    }
+    } catch (error) {
+            console.error('初始化失败:', error);
+            // 确保界面显示
+            if (loading) loading.style.display = 'none';
+            if (app) app.style.display = 'block';
+        }
 });
 
 // 初始化应用
@@ -1020,7 +1018,7 @@ async function initializeApp() {
         // 加载完成后显示提示
         try {
             toast(getTranslation('toast_webui_loaded'));
-        } catch (e) {
+        } catch {
             console.log(getTranslation('toast_webui_loaded'));
         }
     } catch (error) {
