@@ -17,8 +17,6 @@ fi
 # 定义常量
 GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
-GPU_GOVERNOR_GAME_DIR="$GPU_GOVERNOR_DIR/game"
-GAME_MODE_FILE="$GPU_GOVERNOR_GAME_DIR/game_mode"
 LOG_LEVEL_FILE="$GPU_GOVERNOR_LOG_DIR/log_level"
 GPU_GOV_LOG_FILE="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log"
 BIN_PATH="$SCRIPT_DIR/bin"
@@ -66,18 +64,9 @@ log_prefix() {
 # 确保目录存在并设置适当权限
 mkdir -p "$GPU_GOVERNOR_DIR"
 mkdir -p "$GPU_GOVERNOR_LOG_DIR"
-mkdir -p "$GPU_GOVERNOR_GAME_DIR"
 # 设置目录权限为777，确保任何进程都可以写入
 chmod 0777 "$GPU_GOVERNOR_DIR"
 chmod 0777 "$GPU_GOVERNOR_LOG_DIR"
-chmod 0777 "$GPU_GOVERNOR_GAME_DIR"
-
-
-# 确保文件存在
-if [ ! -f "$GAME_MODE_FILE" ]; then
-    echo "0" > "$GAME_MODE_FILE"
-    chmod 666 "$GAME_MODE_FILE"
-fi
 
 # 确保日志等级文件存在，默认为info级别
 if [ ! -f "$LOG_LEVEL_FILE" ]; then
@@ -234,14 +223,6 @@ show_status() {
     echo "----------------------------------------"
     echo "$(log_prefix) $(translate "天玑GPU调速器状态信息" "Mediatek GPU Governor Status Information")"
     echo "----------------------------------------"
-
-    # 显示游戏模式状态
-    local game_mode=$(cat "$GAME_MODE_FILE")
-    if [ "$game_mode" = "1" ]; then
-        echo "$(log_prefix) $(translate "游戏模式: 已开启" "Game Mode: Enabled")"
-    else
-        echo "$(log_prefix) $(translate "游戏模式: 已关闭" "Game Mode: Disabled")"
-    fi
 
     # 显示调速器服务状态
     local governor_status=$(check_governor_status)

@@ -56,7 +56,7 @@ set_permissions() {
 
 # 生成游戏列表配置文件
 generate_gamelist() {
-    echo "$(translate "🔍 正在搜索已安装游戏并配置games.conf" "🔍 Searching for installed games and configuring games.conf")"
+    echo "$(translate "🔍 正在搜索已安装游戏并配置games.toml" "🔍 Searching for installed games and configuring games.toml")"
     echo "$(translate "🎮 GPU调速器可以为游戏列表中的应用启用游戏模式 🎮" "🎮 GPU Governor can enable game mode for applications in the game list 🎮")"
 
     echo "$(translate "📋 添加预设游戏和基准测试应用" "📋 Adding preset games & benchmark applications")"
@@ -126,7 +126,9 @@ com.netease.race
 
 com.activision.callofduty.warzone
 com.MadOut.BIG'
-    echo "$preset_games" > "$GAMES_FILE"
+    echo "# GPU调速器游戏列表配置文件" > "$GAMES_FILE"
+    echo "" >> "$GAMES_FILE"
+    echo "$preset_games" | sed 's/^/[[games]]\npackage = "/;s/$/"\nmode = "balance"\n/' >> "$GAMES_FILE"
 
     echo "$(translate "🎯 正在搜索并添加基于Unity和UE4引擎的游戏" "🎯 Searching and adding Unity & UE4 engine based games")"
     pm list packages -3 | grep -v 'mobileqq' | cut -f2 -d ':' | while read package; do
@@ -137,8 +139,10 @@ com.MadOut.BIG'
             game_libs=$(ls $libs | grep -E '(libunity.so|libUE3.so|libUE4.so)')
             if [[ "$game_libs" != '' ]] && [[ $(echo "$preset_games" | grep $package) == '' ]]; then
                 echo " + $package"
-                echo $package >> "$GAMES_FILE"
-            fi
+                echo "" >> "$GAMES_FILE"
+                echo "[[games]]" >> "$GAMES_FILE"
+                echo "package = \"$package\"" >> "$GAMES_FILE"
+                echo "mode = \"balance\"" >> "$GAMES_FILE"
         fi
     done
 
@@ -149,7 +153,10 @@ com.MadOut.BIG'
             r=$(grep $package "$GAMES_FILE")
             if [[ "$r" == '' ]]; then
                 echo " + $package"
-                echo $package >> "$GAMES_FILE"
+                echo "" >> "$GAMES_FILE"
+                echo "[[games]]" >> "$GAMES_FILE"
+                echo "package = \"$package\"" >> "$GAMES_FILE"
+                echo "mode = \"balance\"" >> "$GAMES_FILE"
             fi
         done
     fi
@@ -264,15 +271,6 @@ install_gov() {
     fi
 
     echo "$(translate "📊 日志将存储在" "📊 Logs will be stored in") $LOG_PATH"
-
-    # 创建游戏模式文件，初始值为0（关闭），如果已存在则不创建
-    if [ ! -f "$GAME_MODE_FILE" ]; then
-        echo "0" > "$GAME_MODE_FILE"
-        chmod 0666 "$GAME_MODE_FILE"
-        echo "$(translate "🎮 游戏模式文件已创建于" "🎮 Game mode file created at") $GAME_MODE_FILE"
-    else
-        echo "$(translate "🎮 游戏模式文件已存在于" "🎮 Game mode file already exists at") $GAME_MODE_FILE"
-    fi
 
     # 创建日志等级文件，默认为info级别，如果已存在则不创建
     if [ ! -f "$LOG_LEVEL_FILE" ]; then
