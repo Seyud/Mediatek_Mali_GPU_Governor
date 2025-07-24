@@ -563,63 +563,6 @@ body {
     }
 }
 
-#statusCard .card-title .title-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    /* 添加miuix风格样式 */
-    width: 32px !important;
-    height: 32px !important;
-    background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 8px rgba(13, 132, 255, 0.3) !important;
-    color: white !important;
-    position: relative !important;
-    overflow: hidden !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    flex-shrink: 0 !important;
-    margin-right: 12px !important;
-}
-
-/* 添加玻璃光泽效果 */
-#statusCard .card-title .title-icon::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
-    border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-#statusCard .card-title .title-icon svg {
-    width: 18px !important;
-    height: 18px !important;
-    color: white !important;
-    fill: white !important;
-    transition: all 0.3s ease;
-    z-index: 1;
-    position: relative;
-    filter: none;
-    /* 移除drop-shadow，因为容器已有阴影 */
-}
-
-#statusCard .card:hover .card-title .title-icon {
-    transform: scale(1.15) rotate(3deg) !important;
-    box-shadow: 0 4px 16px rgba(13, 132, 255, 0.4) !important;
-}
-
-#statusCard .card:hover .card-title .title-icon::before {
-    opacity: 1 !important;
-}
-
-#statusCard .card:hover .card-title .title-icon svg {
-    transform: scale(1.1) !important;
-}
-
 .card-content {
     padding: 16px;
     overflow: visible;
@@ -677,8 +620,6 @@ body {
     min-height: 24px !important;
     margin-right: 8px !important;
 }
-
-/* 移除有问题的选择器规则，改为针对没有miuix图标的status-item使用默认图标样式 */
 
 /* Miuix风格状态图标容器的伪元素和内部SVG */
 .status-item>span:first-child .miuix-status-icon::before {
@@ -793,15 +734,6 @@ body {
     }
 }
 
-.status-item>span:first-child::before {
-    display: none;
-    /* 隐藏原来的圆点，因为现在有图标了 */
-}
-
-.status-item:hover>span:first-child::before {
-    display: none;
-}
-
 /* 深色模式下的状态项样式调整 */
 [data-theme="dark"] .status-item {
     background-color: rgba(13, 132, 255, 0.05);
@@ -815,14 +747,7 @@ body {
 }
 
 /* Miuix风格卡片特殊样式 - 应用到所有主要卡片 */
-#statusCard,
-#gpuConfigCard,
-#marginCard,
-#gamesCard,
-#logCard,
-#settingsCard,
-#appIconCard,
-#copyrightCard {
+.card-universal {
     background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
     border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
     position: relative;
@@ -830,14 +755,7 @@ body {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#statusCard::before,
-#gpuConfigCard::before,
-#marginCard::before,
-#gamesCard::before,
-#logCard::before,
-#settingsCard::before,
-#appIconCard::before,
-#copyrightCard::before {
+.card-universal::before {
     content: "";
     position: absolute;
     top: 0;
@@ -848,36 +766,19 @@ body {
     pointer-events: none;
 }
 
-#statusCard:hover,
-#gpuConfigCard:hover,
-#marginCard:hover,
-#gamesCard:hover,
-#logCard:hover,
-#settingsCard:hover,
-#appIconCard:hover,
-#copyrightCard:hover {
+.card-universal:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
 }
 
-#statusCard .card-title,
-#gpuConfigCard .card-title,
-#marginCard .card-title,
-#gamesCard .card-title,
-#logCard .card-title,
-#settingsCard .card-title {
+.card-universal .card-title {
     background: linear-gradient(135deg, transparent 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
     border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
     position: relative;
 }
 
-#statusCard .card-title::after,
-#gpuConfigCard .card-title::after,
-#marginCard .card-title::after,
-#gamesCard .card-title::after,
-#logCard .card-title::after,
-#settingsCard .card-title::after {
+.card-universal .card-title::after {
     content: "";
     position: absolute;
     bottom: 0;
@@ -888,59 +789,28 @@ body {
     opacity: 0.3;
 }
 
-#statusCard .card-content,
-#gpuConfigCard .card-content,
-#marginCard .card-content,
-#gamesCard .card-content,
-#logCard .card-content,
-#settingsCard .card-content {
+.card-universal .card-content {
     position: relative;
     z-index: 1;
     padding: 20px;
 }
 
 /* 深色模式下的所有卡片样式 */
-[data-theme="dark"] #statusCard,
-[data-theme="dark"] #gpuConfigCard,
-[data-theme="dark"] #marginCard,
-[data-theme="dark"] #gamesCard,
-[data-theme="dark"] #logCard,
-[data-theme="dark"] #settingsCard,
-[data-theme="dark"] #appIconCard,
-[data-theme="dark"] #copyrightCard {
+[data-theme="dark"] .card-universal {
     background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
     border-color: rgba(13, 132, 255, 0.15);
 }
 
-[data-theme="dark"] #statusCard::before,
-[data-theme="dark"] #gpuConfigCard::before,
-[data-theme="dark"] #marginCard::before,
-[data-theme="dark"] #gamesCard::before,
-[data-theme="dark"] #logCard::before,
-[data-theme="dark"] #settingsCard::before,
-[data-theme="dark"] #appIconCard::before,
-[data-theme="dark"] #copyrightCard::before {
+[data-theme="dark"] .card-universal::before {
     background: radial-gradient(circle at top right, rgba(13, 132, 255, 0.08) 0%, transparent 70%);
 }
 
-[data-theme="dark"] #statusCard:hover,
-[data-theme="dark"] #gpuConfigCard:hover,
-[data-theme="dark"] #marginCard:hover,
-[data-theme="dark"] #gamesCard:hover,
-[data-theme="dark"] #logCard:hover,
-[data-theme="dark"] #settingsCard:hover,
-[data-theme="dark"] #appIconCard:hover,
-[data-theme="dark"] #copyrightCard:hover {
+[data-theme="dark"] .card-universal:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     border-color: rgba(13, 132, 255, 0.25);
 }
 
-[data-theme="dark"] #statusCard .card-title,
-[data-theme="dark"] #gpuConfigCard .card-title,
-[data-theme="dark"] #marginCard .card-title,
-[data-theme="dark"] #gamesCard .card-title,
-[data-theme="dark"] #logCard .card-title,
-[data-theme="dark"] #settingsCard .card-title {
+[data-theme="dark"] .card-universal .card-title {
     background: linear-gradient(135deg, transparent 0%, rgba(13, 132, 255, 0.08) 100%);
     border-bottom-color: rgba(13, 132, 255, 0.2);
 }
@@ -1072,7 +942,6 @@ body {
 
 .version-badge {
     padding: 6px 16px;
-    /* 移除左侧额外padding，因为不需要v图标了 */
     border-radius: 16px;
     font-size: 13px;
     font-weight: 600;
@@ -1336,100 +1205,6 @@ tbody tr:last-child td {
     background: rgba(13, 132, 255, 0.08);
 }
 
-/* Miuix风格游戏列表样式 */
-.games-list {
-    list-style: none;
-    max-height: 300px;
-    overflow-y: auto;
-    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
-    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.games-list li {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
-    border-radius: 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s ease;
-    background: transparent;
-}
-
-.games-list li:hover {
-    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
-    transform: translateX(4px);
-    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
-}
-
-.games-list li:last-child {
-    border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
-    margin-bottom: 0;
-}
-
-.games-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 16px;
-}
-
-/* Miuix风格删除按钮 */
-.game-delete-btn {
-    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(244, 67, 54, 0.1) 100%);
-    border: 1px solid rgba(231, 76, 60, 0.2);
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--error-color);
-    padding: 8px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.1);
-}
-
-.game-delete-btn svg {
-    width: 16px;
-    height: 16px;
-    transition: transform 0.3s ease;
-}
-
-.game-delete-btn:hover {
-    background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(244, 67, 54, 0.15) 100%);
-    border-color: rgba(231, 76, 60, 0.4);
-    transform: translateY(-1px) scale(1.05);
-    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
-}
-
-.game-delete-btn:hover svg {
-    transform: scale(1.1) rotate(5deg);
-}
-
-/* 深色模式游戏列表样式 */
-[data-theme="dark"] .games-list {
-    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
-    border-color: rgba(13, 132, 255, 0.15);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="dark"] .games-list li {
-    border-bottom-color: rgba(13, 132, 255, 0.15);
-}
-
-[data-theme="dark"] .games-list li:hover {
-    background: rgba(13, 132, 255, 0.08);
-    border-color: rgba(13, 132, 255, 0.25);
-}
-
-[data-theme="dark"] .games-list li:last-child {
-    border-bottom-color: rgba(13, 132, 255, 0.15);
-}
-
 /* 日志样式 */
 .log-header {
     display: flex;
@@ -1659,8 +1434,7 @@ svg {
 .tab-icon svg,
 .refresh-icon svg,
 .edit-btn svg,
-.delete-btn svg,
-.game-delete-btn svg {
+.delete-btn svg {
     color: inherit;
     fill: currentColor;
 }
@@ -2631,8 +2405,7 @@ button:hover svg {
 }
 
 .edit-btn svg,
-.delete-btn svg,
-.game-delete-btn svg {
+.delete-btn svg {
     width: 18px;
     height: 18px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2677,8 +2450,7 @@ button:hover svg {
 }
 
 .edit-btn:hover svg,
-.delete-btn:hover svg,
-.game-delete-btn:hover svg {
+.delete-btn:hover svg {
     transform: scale(1.15) rotate(5deg);
 }
 
