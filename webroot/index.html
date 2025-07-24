@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>天玑GPU调速器</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- 使用本地字体或系统字体，避免网络请求 -->
 </head>
 
 <body>
@@ -207,35 +206,6 @@
                         </div>
                     </section>
 
-                    <!-- GPU余量配置卡片 -->
-                    <section class="card" id="marginCard">
-                        <h2 class="card-title">
-                            <span class="title-icon">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 8.12,16.5 8.91,15.66L9.91,16.66C9.27,17.33 8.71,18.04 8.24,18.79C7.67,18.63 7.13,18.42 6.63,18.16L7.07,18.28M18.93,18.28L19.37,18.16C18.87,18.42 18.33,18.63 17.76,18.79C17.29,18.04 16.73,17.33 16.09,16.66L17.09,15.66C17.88,16.5 18.5,17.38 18.93,18.28M12,19A7,7 0 0,1 5,12A7,7 0 0,1 12,5A7,7 0 0,1 19,12A7,7 0 0,1 12,19Z" />
-                                </svg>
-                            </span>
-                            GPU频率计算余量
-                        </h2>
-                        <div class="card-content">
-                            <div class="status-item margin-setting">
-                                <span>余量百分比 (%):</span>
-                                <div class="number-spinner">
-                                    <button class="spinner-btn" id="marginDecreaseBtn">-</button>
-                                    <div class="spinner-value" id="marginValue">20</div>
-                                    <button class="spinner-btn" id="marginIncreaseBtn">+</button>
-                                </div>
-                            </div>
-                            <div class="setting-description">
-                                <small>余量越大，GPU升频越积极，性能越充裕</small>
-                                <small>游戏模式下会自动增加10%的余量</small>
-                            </div>
-                            <div class="margin-actions">
-                                <button id="saveMarginBtn" class="btn">保存余量设置</button>
-                            </div>
-                        </div>
-                    </section>
 
                     <!-- 游戏列表卡片 -->
                     <section class="card" id="gamesCard">
@@ -537,7 +507,6 @@
         </button>
     </nav>
 
-    <!-- 移除页脚，版权信息已移至状态页面 -->
     </div>
 
     <script src="app.js"></script>

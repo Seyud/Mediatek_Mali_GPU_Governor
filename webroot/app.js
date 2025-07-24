@@ -37,9 +37,6 @@ const logContent = document.getElementById('logContent');
 const refreshLogBtn = document.getElementById('refreshLogBtn');
 const gpuFreqTable = document.getElementById('gpuFreqTable').querySelector('tbody');
 const gamesList = document.getElementById('gamesList');
-const marginValue_elem = document.getElementById('marginValue');
-const marginDecreaseBtn = document.getElementById('marginDecreaseBtn');
-const marginIncreaseBtn = document.getElementById('marginIncreaseBtn');
 
 // 语言设置相关DOM元素
 const htmlRoot = document.getElementById('htmlRoot');
@@ -98,7 +95,6 @@ let gpuConfigs = []; // 存储当前的GPU配置
 let editingIndex = -1; // 当前正在编辑的配置索引，-1表示新增
 let gamesList_data = []; // 存储当前的游戏列表
 let currentVoltIndex = 0; // 当前电压选择器的索引
-let marginValue = 20; // 默认余量值
 let currentLanguage = 'zh'; // 当前语言，默认中文
 
 
@@ -146,11 +142,6 @@ const translations = {
         'config_not_found': '未找到配置',
         'config_add': '添加配置',
         'config_save': '保存配置',
-        'config_margin_title': 'GPU频率计算余量',
-        'config_margin_percent': '余量百分比 (%):',
-        'config_margin_desc1': '余量越大，GPU升频越积极，性能越充裕',
-        'config_margin_desc2': '游戏模式下会自动增加10%的余量',
-        'config_margin_save': '保存余量设置',
         'config_games_title': '游戏列表',
         'config_games_add': '添加游戏',
         'config_games_save': '保存列表',
@@ -215,8 +206,6 @@ const translations = {
         'toast_config_empty': '没有配置可保存',
         'toast_freq_invalid': '请输入有效的频率值',
         'toast_index_invalid': '无效的配置索引',
-        'toast_margin_saved': '余量设置已成功保存',
-        'toast_margin_save_fail': '保存余量设置失败，请检查权限',
         'toast_game_added': '游戏已添加，请点击"保存列表"按钮保存到文件',
         'toast_game_deleted': '游戏已删除，请点击"保存列表"按钮保存到文件',
         'toast_game_exists': '该应用包名已存在于列表中',
@@ -265,11 +254,6 @@ const translations = {
         'config_not_found': 'No configuration found',
         'config_add': 'Add Config',
         'config_save': 'Save Config',
-        'config_margin_title': 'GPU Frequency Calculation Margin',
-        'config_margin_percent': 'Margin Percentage (%):',
-        'config_margin_desc1': 'Higher margin means more aggressive frequency scaling and better performance',
-        'config_margin_desc2': 'Game mode automatically adds 10% to the margin',
-        'config_margin_save': 'Save Margin',
         'config_games_title': 'Games List',
         'config_games_add': 'Add Game',
         'config_games_save': 'Save List',
@@ -334,10 +318,8 @@ const translations = {
         'toast_config_empty': 'No configuration to save',
         'toast_freq_invalid': 'Please enter a valid frequency value',
         'toast_index_invalid': 'Invalid configuration index',
-        'toast_margin_saved': 'Margin settings saved successfully',
-        'toast_margin_save_fail': 'Failed to save margin settings, please check permissions',
-        'toast_game_added': 'Game added, please click "Save List" to save to file',
-        'toast_game_deleted': 'Game deleted, please click "Save List" to save to file',
+        'toast_game_added': 'Game added, please click "Save List" button to save to file',
+        'toast_game_deleted': 'Game deleted, please click "Save List" button to save to file',
         'toast_game_exists': 'This package name already exists in the list',
         'toast_game_invalid': 'Please enter a valid package name',
         'toast_games_saved': 'Games list saved successfully',
@@ -513,35 +495,6 @@ function applyTranslations() {
             }
         }
 
-        // 更新余量配置
-        try {
-            const marginTitle = document.querySelector('#marginCard .card-title');
-            if (marginTitle) {
-                marginTitle.textContent = getTranslation('config_margin_title');
-            }
-
-            const marginLabel = document.querySelector('#marginCard .status-item > span:first-child');
-            if (marginLabel) {
-                marginLabel.textContent = getTranslation('config_margin_percent');
-            }
-
-            const marginDesc1 = document.querySelector('#marginCard .setting-description small:nth-child(1)');
-            if (marginDesc1) {
-                marginDesc1.textContent = getTranslation('config_margin_desc1');
-            }
-
-            const marginDesc2 = document.querySelector('#marginCard .setting-description small:nth-child(2)');
-            if (marginDesc2) {
-                marginDesc2.textContent = getTranslation('config_margin_desc2');
-            }
-
-            const saveMarginBtn = document.getElementById('saveMarginBtn');
-            if (saveMarginBtn) {
-                saveMarginBtn.textContent = getTranslation('config_margin_save');
-            }
-        } catch (e) {
-            console.error('更新余量配置翻译失败:', e);
-        }
 
         // 更新游戏列表
         try {
@@ -1216,6 +1169,24 @@ function initTheme() {
     });
 }
 
+// 初始化电压选择器
+function initVoltSelect() {
+    console.log('初始化电压选择器');
+
+    // 清空现有的选项
+    voltSelect.innerHTML = '';
+
+    // 添加电压选项
+    VOLT_LIST.forEach(volt => {
+        const option = document.createElement('option');
+        option.value = volt;
+        option.textContent = volt;
+        voltSelect.appendChild(option);
+    });
+
+    console.log('电压选择器初始化完成');
+}
+
 // 初始化margin设置
 function initMarginSetting() {
     // 显示当前margin值
@@ -1247,14 +1218,6 @@ function setupEventListeners() {
             switchPage(targetPageId);
         });
     });
-
-    // 保存余量按钮事件
-    const saveMarginBtn = document.getElementById('saveMarginBtn');
-    if (saveMarginBtn) {
-        saveMarginBtn.addEventListener('click', () => {
-            saveMarginToFile();
-        });
-    }
 
     // 游戏模式状态不再提供切换功能，只显示状态
 
@@ -1519,20 +1482,6 @@ async function loadGpuConfig() {
                 }
             }
 
-            // 检查是否有Margin配置
-            const marginRegex = /Margin\s*=\s*(\d+)/;
-            const marginMatch = marginRegex.exec(content);
-            if (marginMatch) {
-                const parsedMargin = parseInt(marginMatch[1]);
-                if (!isNaN(parsedMargin)) {
-                    marginValue = parsedMargin;
-                    console.log(`从配置文件读取到Margin值: ${marginValue}%`);
-                    // 更新UI显示
-                    if (marginValue_elem) {
-                        marginValue_elem.textContent = marginValue;
-                    }
-                }
-            }
 
             if (hasConfig) {
                 gpuFreqTable.innerHTML = '';
@@ -1552,14 +1501,10 @@ async function loadGpuConfig() {
             gpuFreqTable.innerHTML = `<tr><td colspan="4" class="loading-text">${getTranslation('config_not_found')}</td></tr>`;
         }
 
-        // 初始化margin设置（确保在读取配置后调用）
-        initMarginSetting();
     } catch (error) {
         console.error('加载GPU配置失败:', error);
         gpuFreqTable.innerHTML = '<tr><td colspan="4" class="loading-text">加载失败</td></tr>';
 
-        // 即使加载失败，也要初始化margin设置
-        initMarginSetting();
     }
 }
 
@@ -2058,7 +2003,7 @@ async function saveConfigToFile() {
         configContent += '# volt 单位: uV\n';
         configContent += '# ddr_opp: DDR OPP 档位\n';
         configContent += '# Margin: 调整GPU频率计算的余量百分比，默认值为20（非游戏模式）和30（游戏模式）\n';
-        configContent += `Margin = ${marginValue}\n\n`;
+        configContent += '\n';
 
         configContent += 'freq_table = [\n';
         gpuConfigs.forEach((config, index) => {
@@ -2226,55 +2171,6 @@ async function saveGamesToFile() {
     }
 }
 
-// 保存余量设置到文件
-async function saveMarginToFile() {
-    try {
-        // 读取当前配置文件内容
-        const { errno: readErrno, stdout } = await exec(`cat ${CONFIG_PATH}`);
-
-        if (readErrno !== 0) {
-            toast('读取配置文件失败，请检查权限');
-            return;
-        }
-
-        // 解析配置文件内容
-        const content = stdout.trim();
-        let newContent = '';
-        let marginUpdated = false;
-
-        // 使用正则表达式查找并替换Margin值
-        const marginRegex = /Margin\s*=\s*\d+/;
-        if (marginRegex.test(content)) {
-            newContent = content.replace(marginRegex, `Margin = ${marginValue}`);
-            marginUpdated = true;
-        } else {
-            // 如果没有找到Margin行，在freq_table数组之前添加
-            const freqTableIndex = content.indexOf('freq_table');
-            if (freqTableIndex !== -1) {
-                newContent = content.substring(0, freqTableIndex) + `Margin = ${marginValue}\n\n` + content.substring(freqTableIndex);
-            } else {
-                newContent = `Margin = ${marginValue}\n\n` + content;
-            }
-            marginUpdated = true;
-        }
-
-        if (marginUpdated) {
-            // 保存更新后的内容到文件
-            const { errno: writeErrno } = await exec(`echo '${newContent}' > ${CONFIG_PATH}`);
-
-            if (writeErrno === 0) {
-                toast('余量设置已成功保存');
-            } else {
-                toast('保存余量设置失败，请检查权限');
-            }
-        } else {
-            toast('配置文件格式错误');
-        }
-    } catch (error) {
-        console.error('保存余量设置失败:', error);
-        toast('保存余量设置失败: ' + error.message);
-    }
-}
 
 // 加载日志等级设置
 async function loadLogLevel() {
