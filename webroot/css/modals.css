@@ -1,0 +1,116 @@
+@import url('./variables.css');
+
+/* Miuix风格模态对话框 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    margin: 10% auto;
+    padding: 32px;
+    border-radius: 20px;
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    z-index: 2001;
+    animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center top;
+}
+
+.modal-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(var(--accent-color-rgb, 13, 132, 255), 0.03) 0%, transparent 70%);
+    border-radius: 20px;
+    pointer-events: none;
+}
+
+.close-modal {
+    color: var(--secondary-text-color);
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.close-modal:hover {
+    color: var(--text-color);
+    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+    transform: scale(1.1);
+}
+
+.modal h3 {
+    margin: 0 0 24px 0;
+    color: var(--text-color);
+    font-size: 20px;
+    font-weight: 600;
+    padding-right: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 模态对话框动画 */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 深色模式模态对话框 */
+[data-theme="dark"] .modal {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .modal-content {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .modal-content::before {
+    background: radial-gradient(circle at top right, rgba(13, 132, 255, 0.08) 0%, transparent 70%);
+}

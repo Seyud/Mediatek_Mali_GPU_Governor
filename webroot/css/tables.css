@@ -1,0 +1,165 @@
+@import url('./variables.css');
+
+/* Miuix风格表格样式 */
+.table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+}
+
+th,
+td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    transition: background-color 0.3s ease;
+}
+
+th {
+    font-weight: 600;
+    color: var(--text-color);
+    background: linear-gradient(135deg, transparent 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
+    font-size: 14px;
+}
+
+tbody tr {
+    transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+    transform: translateY(-1px);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 深色模式表格样式 */
+[data-theme="dark"] .table-container {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] th,
+[data-theme="dark"] td {
+    border-bottom-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] th {
+    background: linear-gradient(135deg, transparent 0%, rgba(13, 132, 255, 0.08) 100%);
+}
+
+[data-theme="dark"] tbody tr:hover {
+    background: rgba(13, 132, 255, 0.08);
+}
+
+/* 配置编辑相关样式 */
+.config-actions,
+.margin-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+/* Miuix风格编辑和删除按钮 */
+.edit-btn,
+.delete-btn {
+    background: transparent;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-btn::before,
+.delete-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.edit-btn svg,
+.delete-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.edit-btn {
+    color: var(--accent-color);
+}
+
+.edit-btn::before {
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb, 13, 132, 255), 0.1) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
+}
+
+.edit-btn:hover {
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
+}
+
+.edit-btn:hover::before {
+    opacity: 1;
+}
+
+.delete-btn {
+    color: var(--error-color);
+}
+
+.delete-btn::before {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%);
+}
+
+.delete-btn:hover {
+    border-color: rgba(231, 76, 60, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+.delete-btn:hover::before {
+    opacity: 1;
+}
+
+.edit-btn:hover svg,
+.delete-btn:hover svg {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.edit-btn:active,
+.delete-btn:active {
+    transform: translateY(0) scale(0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色模式编辑删除按钮 */
+[data-theme="dark"] .edit-btn::before {
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.15) 0%, rgba(13, 132, 255, 0.08) 100%);
+}
+
+[data-theme="dark"] .delete-btn::before {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(244, 67, 54, 0.08) 100%);
+}

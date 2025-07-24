@@ -1,0 +1,41 @@
+:root {
+    /* 浅色模式变量 */
+    --background-color: #f5f5f5;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --secondary-text-color: #666666;
+    --border-color: #e0e0e0;
+    --accent-color: #0d84ff;
+    --accent-color-rgb: 13, 132, 255;
+    --accent-hover: #0a6edb;
+    --accent-bg: rgba(13, 132, 255, 0.1);
+    /* 浅色模式下的强调背景色 */
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --error-color: #f44336;
+    --header-background: #ffffff;
+    --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --switch-background: #e0e0e0;
+}
+
+[data-theme="dark"] {
+    /* 深色模式变量 */
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --text-color: #e0e0e0;
+    --secondary-text-color: #aaaaaa;
+    --border-color: #333333;
+    --accent-color: #0d84ff;
+    --accent-color-rgb: 13, 132, 255;
+    --accent-hover: #3a9bff;
+    --accent-bg: rgba(13, 132, 255, 0.2);
+    /* 深色模式下的强调背景色 */
+    --success-color: #66bb6a;
+    --warning-color: #ffa726;
+    --error-color: #ef5350;
+    --header-background: #1e1e1e;
+    --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --switch-background: #333333;
+}

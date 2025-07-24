@@ -1,0 +1,141 @@
+@import url('./variables.css');
+@import url('./base.css');
+@import url('./header.css');
+@import url('./cards.css');
+@import url('./forms.css');
+@import url('./tables.css');
+@import url('./navigation.css');
+@import url('./logs.css');
+@import url('./modals.css');
+
+/* SVG图标通用样式 */
+svg {
+    vertical-align: middle;
+    color: inherit;
+    fill: currentColor;
+}
+
+/* 确保SVG图标在不同主题下都能正确显示 */
+.theme-toggle svg,
+.nav-icon svg,
+.tab-icon svg,
+.refresh-icon svg,
+.edit-btn svg,
+.delete-btn svg {
+    color: inherit;
+    fill: currentColor;
+}
+
+/* 提升SVG图标的交互体验 */
+button:hover svg {
+    transition: transform 0.2s ease;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .theme-toggle {
+        width: 44px;
+        height: 44px;
+        padding: 8px;
+        /* 增加触摸区域 */
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 50%;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-toggle svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* 减少动画强度以提升性能 */
+    .theme-toggle .light-icon svg circle {
+        animation: none;
+    }
+
+    .theme-toggle .light-icon svg path {
+        animation: sunRays 6s linear infinite;
+    }
+
+    .theme-toggle .dark-icon svg path:first-child {
+        animation: moonGlow 6s ease-in-out infinite;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .theme-toggle {
+        border: 2px solid var(--text-color);
+        border-radius: 50%;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-toggle svg {
+        filter: none;
+    }
+
+    .theme-toggle:hover {
+        background-color: var(--text-color);
+    }
+
+    .theme-toggle:hover svg {
+        color: var(--background-color);
+    }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+
+    .theme-toggle,
+    .theme-toggle svg,
+    .theme-toggle svg *,
+    .theme-toggle .light-icon,
+    .theme-toggle .dark-icon {
+        animation: none !important;
+        transition: opacity 0.2s ease, transform 0.2s ease !important;
+    }
+
+    .theme-toggle {
+        border-radius: 50%;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-toggle::before,
+    .theme-toggle::after {
+        display: none !important;
+    }
+}
+
+/* 确保主题切换按钮在各种背景下都清晰可见 */
+.theme-toggle {
+    isolation: isolate;
+}
+
+/* 添加细微的边框以增强定义 */
+[data-theme="light"] .theme-toggle {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .theme-toggle {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* 彻底移除主题切换按钮的默认选中效果 */
+.theme-toggle::selection {
+    background: transparent;
+}
+
+.theme-toggle::-moz-selection {
+    background: transparent;
+}
+
+.theme-toggle,
+.theme-toggle * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
