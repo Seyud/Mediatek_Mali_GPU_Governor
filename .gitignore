@@ -6,7 +6,7 @@
 
 # 忽略miuix-main文件夹中的所有内容，避免与miuix-main项目冲突
 /miuix-main/
-/KernelSUjs/
+/KernelSU_API/
 
 # 忽略编译生成的文件
 /target/
@@ -26,3 +26,6 @@
 .vscode/
 *.iml
 .DS_Store
+
+# 忽略node_modules文件夹
+webroot/node_modules/
