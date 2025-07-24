@@ -969,7 +969,8 @@ async function initializeApp() {
         // 初始化页面显示
         switchPage('page-status'); // 默认显示状态页面
 
-
+        // 设置定时器，每2秒更新一次当前模式
+        setInterval(loadCurrentMode, 2000);
 
         // 加载完成后显示提示
         try {
