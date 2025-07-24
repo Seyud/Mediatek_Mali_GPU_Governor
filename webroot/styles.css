@@ -1110,6 +1110,78 @@ body {
     opacity: 1;
 }
 
+/* 当前模式显示样式 */
+.mode-badge {
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.mode-badge.powersave {
+    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.mode-badge.balance {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.mode-badge.performance {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.mode-badge.fast {
+    background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.mode-badge.default {
+    background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(158, 158, 158, 0.3);
+}
+
+.mode-badge:hover {
+    transform: translateY(-1px) scale(1.02);
+}
+
+.mode-badge.powersave:hover {
+    background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+}
+
+.mode-badge.balance:hover {
+    background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
+    box-shadow: 0 4px 16px rgba(33, 150, 243, 0.4);
+}
+
+.mode-badge.performance:hover {
+    background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+    box-shadow: 0 4px 16px rgba(255, 152, 0, 0.4);
+}
+
+.mode-badge.fast:hover {
+    background: linear-gradient(135deg, #EF5350 0%, #F44336 100%);
+    box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
+}
+
 /* 移除version-badge的::after伪元素，因为版本号本身已经包含v */
 
 @keyframes statusPulse {

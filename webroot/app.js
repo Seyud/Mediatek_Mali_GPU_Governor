@@ -30,6 +30,7 @@ const themeToggle = document.getElementById('themeToggle');
 const runningStatus = document.getElementById('runningStatus');
 
 const moduleVersion = document.getElementById('moduleVersion');
+const currentMode = document.getElementById('currentMode');
 const followSystemThemeToggle = document.querySelector('#followSystemThemeToggle .miuix-switch-input');
 const followSystemThemeSuperSwitch = document.getElementById('followSystemThemeSuperSwitch');
 const logContent = document.getElementById('logContent');
@@ -77,7 +78,8 @@ const navItems = document.querySelectorAll('.nav-item');
 
 // 路径常量
 const LOG_PATH = '/data/adb/gpu_governor/log';
-const CONFIG_PATH = '/data/gpu_freq_table.conf';
+const CONFIG_PATH = '/data/adb/gpu_governor/config/gpu_freq_table.toml';
+const CURRENT_MODE_PATH = '/data/adb/gpu_governor/config/current_mode';
 
 const GAMES_FILE = '/data/adb/gpu_governor/game/games.conf'; // 游戏列表文件路径
 
@@ -1000,6 +1002,7 @@ async function initializeApp() {
         // 逐个加载数据，每个函数都有自己的错误处理
         await safeExecute(checkModuleStatus, '检查模块状态失败');
         await safeExecute(loadModuleVersion, '加载模块版本失败');
+        await safeExecute(loadCurrentMode, '加载当前模式失败');
 
         await safeExecute(loadGpuConfig, '加载GPU配置失败');
         await safeExecute(loadGamesList, '加载游戏列表失败');
@@ -1463,50 +1466,81 @@ async function loadGpuConfig() {
         const { errno, stdout } = await exec(`cat ${CONFIG_PATH}`);
 
         if (errno === 0 && stdout.trim()) {
-            const lines = stdout.trim().split('\n');
+            const content = stdout.trim();
 
             // 清空当前配置
             gpuConfigs = [];
+            let hasConfig = false;
 
-            // 先检查是否有Margin配置
-            for (const line of lines) {
-                const trimmedLine = line.trim();
-                // 确保不是注释行
-                if (trimmedLine.startsWith('Margin=') && !trimmedLine.startsWith('#')) {
-                    const marginStr = trimmedLine.substring(7).trim();
-                    const parsedMargin = parseInt(marginStr);
-                    if (!isNaN(parsedMargin)) {
-                        marginValue = parsedMargin;
-                        console.log(`从配置文件读取到Margin值: ${marginValue}%`);
-                        // 更新UI显示
-                        if (marginValue_elem) {
-                            marginValue_elem.textContent = marginValue;
-                        }
+            // 首先尝试匹配数组格式（如mtd8100.toml）
+            const arrayRegex = /freq_table\s*=\s*\[([\s\S]*?)\]/;
+            const arrayMatch = arrayRegex.exec(content);
+            
+            if (arrayMatch) {
+                // 解析数组格式
+                const arrayContent = arrayMatch[1];
+                const itemRegex = /\{\s*freq\s*=\s*(\d+),\s*volt\s*=\s*(\d+),\s*ddr_opp\s*=\s*(\d+)\s*\}/g;
+                let itemMatch;
+                
+                while ((itemMatch = itemRegex.exec(arrayContent)) !== null) {
+                    const freq = parseInt(itemMatch[1]);
+                    const volt = parseInt(itemMatch[2]);
+                    const ddr = parseInt(itemMatch[3]);
+
+                    if (!isNaN(freq) && !isNaN(volt) && !isNaN(ddr)) {
+                        gpuConfigs.push({
+                            freq: freq,
+                            volt: volt,
+                            ddr: ddr
+                        });
+                        hasConfig = true;
                     }
                 }
             }
 
-            // 过滤出频率配置行
-            const configLines = lines.filter(line => !line.startsWith('#') && !line.startsWith('Margin=') && line.trim());
+            // 如果没有找到数组格式，尝试匹配传统格式（[[freq_table]]）
+            if (!hasConfig) {
+                const freqTableRegex = /\[\[freq_table\]\][\s\S]*?freq\s*=\s*(\d+)[\s\S]*?volt\s*=\s*(\d+)[\s\S]*?ddr_opp\s*=\s*(\d+)/g;
+                let match;
 
-            if (configLines.length > 0) {
+                while ((match = freqTableRegex.exec(content)) !== null) {
+                    const freq = parseInt(match[1]);
+                    const volt = parseInt(match[2]);
+                    const ddr = parseInt(match[3]);
+
+                    if (!isNaN(freq) && !isNaN(volt) && !isNaN(ddr)) {
+                        gpuConfigs.push({
+                            freq: freq,
+                            volt: volt,
+                            ddr: ddr
+                        });
+                        hasConfig = true;
+                    }
+                }
+            }
+
+            // 检查是否有Margin配置
+            const marginRegex = /Margin\s*=\s*(\d+)/;
+            const marginMatch = marginRegex.exec(content);
+            if (marginMatch) {
+                const parsedMargin = parseInt(marginMatch[1]);
+                if (!isNaN(parsedMargin)) {
+                    marginValue = parsedMargin;
+                    console.log(`从配置文件读取到Margin值: ${marginValue}%`);
+                    // 更新UI显示
+                    if (marginValue_elem) {
+                        marginValue_elem.textContent = marginValue;
+                    }
+                }
+            }
+
+            if (hasConfig) {
                 gpuFreqTable.innerHTML = '';
 
-                // 解析所有配置
-                configLines.forEach(line => {
-                    const [freq, volt, ddr] = line.trim().split(/\s+/);
+                // 按频率排序
+                gpuConfigs.sort((a, b) => a.freq - b.freq);
 
-                    if (freq && volt && ddr) {
-                        // 保存配置到全局变量
-                        gpuConfigs.push({
-                            freq: parseInt(freq),
-                            volt: parseInt(volt),
-                            ddr: parseInt(ddr)
-                        });
-                    }
-                });
-
-                // 然后使用refreshGpuTable来显示配置
+                // 使用refreshGpuTable来显示配置
                 refreshGpuTable();
 
                 // 初始化电压选择下拉框
@@ -2018,16 +2052,23 @@ async function saveConfigToFile() {
         // 按频率排序
         gpuConfigs.sort((a, b) => a.freq - b.freq);
 
-        // 生成配置文件内容
-        let configContent = '# Freq Volt DDR_OPP\n';
-        configContent += '# example(Does not include the # symbol)\n';
-        configContent += '#852000 61250 3\n';
+        // 生成数组格式的toml配置文件内容（如mtd8100.toml格式）
+        let configContent = '# GPU 频率表\n';
+        configContent += '# freq 单位: kHz\n';
+        configContent += '# volt 单位: uV\n';
+        configContent += '# ddr_opp: DDR OPP 档位\n';
         configContent += '# Margin: 调整GPU频率计算的余量百分比，默认值为20（非游戏模式）和30（游戏模式）\n';
-        configContent += `Margin=${marginValue}\n`;
+        configContent += `Margin = ${marginValue}\n\n`;
 
-        gpuConfigs.forEach(config => {
-            configContent += `${config.freq} ${config.volt} ${config.ddr}\n`;
+        configContent += 'freq_table = [\n';
+        gpuConfigs.forEach((config, index) => {
+            configContent += `    { freq = ${config.freq}, volt = ${config.volt}, ddr_opp = ${config.ddr} }`;
+            if (index < gpuConfigs.length - 1) {
+                configContent += ',';
+            }
+            configContent += '\n';
         });
+        configContent += ']\n';
 
         // 保存到文件
         const { errno } = await exec(`echo '${configContent}' > ${CONFIG_PATH}`);
@@ -2197,35 +2238,37 @@ async function saveMarginToFile() {
         }
 
         // 解析配置文件内容
-        const lines = stdout.trim().split('\n');
+        const content = stdout.trim();
         let newContent = '';
         let marginUpdated = false;
 
-        // 更新Margin行或保留原始内容
-        for (const line of lines) {
-            if (line.trim().startsWith('Margin=') && !line.trim().startsWith('#')) {
-                // 替换Margin行
-                newContent += `Margin=${marginValue}\n`;
-                marginUpdated = true;
-            } else {
-                // 保留原始行
-                newContent += line + '\n';
-            }
-        }
-
-        // 如果没有找到Margin行，添加一个
-        if (!marginUpdated) {
-            newContent += `# Margin: 调整GPU频率计算的余量百分比，默认值为20（非游戏模式）和30（游戏模式）\n`;
-            newContent += `Margin=${marginValue}\n`;
-        }
-
-        // 保存到文件
-        const { errno: writeErrno } = await exec(`echo '${newContent}' > ${CONFIG_PATH}`);
-
-        if (writeErrno === 0) {
-            toast('余量设置已成功保存');
+        // 使用正则表达式查找并替换Margin值
+        const marginRegex = /Margin\s*=\s*\d+/;
+        if (marginRegex.test(content)) {
+            newContent = content.replace(marginRegex, `Margin = ${marginValue}`);
+            marginUpdated = true;
         } else {
-            toast('保存余量设置失败，请检查权限');
+            // 如果没有找到Margin行，在freq_table数组之前添加
+            const freqTableIndex = content.indexOf('freq_table');
+            if (freqTableIndex !== -1) {
+                newContent = content.substring(0, freqTableIndex) + `Margin = ${marginValue}\n\n` + content.substring(freqTableIndex);
+            } else {
+                newContent = `Margin = ${marginValue}\n\n` + content;
+            }
+            marginUpdated = true;
+        }
+
+        if (marginUpdated) {
+            // 保存更新后的内容到文件
+            const { errno: writeErrno } = await exec(`echo '${newContent}' > ${CONFIG_PATH}`);
+
+            if (writeErrno === 0) {
+                toast('余量设置已成功保存');
+            } else {
+                toast('保存余量设置失败，请检查权限');
+            }
+        } else {
+            toast('配置文件格式错误');
         }
     } catch (error) {
         console.error('保存余量设置失败:', error);
@@ -2359,5 +2402,45 @@ async function loadLog() {
     } catch (error) {
         console.error('加载日志失败:', error);
         logContent.textContent = '加载日志失败，请检查权限';
+    }
+}
+
+// 加载当前模式
+async function loadCurrentMode() {
+    try {
+        const { errno, stdout } = await exec(`cat ${CURRENT_MODE_PATH} 2>/dev/null || echo "unknown"`);
+        
+        let mode = 'unknown';
+        if (errno === 0) {
+            mode = stdout.trim().toLowerCase();
+        }
+        
+        // 验证模式是否有效
+        const validModes = ['powersave', 'balance', 'performance', 'fast'];
+        if (!validModes.includes(mode)) {
+            mode = 'unknown';
+        }
+        
+        // 更新显示
+        if (currentMode) {
+            const modeText = {
+                'powersave': '省电模式',
+                'balance': '平衡模式', 
+                'performance': '性能模式',
+                'fast': '极速模式',
+                'unknown': '未知'
+            };
+            
+            currentMode.textContent = modeText[mode] || '未知';
+            currentMode.className = `mode-badge ${mode}`;
+        }
+        
+        console.log(`当前模式: ${mode}`);
+    } catch (error) {
+        console.error('加载当前模式失败:', error);
+        if (currentMode) {
+            currentMode.textContent = '未知';
+            currentMode.className = 'mode-badge default';
+        }
     }
 }
