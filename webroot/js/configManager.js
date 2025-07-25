@@ -1019,7 +1019,6 @@ export class ConfigManager {
             configContent += '# freq 单位: kHz\n';
             configContent += '# volt 单位: uV\n';
             configContent += '# ddr_opp: DDR OPP 档位\n';
-            configContent += '# Margin: 调整GPU频率计算的余量百分比，默认值为20（非游戏模式）和30（游戏模式）\n';
             configContent += '\n';
 
             configContent += 'freq_table = [\n';
