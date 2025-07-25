@@ -2,6 +2,7 @@
 export const PATHS = {
     LOG_PATH: '/data/adb/gpu_governor/log',
     CONFIG_PATH: '/data/adb/gpu_governor/config/gpu_freq_table.toml',
+    CUSTOM_CONFIG_PATH: '/data/adb/gpu_governor/config/config.toml',
     CURRENT_MODE_PATH: '/data/adb/gpu_governor/config/current_mode',
     GAMES_FILE: '/data/adb/gpu_governor/game/games.toml',
     LOG_LEVEL_PATH: '/data/adb/gpu_governor/log/log_level'
