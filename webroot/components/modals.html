@@ -1,0 +1,69 @@
+<!-- 编辑配置对话框 -->
+<div id="editConfigModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>编辑GPU配置</h3>
+        <div class="form-group">
+            <label for="freqInput">频率 (MHz):</label>
+            <input type="number" id="freqInput" min="100000" max="1000000" step="1000"
+                placeholder="例如: 350000 (KHz)">
+            <small class="input-hint">请输入KHz值，表格中显示为MHz</small>
+        </div>
+        <div class="form-group">
+            <label for="voltSelect">电压 (uV):</label>
+            <div class="number-spinner">
+                <button class="spinner-btn" id="voltDecreaseBtn">-</button>
+                <div class="spinner-value" id="selectedVolt">65000</div>
+                <button class="spinner-btn" id="voltIncreaseBtn">+</button>
+                <select id="voltSelect" class="select" style="display: none;">
+                    <!-- 电压选项将通过JavaScript动态添加 -->
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>内存档位:</label>
+            <div class="select-container">
+                <div class="custom-select" id="ddrContainer">
+                    <div class="selected-option" id="selectedDdr">999 (不调整)</div>
+                    <div class="options-container" id="ddrOptions">
+                        <div class="option" data-value="999">999 (不调整)</div>
+                        <div class="option" data-value="0">0 (最高)</div>
+                        <div class="option" data-value="1">1</div>
+                        <div class="option" data-value="2">2</div>
+                        <div class="option" data-value="3">3 (最低)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button id="saveItemBtn" class="btn">保存</button>
+            <button id="cancelEditBtn" class="btn btn-secondary">取消</button>
+            <button id="deleteItemBtn" class="btn btn-danger">删除</button>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑游戏对话框 -->
+<div id="editGameModal" class="modal">
+    <div class="modal-content">
+        <span class="close-game-modal">&times;</span>
+        <h3 data-i18n="edit_game_title">编辑游戏列表</h3>
+        <div class="form-group">
+            <label for="packageNameInput" data-i18n="edit_game_package">应用包名:</label>
+            <input type="text" id="packageNameInput" placeholder="例如: com.tencent.tmgp.sgame" data-i18n="edit_game_package_example">
+        </div>
+        <div class="form-group">
+            <label for="gameModeSelect" data-i18n="status_current_mode">模式选择:</label>
+            <select id="gameModeSelect" class="form-select">
+                <option value="powersave" data-i18n="status_mode_powersave">省电</option>
+                <option value="balance" selected data-i18n="status_mode_balance">均衡</option>
+                <option value="performance" data-i18n="status_mode_performance">性能</option>
+                <option value="fast" data-i18n="status_mode_fast">极速</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button id="saveGameBtn" class="btn" data-i18n="edit_game_save">保存</button>
+            <button id="cancelGameBtn" class="btn btn-secondary" data-i18n="edit_game_cancel">取消</button>
+        </div>
+    </div>
+</div>

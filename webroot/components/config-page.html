@@ -1,0 +1,76 @@
+<!-- 页面2: 配置 -->
+<div class="page" id="page-config">
+    <!-- GPU配置表卡片 -->
+    <section class="card" id="gpuConfigCard">
+        <h2 class="card-title">
+            <span class="title-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                </svg>
+            </span>
+            GPU频率表
+        </h2>
+        <div class="card-content">
+            <div class="table-container">
+                <table id="gpuFreqTable">
+                    <thead>
+                        <tr>
+                            <th>频率 (MHz)</th>
+                            <th>电压 (uV)</th>
+                            <th>内存档位</th>
+                            <th>编辑</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" class="loading-text">加载中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="config-actions">
+                <button id="addConfigBtn" class="btn btn-miuix">
+                    <span class="btn-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                        </svg>
+                    </span>
+                    <span class="btn-text">添加配置</span>
+                </button>
+                <button id="saveConfigBtn" class="btn btn-miuix btn-primary">
+                    <span class="btn-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
+                        </svg>
+                    </span>
+                    <span class="btn-text">保存配置</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 游戏列表卡片 -->
+    <section class="card" id="gamesCard">
+        <h2 class="card-title">
+            <span class="title-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M21,6H3A1,1 0 0,0 2,7V17A1,1 0 0,0 3,18H21A1,1 0 0,0 22,17V7A1,1 0 0,0 21,6M20,16H4V8H20V16M6,15A1,1 0 0,0 7,14A1,1 0 0,0 6,13A1,1 0 0,0 5,14A1,1 0 0,0 6,15M8,13A1,1 0 0,0 9,12A1,1 0 0,0 8,11A1,1 0 0,0 7,12A1,1 0 0,0 8,13M16,15A1,1 0 0,0 17,14A1,1 0 0,0 16,13A1,1 0 0,0 15,14A1,1 0 0,0 16,15M18,13A1,1 0 0,0 19,12A1,1 0 0,0 18,11A1,1 0 0,0 17,12A1,1 0 0,0 18,13Z" />
+                </svg>
+            </span>
+            游戏列表
+        </h2>
+        <div class="card-content">
+            <ul id="gamesList" class="games-list">
+                <li class="loading-text">加载中...</li>
+            </ul>
+            <div class="games-actions">
+                <button id="addGameBtn" class="btn">添加游戏</button>
+                <button id="saveGamesBtn" class="btn">保存列表</button>
+            </div>
+        </div>
+    </section>
+</div>
