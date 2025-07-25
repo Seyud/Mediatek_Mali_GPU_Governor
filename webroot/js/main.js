@@ -558,7 +558,6 @@ export class MainApp {
         await safeExecute(() => this.loadCurrentMode(), '加载当前模式失败');
 
         await safeExecute(() => this.configManager.loadGpuConfig(), '加载GPU配置失败');
-        await safeExecute(() => this.configManager.loadCustomConfigFromFile(), '加载自定义配置失败');
         await safeExecute(() => this.gamesManager.loadGamesList(), '加载游戏列表失败');
         await safeExecute(() => this.logManager.loadLog(), '加载日志失败');
         await safeExecute(() => this.settingsManager.loadLogLevel(), '加载日志等级设置失败');
