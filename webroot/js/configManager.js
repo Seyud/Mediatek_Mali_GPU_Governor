@@ -367,12 +367,13 @@ export class ConfigManager {
 
     // 填充自定义配置表单
     populateCustomConfigForm() {
+        if (!this.customConfig) return;
+
         // 填充全局设置
         if (this.customConfig.global) {
             if (this.globalModeSelect && this.customConfig.global.mode) {
                 this.globalModeSelect.value = this.customConfig.global.mode;
             }
-            
             if (this.idleThresholdInput && this.customConfig.global.idle_threshold !== undefined) {
                 this.idleThresholdInput.value = this.customConfig.global.idle_threshold;
             }
@@ -389,6 +390,11 @@ export class ConfigManager {
         
         // 填充极速模式设置
         this.populateModeConfig(this.fastInputs, this.customConfig.fast);
+        
+        // 同步模式选项卡与全局模式
+        if (this.customConfig.global && this.customConfig.global.mode) {
+            this.syncModeTabsWithGlobalMode(this.customConfig.global.mode);
+        }
     }
 
     // 填充模式配置
@@ -1049,6 +1055,12 @@ export class ConfigManager {
         const modeButtons = document.querySelectorAll('.mode-tabs-grid .settings-tab-btn');
         const modeSections = document.querySelectorAll('.mode-config-section');
         
+        // 根据全局模式设置默认选中状态
+        if (this.globalModeSelect) {
+            const globalMode = this.globalModeSelect.value;
+            this.syncModeTabsWithGlobalMode(globalMode);
+        }
+        
         modeButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const mode = button.getAttribute('data-mode');
@@ -1063,6 +1075,36 @@ export class ConfigManager {
                 });
                 document.getElementById(`${mode}-config`).classList.add('active');
             });
+        });
+        
+        // 监听全局模式选择框的变化
+        if (this.globalModeSelect) {
+            this.globalModeSelect.addEventListener('change', () => {
+                const mode = this.globalModeSelect.value;
+                this.syncModeTabsWithGlobalMode(mode);
+            });
+        }
+    }
+    
+    // 同步模式选项卡与全局模式
+    syncModeTabsWithGlobalMode(mode) {
+        const modeButtons = document.querySelectorAll('.mode-tabs-grid .settings-tab-btn');
+        const modeSections = document.querySelectorAll('.mode-config-section');
+        
+        // 更新按钮状态
+        modeButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-mode') === mode) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // 显示对应的配置区域
+        modeSections.forEach(section => {
+            section.classList.remove('active');
+            if (section.id === `${mode}-config`) {
+                section.classList.add('active');
+            }
         });
     }
 }
