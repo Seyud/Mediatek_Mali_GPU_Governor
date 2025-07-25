@@ -143,6 +143,7 @@ com.MadOut.BIG'
                 echo "[[games]]" >> "$GAMES_FILE"
                 echo "package = \"$package\"" >> "$GAMES_FILE"
                 echo "mode = \"balance\"" >> "$GAMES_FILE"
+            fi
         fi
     done
 
