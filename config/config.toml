@@ -36,7 +36,7 @@ down_rate_delay = 5000
 # 平衡模式 - 默认设置
 [balance]
 ultra_simple_threshold = 90
-margin = 5
+margin = 0
 down_counter_threshold = 10
 aggressive_down = true
 sampling_interval = 8
