@@ -4,7 +4,8 @@ export const PATHS = {
     CONFIG_PATH: '/data/adb/gpu_governor/config/gpu_freq_table.toml',
     CURRENT_MODE_PATH: '/data/adb/gpu_governor/config/current_mode',
     GAMES_FILE: '/data/adb/gpu_governor/game/games.toml',
-    LOG_LEVEL_PATH: '/data/adb/gpu_governor/log/log_level'
+    LOG_LEVEL_PATH: '/data/adb/gpu_governor/log/log_level',
+    CUSTOM_CONFIG_PATH: '/data/adb/gpu_governor/config/config.toml'
 };
 
 export const VOLT_LIST = [

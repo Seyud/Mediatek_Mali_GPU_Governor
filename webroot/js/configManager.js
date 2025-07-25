@@ -13,6 +13,7 @@ export class ConfigManager {
         this.increaseTimer = null;
         this.voltageEventsInitialized = false;
         this.currentLanguage = 'zh';
+        this.customConfig = {}; // 存储自定义配置
         
         // DOM元素
         this.gpuFreqTable = document.getElementById('gpuFreqTable')?.querySelector('tbody');
@@ -30,11 +31,79 @@ export class ConfigManager {
         this.voltIncreaseBtn = document.getElementById('voltIncreaseBtn');
         this.ddrContainer = document.getElementById('ddrContainer');
         this.selectedDdr = document.getElementById('selectedDdr');
+        
+        // 自定义配置相关DOM元素
+        this.loadCustomConfigBtn = document.getElementById('loadCustomConfigBtn');
+        this.saveCustomConfigBtn = document.getElementById('saveCustomConfigBtn');
+        this.globalModeSelect = document.getElementById('globalMode');
+        this.idleThresholdInput = document.getElementById('idleThreshold');
+        
+        // 省电模式配置元素
+        this.powersaveInputs = {
+            ultra_simple_threshold: document.getElementById('powersaveUltraSimple'),
+            margin: document.getElementById('powersaveMargin'),
+            down_counter_threshold: document.getElementById('powersaveDownCounter'),
+            sampling_interval: document.getElementById('powersaveSamplingInterval'),
+            min_adaptive_interval: document.getElementById('powersaveMinAdaptiveInterval'),
+            max_adaptive_interval: document.getElementById('powersaveMaxAdaptiveInterval'),
+            up_rate_delay: document.getElementById('powersaveUpRateDelay'),
+            down_rate_delay: document.getElementById('powersaveDownRateDelay'),
+            aggressive_down: document.getElementById('powersaveAggressiveDown'),
+            gaming_mode: document.getElementById('powersaveGamingMode'),
+            adaptive_sampling: document.getElementById('powersaveAdaptiveSampling')
+        };
+        
+        // 平衡模式配置元素
+        this.balanceInputs = {
+            ultra_simple_threshold: document.getElementById('balanceUltraSimple'),
+            margin: document.getElementById('balanceMargin'),
+            down_counter_threshold: document.getElementById('balanceDownCounter'),
+            sampling_interval: document.getElementById('balanceSamplingInterval'),
+            min_adaptive_interval: document.getElementById('balanceMinAdaptiveInterval'),
+            max_adaptive_interval: document.getElementById('balanceMaxAdaptiveInterval'),
+            up_rate_delay: document.getElementById('balanceUpRateDelay'),
+            down_rate_delay: document.getElementById('balanceDownRateDelay'),
+            aggressive_down: document.getElementById('balanceAggressiveDown'),
+            gaming_mode: document.getElementById('balanceGamingMode'),
+            adaptive_sampling: document.getElementById('balanceAdaptiveSampling')
+        };
+        
+        // 性能模式配置元素
+        this.performanceInputs = {
+            ultra_simple_threshold: document.getElementById('performanceUltraSimple'),
+            margin: document.getElementById('performanceMargin'),
+            down_counter_threshold: document.getElementById('performanceDownCounter'),
+            sampling_interval: document.getElementById('performanceSamplingInterval'),
+            min_adaptive_interval: document.getElementById('performanceMinAdaptiveInterval'),
+            max_adaptive_interval: document.getElementById('performanceMaxAdaptiveInterval'),
+            up_rate_delay: document.getElementById('performanceUpRateDelay'),
+            down_rate_delay: document.getElementById('performanceDownRateDelay'),
+            aggressive_down: document.getElementById('performanceAggressiveDown'),
+            gaming_mode: document.getElementById('performanceGamingMode'),
+            adaptive_sampling: document.getElementById('performanceAdaptiveSampling')
+        };
+        
+        // 极速模式配置元素
+        this.fastInputs = {
+            ultra_simple_threshold: document.getElementById('fastUltraSimple'),
+            margin: document.getElementById('fastMargin'),
+            down_counter_threshold: document.getElementById('fastDownCounter'),
+            sampling_interval: document.getElementById('fastSamplingInterval'),
+            min_adaptive_interval: document.getElementById('fastMinAdaptiveInterval'),
+            max_adaptive_interval: document.getElementById('fastMaxAdaptiveInterval'),
+            up_rate_delay: document.getElementById('fastUpRateDelay'),
+            down_rate_delay: document.getElementById('fastDownRateDelay'),
+            aggressive_down: document.getElementById('fastAggressiveDown'),
+            gaming_mode: document.getElementById('fastGamingMode'),
+            adaptive_sampling: document.getElementById('fastAdaptiveSampling')
+        };
     }
 
     init() {
         this.setupEventListeners();
         this.initVoltSelect();
+        this.loadGpuConfig();
+        this.loadCustomConfigFromFile();
     }
 
     setupEventListeners() {
@@ -74,6 +143,19 @@ export class ConfigManager {
             });
         }
 
+        // 自定义配置按钮事件
+        if (this.loadCustomConfigBtn) {
+            this.loadCustomConfigBtn.addEventListener('click', () => {
+                this.loadCustomConfigFromFile();
+            });
+        }
+
+        if (this.saveCustomConfigBtn) {
+            this.saveCustomConfigBtn.addEventListener('click', () => {
+                this.saveCustomConfigToFile();
+            });
+        }
+
         // 点击模态框外部关闭
         window.addEventListener('click', (event) => {
             if (event.target === this.editConfigModal) {
@@ -89,6 +171,9 @@ export class ConfigManager {
                 }
             }
         });
+
+        // 初始化模式切换事件
+        this.initModeSwitchEvents();
 
         // 自定义内存档位选择事件
         if (this.ddrContainer) {
@@ -201,12 +286,207 @@ export class ConfigManager {
                     this.gpuFreqTable.innerHTML = `<tr><td colspan="4" class="loading-text">${getTranslation('config_not_found', {}, this.currentLanguage)}</td></tr>`;
                 }
             }
-
         } catch (error) {
             console.error('加载GPU配置失败:', error);
             if (this.gpuFreqTable) {
                 this.gpuFreqTable.innerHTML = '<tr><td colspan="4" class="loading-text">加载失败</td></tr>';
             }
+        }
+    }
+
+    // 加载自定义配置文件
+    async loadCustomConfigFromFile() {
+        try {
+            const { errno, stdout } = await exec(`cat ${PATHS.CUSTOM_CONFIG_PATH}`);
+
+            if (errno === 0 && stdout.trim()) {
+                const content = stdout.trim();
+                this.parseCustomConfig(content);
+                this.populateCustomConfigForm();
+                toast(getTranslation('自定义配置加载完成', {}, this.currentLanguage));
+            } else {
+                toast(getTranslation('toast_config_load_fail', {}, this.currentLanguage));
+            }
+        } catch (error) {
+            console.error('加载自定义配置失败:', error);
+            toast(`加载自定义配置失败: ${error.message}`);
+        }
+    }
+
+    // 解析自定义配置内容
+    parseCustomConfig(content) {
+        this.customConfig = {};
+
+        // 解析全局设置
+        const globalMatch = /\[global\]([\s\S]*?)(?=\n\[|$)/.exec(content);
+        if (globalMatch) {
+            const globalSection = globalMatch[1];
+            this.customConfig.global = this.parseSection(globalSection);
+        }
+
+        // 解析各模式设置
+        const modes = ['powersave', 'balance', 'performance', 'fast'];
+        modes.forEach(mode => {
+            const modeMatch = new RegExp(`\\[${mode}\\]([\\s\\S]*?)(?=\\n\\[|$)`).exec(content);
+            if (modeMatch) {
+                const modeSection = modeMatch[1];
+                this.customConfig[mode] = this.parseSection(modeSection);
+            }
+        });
+    }
+
+    // 解析配置节
+    parseSection(sectionContent) {
+        const config = {};
+        const lines = sectionContent.split('\n');
+        
+        lines.forEach(line => {
+            const trimmedLine = line.trim();
+            if (trimmedLine && !trimmedLine.startsWith('#')) {
+                const [key, value] = trimmedLine.split('=');
+                if (key && value) {
+                    const cleanKey = key.trim();
+                    const cleanValue = value.trim().replace(/["']/g, '');
+                    
+                    // 尝试转换为适当的数据类型
+                    if (cleanValue === 'true') {
+                        config[cleanKey] = true;
+                    } else if (cleanValue === 'false') {
+                        config[cleanKey] = false;
+                    } else if (!isNaN(cleanValue)) {
+                        config[cleanKey] = Number(cleanValue);
+                    } else {
+                        config[cleanKey] = cleanValue;
+                    }
+                }
+            }
+        });
+        
+        return config;
+    }
+
+    // 填充自定义配置表单
+    populateCustomConfigForm() {
+        // 填充全局设置
+        if (this.customConfig.global) {
+            if (this.globalModeSelect && this.customConfig.global.mode) {
+                this.globalModeSelect.value = this.customConfig.global.mode;
+            }
+            
+            if (this.idleThresholdInput && this.customConfig.global.idle_threshold !== undefined) {
+                this.idleThresholdInput.value = this.customConfig.global.idle_threshold;
+            }
+        }
+
+        // 填充省电模式设置
+        this.populateModeConfig(this.powersaveInputs, this.customConfig.powersave);
+        
+        // 填充平衡模式设置
+        this.populateModeConfig(this.balanceInputs, this.customConfig.balance);
+        
+        // 填充性能模式设置
+        this.populateModeConfig(this.performanceInputs, this.customConfig.performance);
+        
+        // 填充极速模式设置
+        this.populateModeConfig(this.fastInputs, this.customConfig.fast);
+    }
+
+    // 填充模式配置
+    populateModeConfig(inputs, config) {
+        if (!config || !inputs) return;
+        
+        Object.keys(inputs).forEach(key => {
+            const element = inputs[key];
+            if (element && config[key] !== undefined) {
+                if (element.type === 'checkbox') {
+                    element.checked = config[key];
+                } else {
+                    element.value = config[key];
+                }
+            }
+        });
+    }
+
+    // 生成自定义配置内容
+    generateCustomConfigContent() {
+        let content = '# GPU调速器配置文件\n\n';
+        
+        // 生成全局配置
+        content += '[global]\n';
+        content += '# 全局模式设置: powersave, balance, performance, fast\n';
+        content += `mode = "${this.globalModeSelect?.value || 'balance'}"\n`;
+        content += '# 空闲阈值（百分比）\n';
+        content += `idle_threshold = ${this.idleThresholdInput?.value || 5}\n\n`;
+        
+        // 生成省电模式配置
+        content += '# 省电模式 - 更高的升频阈值，更激进的降频\n';
+        content += '[powersave]\n';
+        content += this.generateModeConfigContent(this.powersaveInputs);
+        
+        // 生成平衡模式配置
+        content += '# 平衡模式 - 默认设置\n';
+        content += '[balance]\n';
+        content += this.generateModeConfigContent(this.balanceInputs);
+        
+        // 生成性能模式配置
+        content += '# 性能模式 - 更低的升频阈值，更保守的降频\n';
+        content += '[performance]\n';
+        content += this.generateModeConfigContent(this.performanceInputs);
+        
+        // 生成极速模式配置
+        content += '# 极速模式 - 最低的升频阈值，最保守的降频\n';
+        content += '[fast]\n';
+        content += this.generateModeConfigContent(this.fastInputs);
+        
+        return content;
+    }
+
+    // 生成模式配置内容
+    generateModeConfigContent(config) {
+        let content = '';
+        content += `# 极简阈值（百分比）- 达到此阈值时升频\n`;
+        content += `ultra_simple_threshold = ${config.ultra_simple_threshold?.value || 95}\n`;
+        content += `# 余量\n`;
+        content += `# 当设置为0时使用原调频策略\n`;
+        content += `# 当设置为N时，降频阈值为(100-N)%\n`;
+        content += `margin = ${config.margin?.value || 10}\n`;
+        content += `# 降频计数器配置值（0=禁用降频计数器功能）\n`;
+        content += `down_counter_threshold = ${config.down_counter_threshold?.value || 5}\n`;
+        content += `# 是否使用激进降频策略\n`;
+        content += `aggressive_down = ${config.aggressive_down?.checked ? 'true' : 'false'}\n`;
+        content += `# 采样间隔（毫秒）\n`;
+        content += `sampling_interval = ${config.sampling_interval?.value || 16}\n`;
+        content += `# 游戏模式 - 启用游戏特殊内存优化\n`;
+        content += `gaming_mode = ${config.gaming_mode?.checked ? 'true' : 'false'}\n`;
+        content += `# 自适应采样\n`;
+        content += `adaptive_sampling = ${config.adaptive_sampling?.checked ? 'true' : 'false'}\n`;
+        content += `# 自适应采样最小间隔（毫秒）\n`;
+        content += `min_adaptive_interval = ${config.min_adaptive_interval?.value || 4}\n`;
+        content += `# 自适应采样最大间隔（毫秒）\n`;
+        content += `max_adaptive_interval = ${config.max_adaptive_interval?.value || 20}\n`;
+        content += `# 升频延迟（毫秒）\n`;
+        content += `up_rate_delay = ${config.up_rate_delay?.value || 1000}\n`;
+        content += `# 降频延迟（毫秒）\n`;
+        content += `down_rate_delay = ${config.down_rate_delay?.value || 5000}\n\n`;
+        return content;
+    }
+
+    // 保存自定义配置到文件
+    async saveCustomConfigToFile() {
+        try {
+            const configContent = this.generateCustomConfigContent();
+            
+            // 保存到文件
+            const { errno } = await exec(`echo '${configContent}' > ${PATHS.CUSTOM_CONFIG_PATH}`);
+
+            if (errno === 0) {
+                toast(getTranslation('toast_config_saved', {}, this.currentLanguage));
+            } else {
+                toast(getTranslation('toast_config_save_fail', {}, this.currentLanguage));
+            }
+        } catch (error) {
+            console.error('保存自定义配置失败:', error);
+            toast(`保存自定义配置失败: ${error.message}`);
         }
     }
 
@@ -762,5 +1042,27 @@ export class ConfigManager {
 
     setLanguage(language) {
         this.currentLanguage = language;
+    }
+
+    // 初始化模式切换按钮事件
+    initModeSwitchEvents() {
+        const modeButtons = document.querySelectorAll('.mode-tabs-grid .settings-tab-btn');
+        const modeSections = document.querySelectorAll('.mode-config-section');
+        
+        modeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const mode = button.getAttribute('data-mode');
+                
+                // 更新按钮状态
+                modeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // 显示对应的配置区域
+                modeSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(`${mode}-config`).classList.add('active');
+            });
+        });
     }
 }
