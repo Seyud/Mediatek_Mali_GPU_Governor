@@ -69,7 +69,6 @@ com.futuremark.dmandroid.application
 com.glbenchmark.glbenchmark27
 com.antutu.benchmark.full
 com.ioncannon.cpuburn.gpugflops
-
 com.tencent.tmgp.cod
 com.tencent.tmgp.pubgmhd
 com.tencent.tmgp.pubgmhdce
@@ -82,7 +81,6 @@ com.tencent.tmgp.cf
 com.tencent.af
 com.tencent.lolm
 com.tencent.jkchess
-
 com.miHoYo.Yuanshen
 com.miHoYo.ys.mi
 com.miHoYo.ys.bilibili
@@ -96,11 +94,9 @@ com.mihoyo.bh3.uc
 com.miHoYo.bh3.wdj
 com.miHoYo.bh3.bilibili
 com.mojang.minecraftpe
-
 com.tgc.sky.android
 com.kiloo.subwaysurf
 com.taptap
-
 com.netease.sky
 com.netease.moba.aligames
 com.netease.party
@@ -108,22 +104,18 @@ com.netease.jddsaef
 com.netease.g93na
 com.netease.g93natw
 com.netease.g93nagb
-
 com.netease.mrzhna
 com.netease.mrzh.nearme.gamecenter
-
 com.dw.h5yvzr.yt
 com.pwrd.hotta.laohu
 com.hottagames.hotta.bilibili
 com.hottagames.hotta.mi
 com.hottagames.hotta.vivo
-
 com.kurogame.mingchao
 com.kurogame.wutheringwaves.global
 com.dragonli.projectsnow.lhm
 com.netease.aceracer
 com.netease.race
-
 com.activision.callofduty.warzone
 com.MadOut.BIG'
     echo "# GPU调速器游戏列表配置文件" > "$GAMES_FILE"
