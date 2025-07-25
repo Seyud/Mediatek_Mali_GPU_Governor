@@ -15,6 +15,7 @@ export class GamesManager {
         this.editGameModal = document.getElementById('editGameModal');
         this.closeGameModalBtn = document.querySelector('.close-game-modal');
         this.packageNameInput = document.getElementById('packageNameInput');
+        this.gameModeSelect = document.getElementById('gameModeSelect');
         this.saveGameBtn = document.getElementById('saveGameBtn');
         this.cancelGameBtn = document.getElementById('cancelGameBtn');
     }
@@ -76,8 +77,9 @@ export class GamesManager {
             const { errno, stdout } = await exec(`cat ${PATHS.GAMES_FILE}`);
 
             if (errno === 0 && stdout.trim()) {
-                const games = stdout.trim().split('\n').filter(game => game.trim());
-
+                // 解析TOML格式的游戏列表
+                const games = this.parseTomlGames(stdout.trim());
+                
                 // 保存到实例变量
                 this.gamesListData = games;
 
@@ -101,6 +103,51 @@ export class GamesManager {
         }
     }
 
+    // 解析TOML格式的游戏列表
+    parseTomlGames(tomlString) {
+        const games = [];
+        const lines = tomlString.split('\n');
+        
+        let currentGame = null;
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+            
+            // 忽略空行和注释行
+            if (!trimmedLine || trimmedLine.startsWith('#')) {
+                continue;
+            }
+            
+            // 检测游戏条目开始
+            if (trimmedLine.startsWith('[[games]]')) {
+                if (currentGame) {
+                    games.push(currentGame);
+                }
+                currentGame = {};
+                continue;
+            }
+            
+            // 解析键值对
+            if (currentGame && trimmedLine.includes('=')) {
+                const [key, value] = trimmedLine.split('=');
+                const cleanKey = key.trim();
+                const cleanValue = value.trim().replace(/"/g, ''); // 移除引号
+                
+                if (cleanKey === 'package') {
+                    currentGame.package = cleanValue;
+                } else if (cleanKey === 'mode') {
+                    currentGame.mode = cleanValue;
+                }
+            }
+        }
+        
+        // 添加最后一个游戏条目
+        if (currentGame) {
+            games.push(currentGame);
+        }
+        
+        return games;
+    }
+
     // 刷新游戏列表
     refreshGamesList() {
         if (!this.gamesList) return;
@@ -117,8 +164,28 @@ export class GamesManager {
 
             // 创建游戏包名文本
             const gameText = document.createElement('span');
-            gameText.textContent = game.trim();
+            const modeText = this.getModeText(game.mode || 'balance');
+            gameText.textContent = game.package ? `${game.package} (${modeText})` : game.trim();
             li.appendChild(gameText);
+
+            // 创建按钮容器
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'game-button-container';
+
+            // 创建编辑按钮
+            const editBtn = document.createElement('button');
+            editBtn.className = 'game-edit-btn';
+            editBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3,17.25V21h3.75L17.81,9.94L14.06,6.19L3,17.25M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04Z"/>
+                </svg>
+            `;
+            editBtn.title = '编辑';
+            editBtn.onclick = (e) => {
+                e.stopPropagation(); // 阻止事件冒泡
+                this.editGameItem(index);
+            };
+            buttonContainer.appendChild(editBtn);
 
             // 创建删除按钮
             const deleteBtn = document.createElement('button');
@@ -133,20 +200,62 @@ export class GamesManager {
                 e.stopPropagation(); // 阻止事件冒泡
                 this.deleteGameItem(index);
             };
-            li.appendChild(deleteBtn);
+            buttonContainer.appendChild(deleteBtn);
 
+            li.appendChild(buttonContainer);
             this.gamesList.appendChild(li);
         });
     }
 
-    // 打开游戏编辑模态框
+    // 获取模式显示文本
+    getModeText(mode) {
+        const modeTexts = {
+            'zh': {
+                'powersave': '省电',
+                'balance': '均衡',
+                'performance': '性能',
+                'fast': '极速'
+            },
+            'en': {
+                'powersave': 'Power Saving',
+                'balance': 'Balance',
+                'performance': 'Performance',
+                'fast': 'Fast'
+            }
+        };
+        
+        return modeTexts[this.currentLanguage][mode] || modeTexts[this.currentLanguage]['balance'];
+    }
+
+    // 打开游戏编辑模态框（新增）
     openGameModal() {
         if (this.packageNameInput) {
             this.packageNameInput.value = '';
         }
+        if (this.gameModeSelect) {
+            this.gameModeSelect.value = 'balance';
+        }
         if (this.editGameModal) {
             this.editGameModal.style.display = 'block';
         }
+        this.editingIndex = -1; // 新增模式
+    }
+
+    // 打开游戏编辑模态框（编辑）
+    editGameItem(index) {
+        if (index < 0 || index >= this.gamesListData.length) return;
+        
+        const game = this.gamesListData[index];
+        if (this.packageNameInput) {
+            this.packageNameInput.value = game.package || '';
+        }
+        if (this.gameModeSelect) {
+            this.gameModeSelect.value = game.mode || 'balance';
+        }
+        if (this.editGameModal) {
+            this.editGameModal.style.display = 'block';
+        }
+        this.editingIndex = index; // 编辑模式
     }
 
     // 关闭游戏编辑模态框
@@ -154,6 +263,7 @@ export class GamesManager {
         if (this.editGameModal) {
             this.editGameModal.style.display = 'none';
         }
+        this.editingIndex = -1;
     }
 
     // 保存游戏项
@@ -161,20 +271,31 @@ export class GamesManager {
         if (!this.packageNameInput) return;
         
         const packageName = this.packageNameInput.value.trim();
+        const gameMode = this.gameModeSelect ? this.gameModeSelect.value : 'balance';
 
         if (!packageName) {
             toast(getTranslation('toast_game_invalid', {}, this.currentLanguage));
             return;
         }
 
-        // 检查是否已存在
-        if (this.gamesListData.includes(packageName)) {
-            toast(getTranslation('toast_game_exists', {}, this.currentLanguage));
-            return;
-        }
+        // 检查是否已存在（新增时检查）
+        if (this.editingIndex === -1) {
+            const exists = this.gamesListData.some(game => game.package === packageName);
+            if (exists) {
+                toast(getTranslation('toast_game_exists', {}, this.currentLanguage));
+                return;
+            }
 
-        // 添加到列表
-        this.gamesListData.push(packageName);
+            // 添加到列表
+            this.gamesListData.push({
+                package: packageName,
+                mode: gameMode
+            });
+        } else {
+            // 更新现有项
+            this.gamesListData[this.editingIndex].package = packageName;
+            this.gamesListData[this.editingIndex].mode = gameMode;
+        }
 
         // 关闭模态框
         this.closeGameModal();
@@ -182,7 +303,9 @@ export class GamesManager {
         // 刷新列表
         this.refreshGamesList();
 
-        toast(getTranslation('toast_game_added', {}, this.currentLanguage));
+        if (this.editingIndex === -1) {
+            toast(getTranslation('toast_game_added', {}, this.currentLanguage));
+        }
     }
 
     // 删除游戏项
@@ -208,8 +331,13 @@ export class GamesManager {
                 return;
             }
 
-            // 生成文件内容
-            const gamesContent = this.gamesListData.join('\n');
+            // 生成TOML格式的文件内容
+            let gamesContent = '# GPU调速器游戏列表配置文件\n\n';
+            this.gamesListData.forEach(game => {
+                gamesContent += '[[games]]\n';
+                gamesContent += `package = "${game.package}"\n`;
+                gamesContent += `mode = "${game.mode || 'balance'}"\n\n`;
+            });
 
             // 保存到文件
             const { errno } = await exec(`echo '${gamesContent}' > ${PATHS.GAMES_FILE}`);

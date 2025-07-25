@@ -455,14 +455,23 @@
     <div id="editGameModal" class="modal">
         <div class="modal-content">
             <span class="close-game-modal">&times;</span>
-            <h3>编辑游戏列表</h3>
+            <h3 data-i18n="edit_game_title">编辑游戏列表</h3>
             <div class="form-group">
-                <label for="packageNameInput">应用包名:</label>
-                <input type="text" id="packageNameInput" placeholder="例如: com.tencent.tmgp.sgame">
+                <label for="packageNameInput" data-i18n="edit_game_package">应用包名:</label>
+                <input type="text" id="packageNameInput" placeholder="例如: com.tencent.tmgp.sgame" data-i18n="edit_game_package_example">
+            </div>
+            <div class="form-group">
+                <label for="gameModeSelect" data-i18n="status_current_mode">模式选择:</label>
+                <select id="gameModeSelect" class="form-select">
+                    <option value="powersave" data-i18n="status_mode_powersave">省电</option>
+                    <option value="balance" selected data-i18n="status_mode_balance">均衡</option>
+                    <option value="performance" data-i18n="status_mode_performance">性能</option>
+                    <option value="fast" data-i18n="status_mode_fast">极速</option>
+                </select>
             </div>
             <div class="form-actions">
-                <button id="saveGameBtn" class="btn">保存</button>
-                <button id="cancelGameBtn" class="btn btn-secondary">取消</button>
+                <button id="saveGameBtn" class="btn" data-i18n="edit_game_save">保存</button>
+                <button id="cancelGameBtn" class="btn btn-secondary" data-i18n="edit_game_cancel">取消</button>
             </div>
         </div>
     </div>
