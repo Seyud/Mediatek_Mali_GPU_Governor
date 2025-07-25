@@ -20,7 +20,7 @@ down_counter_threshold = 5
 aggressive_down = true
 # 采样间隔（毫秒）
 sampling_interval = 16
-# 游戏模式 - 启用游戏特殊内存优化
+# 游戏优化 - 启用游戏特殊内存优化
 gaming_mode = false
 # 自适应采样
 adaptive_sampling = true

@@ -462,7 +462,7 @@ export class ConfigManager {
         content += `aggressive_down = ${config.aggressive_down?.checked ? 'true' : 'false'}\n`;
         content += `# 采样间隔（毫秒）\n`;
         content += `sampling_interval = ${config.sampling_interval?.value || 16}\n`;
-        content += `# 游戏模式 - 启用游戏特殊内存优化\n`;
+        content += `# 游戏优化 - 启用游戏特殊内存优化\n`;
         content += `gaming_mode = ${config.gaming_mode?.checked ? 'true' : 'false'}\n`;
         content += `# 自适应采样\n`;
         content += `adaptive_sampling = ${config.adaptive_sampling?.checked ? 'true' : 'false'}\n`;
