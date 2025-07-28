@@ -106,6 +106,26 @@
     z-index: 20;
 }
 
+/* 为全局模式选择器设置z-index */
+#globalModeContainer {
+    z-index: 15;
+}
+
+/* 为全局模式选择器的选项容器设置z-index */
+#globalModeOptions {
+    z-index: 16;
+}
+
+/* 为游戏模式选择器设置z-index */
+#gameModeContainer {
+    z-index: 10;
+}
+
+/* 为游戏模式选择器的选项容器设置z-index */
+#gameModeOptions {
+    z-index: 11;
+}
+
 .selected-option {
     background-color: transparent;
     color: var(--text-color);

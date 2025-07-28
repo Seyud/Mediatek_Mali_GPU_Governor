@@ -18,6 +18,11 @@ export class GamesManager {
         this.gameModeSelect = document.getElementById('gameModeSelect');
         this.saveGameBtn = document.getElementById('saveGameBtn');
         this.cancelGameBtn = document.getElementById('cancelGameBtn');
+        
+        // 游戏模式选择器元素
+        this.gameModeContainer = document.getElementById('gameModeContainer');
+        this.selectedGameMode = document.getElementById('selectedGameMode');
+        this.gameModeOptions = document.getElementById('gameModeOptions');
     }
 
     init() {
@@ -70,6 +75,9 @@ export class GamesManager {
                 }
             }
         });
+        
+        // 初始化游戏模式选择器
+        this.initGameModeSelect();
     }
 
     async loadGamesList() {
@@ -235,6 +243,8 @@ export class GamesManager {
         if (this.gameModeSelect) {
             this.gameModeSelect.value = 'balance';
         }
+        // 更新自定义选择器显示
+        this.updateGameModeSelectDisplay('balance');
         if (this.editGameModal) {
             this.editGameModal.style.display = 'block';
         }
@@ -252,6 +262,8 @@ export class GamesManager {
         if (this.gameModeSelect) {
             this.gameModeSelect.value = game.mode || 'balance';
         }
+        // 更新自定义选择器显示
+        this.updateGameModeSelectDisplay(game.mode || 'balance');
         if (this.editGameModal) {
             this.editGameModal.style.display = 'block';
         }
@@ -305,6 +317,69 @@ export class GamesManager {
 
         if (this.editingIndex === -1) {
             toast(getTranslation('toast_game_added', {}, this.currentLanguage));
+        }
+    }
+    
+    // 初始化游戏模式选择器
+    initGameModeSelect() {
+        if (!this.gameModeContainer || !this.selectedGameMode || !this.gameModeOptions) return;
+        
+        // 点击选中项切换选项容器显示状态
+        this.selectedGameMode.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.gameModeContainer.classList.toggle('open');
+        });
+        
+        // 点击选项更新选中值并触发change事件
+        const options = this.gameModeOptions.querySelectorAll('.option');
+        options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = option.getAttribute('data-value');
+                const text = option.textContent;
+                
+                // 更新显示文本
+                this.selectedGameMode.textContent = text;
+                
+                // 更新隐藏select的值
+                if (this.gameModeSelect) {
+                    this.gameModeSelect.value = value;
+                    // 触发change事件
+                    this.gameModeSelect.dispatchEvent(new Event('change'));
+                }
+                
+                // 移除其他选项的选中状态
+                options.forEach(opt => opt.classList.remove('selected'));
+                // 为当前选项添加选中状态
+                option.classList.add('selected');
+                
+                // 隐藏选项容器
+                this.gameModeContainer.classList.remove('open');
+            });
+        });
+        
+        // 点击外部隐藏选项容器
+        document.addEventListener('click', (e) => {
+            if (!this.gameModeContainer.contains(e.target)) {
+                this.gameModeContainer.classList.remove('open');
+            }
+        });
+    }
+    
+    // 更新游戏模式选择器显示
+    updateGameModeSelectDisplay(mode) {
+        if (!this.selectedGameMode || !this.gameModeOptions) return;
+        
+        // 查找对应的选项
+        const option = this.gameModeOptions.querySelector(`.option[data-value="${mode}"]`);
+        if (option) {
+            // 更新显示文本
+            this.selectedGameMode.textContent = option.textContent;
+            
+            // 更新选中状态
+            const options = this.gameModeOptions.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
         }
     }
 

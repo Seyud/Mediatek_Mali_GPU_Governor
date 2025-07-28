@@ -66,12 +66,18 @@
                 <h3 data-i18n="config_global_settings">全局设置</h3>
                 <div class="form-group">
                     <label for="globalMode" data-i18n="config_global_mode">全局模式:</label>
-                    <select id="globalMode" class="form-control">
-                        <option value="powersave" data-i18n="config_mode_powersave">省电模式</option>
-                        <option value="balance" data-i18n="config_mode_balance">平衡模式</option>
-                        <option value="performance" data-i18n="config_mode_performance">性能模式</option>
-                        <option value="fast" data-i18n="config_mode_fast">极速模式</option>
-                    </select>
+                    <div class="custom-select" id="globalModeContainer">
+                        <div class="selected-option" id="selectedGlobalMode">
+                            <span data-i18n="config_mode_balance">平衡模式</span>
+                        </div>
+                        <div class="options-container" id="globalModeOptions">
+                            <div class="option" data-value="powersave" data-i18n="config_mode_powersave">省电模式</div>
+                            <div class="option" data-value="balance" data-i18n="config_mode_balance">平衡模式</div>
+                            <div class="option" data-value="performance" data-i18n="config_mode_performance">性能模式</div>
+                            <div class="option" data-value="fast" data-i18n="config_mode_fast">极速模式</div>
+                        </div>
+                    </div>
+                    <select id="globalMode" class="form-control" style="display: none;"></select>
                 </div>
                 <div class="form-group">
                     <label for="idleThreshold" data-i18n="config_idle_threshold">空闲阈值 (%):</label>

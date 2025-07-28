@@ -36,6 +36,9 @@ export class ConfigManager {
         this.loadCustomConfigBtn = document.getElementById('loadCustomConfigBtn');
         this.saveCustomConfigBtn = document.getElementById('saveCustomConfigBtn');
         this.globalModeSelect = document.getElementById('globalMode');
+        this.globalModeContainer = document.getElementById('globalModeContainer');
+        this.selectedGlobalMode = document.getElementById('selectedGlobalMode');
+        this.globalModeOptions = document.getElementById('globalModeOptions');
         this.idleThresholdInput = document.getElementById('idleThreshold');
         
         // 省电模式配置元素
@@ -102,6 +105,7 @@ export class ConfigManager {
     init() {
         this.setupEventListeners();
         this.initVoltSelect();
+        this.initGlobalModeSelect();
         this.loadGpuConfig();
         this.loadCustomConfigFromFile();
     }
@@ -586,6 +590,45 @@ export class ConfigManager {
 
         // 设置事件监听器（只在第一次初始化时添加）
         this.setupVoltageEvents();
+    }
+    
+    // 初始化全局模式选择器
+    initGlobalModeSelect() {
+        // 点击选中项时切换选项容器的显示状态
+        this.selectedGlobalMode.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.globalModeContainer.classList.toggle('open');
+        });
+        
+        // 点击选项时更新选中值并隐藏选项容器
+        const options = this.globalModeOptions.querySelectorAll('.option');
+        options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = option.getAttribute('data-value');
+                const text = option.textContent;
+                
+                // 更新选中项的显示文本
+                this.selectedGlobalMode.querySelector('span').textContent = text;
+                this.selectedGlobalMode.querySelector('span').setAttribute('data-i18n', option.getAttribute('data-i18n'));
+                
+                // 更新隐藏的select元素的值
+                this.globalModeSelect.value = value;
+                
+                // 触发change事件以同步模式选项卡
+                this.globalModeSelect.dispatchEvent(new Event('change'));
+                
+                // 隐藏选项容器
+                this.globalModeContainer.classList.remove('open');
+            });
+        });
+        
+        // 点击其他地方时隐藏选项容器
+        document.addEventListener('click', (e) => {
+            if (!this.globalModeContainer.contains(e.target)) {
+                this.globalModeContainer.classList.remove('open');
+            }
+        });
     }
 
     // 设置电压选择器的事件监听器（只调用一次）
