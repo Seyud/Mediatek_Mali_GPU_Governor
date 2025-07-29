@@ -1,7 +1,7 @@
 // 游戏列表管理模块
 import { exec, toast } from './utils.js';
 import { PATHS } from './constants.js';
-import { getTranslation } from './i18n.js';
+import { translations, getTranslation } from './i18n.js';
 
 export class GamesManager {
     constructor() {
@@ -430,5 +430,42 @@ export class GamesManager {
 
     setLanguage(language) {
         this.currentLanguage = language;
+        
+        // 更新游戏模式选择器的显示文本
+        if (this.gameModeSelect) {
+            const options = this.gameModeSelect.options;
+            for (let i = 0; i < options.length; i++) {
+                const option = options[i];
+                const value = option.value;
+                const key = `status_mode_${value}`;
+                if (translations[language] && translations[language][key]) {
+                    option.textContent = translations[language][key];
+                }
+            }
+        }
+        
+        // 更新自定义选择器的显示文本
+        if (this.gameModeOptions) {
+            const customOptions = this.gameModeOptions.querySelectorAll('.option');
+            customOptions.forEach(option => {
+                const value = option.getAttribute('data-value');
+                const key = `status_mode_${value}`;
+                if (translations[language] && translations[language][key]) {
+                    option.textContent = translations[language][key];
+                }
+            });
+        }
+        
+        // 更新当前选中项的显示文本
+        if (this.selectedGameMode && this.gameModeSelect) {
+            const selectedValue = this.gameModeSelect.value;
+            const key = `status_mode_${selectedValue}`;
+            if (translations[language] && translations[language][key]) {
+                this.selectedGameMode.textContent = translations[language][key];
+            }
+        }
+        
+        // 刷新游戏列表以更新模式显示文本
+        this.refreshGamesList();
     }
 }

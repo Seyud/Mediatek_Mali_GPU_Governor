@@ -247,7 +247,7 @@ export const translations = {
         'edit_config_ddr_highest': '0 (Highest)',
         'edit_config_ddr_high': '1',
         'edit_config_ddr_medium': '2',
-        'edit_config_ddr_low': '3 (Lowest)',
+        'edit_config_ddr_low': '3',
         'edit_config_save': 'Save',
         'edit_config_cancel': 'Cancel',
         'edit_config_delete': 'Delete',
