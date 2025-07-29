@@ -102,7 +102,7 @@ export const translations = {
         'edit_config_ddr_highest': '0 (最高)',
         'edit_config_ddr_high': '1',
         'edit_config_ddr_medium': '2',
-        'edit_config_ddr_low': '3 (最低)',
+        'edit_config_ddr_low': '3',
         'edit_config_save': '保存',
         'edit_config_cancel': '取消',
         'edit_config_delete': '删除',
@@ -110,6 +110,7 @@ export const translations = {
         'edit_game_title': '编辑游戏列表',
         'edit_game_package': '应用包名:',
         'edit_game_package_example': '例如: com.tencent.tmgp.sgame',
+        'edit_game_mode': '对应模式:',
         'edit_game_save': '保存',
         'edit_game_cancel': '取消',
         // 提示消息
@@ -251,9 +252,10 @@ export const translations = {
         'edit_config_cancel': 'Cancel',
         'edit_config_delete': 'Delete',
         // Edit game dialog
-        'edit_game_title': 'Edit Game List',
+        'edit_game_title': 'Edit Games List',
         'edit_game_package': 'Package Name:',
-        'edit_game_package_example': 'Example: com.tencent.tmgp.sgame',
+        'edit_game_package_example': 'e.g.: com.tencent.tmgp.sgame',
+        'edit_game_mode': 'Corresponding Mode:',
         'edit_game_save': 'Save',
         'edit_game_cancel': 'Cancel',
         // Toast messages
