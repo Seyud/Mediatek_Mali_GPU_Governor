@@ -92,8 +92,8 @@ export const translations = {
         'settings_log_level_error': 'Error (错误)',
         'settings_log_level_desc1': '修改日志等级后实时生效',
         'settings_log_level_desc2': '设置为Debug级别将启用详细日志记录',
-        // 编辑配置对话框
-        'edit_config_title': '编辑GPU配置',
+        // 编辑频率表对话框
+        'edit_config_title': '编辑GPU频率表',
         'edit_config_freq': '频率 (MHz):',
         'edit_config_freq_hint': '请输入KHz值，表格中显示为MHz',
         'edit_config_volt': '电压 (uV):',
@@ -238,7 +238,7 @@ export const translations = {
         'settings_log_level_desc1': 'Log level changes take effect immediately',
         'settings_log_level_desc2': 'Debug level enables detailed logging',
         // Edit config dialog
-        'edit_config_title': 'Edit GPU Config',
+        'edit_config_title': 'Edit GPU Frequency Table',
         'edit_config_freq': 'Frequency (MHz):',
         'edit_config_freq_hint': 'Please enter KHz value, displayed as MHz in table',
         'edit_config_volt': 'Voltage (uV):',
