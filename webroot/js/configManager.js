@@ -183,6 +183,32 @@ export class ConfigManager {
         if (this.ddrContainer) {
             this.ddrContainer.addEventListener('click', () => {
                 this.ddrContainer.classList.toggle('open');
+                
+                // 添加延迟以同步动画和选项显示
+                if (this.ddrContainer.classList.contains('open')) {
+                    // 展开时，先触发动画，再显示选项
+                    setTimeout(() => {
+                        const options = this.ddrContainer.querySelectorAll('.option');
+                        options.forEach((option, index) => {
+                            setTimeout(() => {
+                                option.style.opacity = '1';
+                                option.style.transform = 'translateY(0)';
+                            }, index * 50);
+                        });
+                    }, 10);
+                } else {
+                    // 关闭时，先隐藏选项，再触发动画
+                    const options = this.ddrContainer.querySelectorAll('.option');
+                    options.forEach(option => {
+                        option.style.opacity = '0';
+                        option.style.transform = 'translateY(-10px)';
+                    });
+                    
+                    // 延迟移除open类，使选项先消失
+                    setTimeout(() => {
+                        this.ddrContainer.classList.remove('open');
+                    }, 150);
+                }
             });
 
             // 点击内存档位选项时
@@ -202,8 +228,26 @@ export class ConfigManager {
                         this.selectedDdr.textContent = option.textContent;
                     }
 
-                    // 关闭下拉菜单
-                    this.ddrContainer.classList.remove('open');
+                    // 关闭下拉菜单 - 先隐藏选项再关闭
+                    const options = this.ddrContainer.querySelectorAll('.option');
+                    options.forEach(option => {
+                        option.style.opacity = '0';
+                        option.style.transform = 'translateY(-10px)';
+                    });
+                    
+                    // 延迟移除open类，使选项先消失
+                    setTimeout(() => {
+                        this.ddrContainer.classList.remove('open');
+                    }, 150);
+
+                    // 重置选项样式
+                    setTimeout(() => {
+                        const options = this.ddrContainer.querySelectorAll('.option');
+                        options.forEach(option => {
+                            option.style.opacity = '';
+                            option.style.transform = '';
+                        });
+                    }, 300);
                 });
             });
         }

@@ -205,6 +205,14 @@
     color: var(--text-color);
     transition: background-color 0.2s;
     border-bottom: 1px solid var(--border-color);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-select.open .option {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .option:last-child {
