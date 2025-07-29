@@ -6,6 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>天玑GPU调速器</title>
     <link rel="stylesheet" href="css/main.css">
+    <script>
+        // 检测系统主题偏好并设置初始主题
+        (function() {
+            try {
+                // 检查是否有用户保存的主题设置
+                const savedTheme = localStorage.getItem('theme');
+                
+                // 检查系统是否支持深色模式检测
+                const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                
+                // 检查用户是否设置了跟随系统主题
+                const followSystemThemeSetting = localStorage.getItem('followSystemTheme');
+                const followSystemTheme = followSystemThemeSetting === null ? true : followSystemThemeSetting === 'true';
+                
+                // 根据设置决定使用哪个主题
+                let theme;
+                if (followSystemTheme) {
+                    // 如果设置了跟随系统，则使用系统主题
+                    theme = prefersDarkMode ? 'dark' : 'light';
+                } else if (savedTheme) {
+                    // 如果没有设置跟随系统，但有保存的主题，则使用保存的主题
+                    theme = savedTheme;
+                } else {
+                    // 如果既没有设置跟随系统，也没有保存的主题，则默认使用系统主题
+                    theme = prefersDarkMode ? 'dark' : 'light';
+                }
+                
+                // 应用主题
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {
+                console.warn('无法设置初始主题，使用默认主题', e);
+            }
+        })();
+    </script>
 </head>
 
 <body>
