@@ -5,14 +5,15 @@
 [![Language](https://img.shields.io/badge/Language-Rust-orange)](https://www.rust-lang.org/)
 
 ## Introduction 📝
-[简体中文](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/README.md) | **English**
+**English** | [简体中文](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/README.md)
 
 Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor designed specifically for MediaTek processors. Developed in **Rust**, the high-performance core engine intelligently monitors GPU load and dynamically adjusts frequency, achieving the best balance between gaming experience and power consumption. The module integrates a modern **WebUI management interface** and **complete game mode detection**, providing users with an excellent GPU tuning solution.
 
 ## Features ✨
 
 ### Core Features
-- 🎮 **Intelligent Game Mode**: Automatically detects game apps configured in `games.conf` and applies performance-optimized GPU frequency strategies
+- 🎮 **Intelligent Game Mode**: Automatically detects game apps configured in `games.toml` and applies performance-optimized GPU frequency strategies
+- ⚙️ **Custom Configuration System**: Flexible adjustment of governor strategies through `config.toml` configuration file, supporting global configuration and four mode configuration items
 - 📊 **Real-time Load Monitoring**: High-performance implementation in Rust, real-time monitoring of GPU load
 - 🔄 **Adaptive Frequency Algorithm**: Aggressive up-frequency strategy in game mode, energy-saving down-frequency strategy in normal mode
 - 🎯 **Precise Frequency Control**: Fully supports GPUFreq v1/v2 drivers, automatically detects driver version and adapts
@@ -23,13 +24,13 @@ Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor 
 - 🖥️ **Modern WebUI**: Graphical management interface based on KernelSU API, designed in Miuix style
 - 🌓 **Smart Theme System**: Supports dark/light/auto mode, automatically adapts to system settings
 - 🌐 **Full Multi-language Support**: Supports Chinese and English UI, automatically detects system language
-- 📊 **Visual Config Editing**: Edit frequency table, voltage, and game list directly via WebUI
+- 📊 **Visual Config Editing**: Edit frequency table, custom configurations, and game list directly via WebUI
 - 🔧 **Interactive Control Script**: Provides `action.sh` volume key control script, supports service management and log level settings
 
 ### Technical Features
-- 🦀 **Rust Core Engine & Multithreaded Monitoring**: Developed in Rust for memory safety, zero-cost abstraction, and ultimate performance. The main program uses a multithreaded architecture, responsible for GPU load monitoring, foreground app monitoring, config hot-reload, game mode monitoring, log level monitoring, etc., ensuring the governor responds to system state changes in real time.
+- 🦀 **Rust Core Engine & Multithreaded Monitoring**: Developed in Rust for memory safety, zero-cost abstraction, and ultimate performance. The main program uses a multithreaded architecture, responsible for GPU load monitoring, foreground app monitoring, frequency table file hot-reload, custom configuration monitoring, log level monitoring, etc., ensuring the governor responds to system state changes in real time.
 - 🔧 **Highly Customizable**: Customize GPU frequency, voltage, and memory frequency levels via config files
-- 📱 **Wide Device Compatibility**: Supports Dimensity, Helio, MT6xxx and other MediaTek series processors
+- 📱 **Wide Device Compatibility**: Supports Dimensity series MediaTek processors
 - 📝 **Professional Logging System**: Supports debug/info/warn/error log levels
 - 🔄 **Automatic Device Adaptation**: Automatically detects device model during installation and applies the best config file
 
@@ -46,50 +47,138 @@ Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor 
   - **KernelSU/APatch users**: Directly click "Open WebUI" in the manager
   - **Magisk users**: Need to install one of the following apps
     - [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) - Standalone WebUI app
-    - [SSU](https://ssu.oom-wg.dev/base/install) - SSU module manager app
+    - [SSU](https://ssu.oom-wg.dev/base/install) - SSU manager app
 
-## Configuration Files ⚙️
+##### Configuration Files ⚙️
+
+### Custom Configuration
+
+Users can customize the behavior of the GPU governor by modifying the `/data/adb/gpu_governor/config/config.toml` file. The configuration file contains global settings and detailed parameters for four modes (powersave, balance, performance, fast).
+
+#### Global Configuration
+- `mode`: Set the default mode, options are `powersave`, `balance`, `performance`, `fast`
+- `idle_threshold`: Idle threshold (percentage), the system is considered idle when GPU load is below this value
+
+#### Mode Configuration
+Each mode has the following configurable parameters:
+- `ultra_simple_threshold`: Ultra simple threshold (percentage), frequency increases when this threshold is reached
+- `margin`: Margin, when set to N, the frequency decrease threshold is (100-N)%
+- `down_counter_threshold`: Down counter threshold, 0 means disable down counter function
+- `aggressive_down`: Whether to use aggressive down frequency strategy
+- `sampling_interval`: Sampling interval (milliseconds)
+- `gaming_mode`: Gaming optimization, enable special memory optimization for games
+- `adaptive_sampling`: Whether to enable adaptive sampling
+- `min_adaptive_interval`: Minimum adaptive sampling interval (milliseconds)
+- `max_adaptive_interval`: Maximum adaptive sampling interval (milliseconds)
+- `up_rate_delay`: Frequency increase delay (milliseconds)
+- `down_rate_delay`: Frequency decrease delay (milliseconds)
 
 ### GPU Frequency Table Configuration
 
-The main config file is located at `/data/gpu_freq_table.conf`. The module will automatically select the appropriate config file based on the device model:
+The frequency table file is located at `/data/adb/gpu_governor/config/gpu_freq_table.toml`:
 
+```toml
+# GPU frequency table
+# freq unit: kHz
+# volt unit: uV
+# ddr_opp: DDR OPP level
+
+[[freq_table]]
+freq = 218000
+volt = 45000
+ddr_opp = 999
+
+[[freq_table]]
+freq = 280000
+volt = 46875
+ddr_opp = 999
+
+[[freq_table]]
+freq = 350000
+volt = 48750
+ddr_opp = 999
+
+[[freq_table]]
+freq = 431000
+volt = 49375
+ddr_opp = 999
+
+[[freq_table]]
+freq = 471000
+volt = 50625
+ddr_opp = 999
+
+[[freq_table]]
+freq = 532000
+volt = 51875
+ddr_opp = 999
+
+[[freq_table]]
+freq = 573000
+volt = 53125
+ddr_opp = 3
+
+[[freq_table]]
+freq = 634000
+volt = 55000
+ddr_opp = 3
+
+[[freq_table]]
+freq = 685000
+volt = 56875
+ddr_opp = 0
+
+[[freq_table]]
+freq = 755000
+volt = 59375
+ddr_opp = 0
+
+[[freq_table]]
+freq = 853000
+volt = 60625
+ddr_opp = 0
 ```
-# Margin: Adjustment margin percentage for GPU frequency calculation
-Margin=5
-# Freq Volt DDR_OPP
-218000 45000 999
-280000 46875 999
-350000 48750 999
-431000 49375 999
-471000 50625 999
-532000 51875 999
-573000 53125 2
-634000 55000 1
-685000 56875 1
-755000 59375 0
-853000 60625 0
+
+**Configuration Parameter Description**:
+- **freq**: GPU frequency (kHz)
+- **volt**: Voltage (μV)
+- **ddr_opp**: DDR OPP level (999 means no adjustment, 0-3 means different levels)
+
+**Preset Configuration Files**:
+- `config/mtd720.toml` - Dimensity 720 series
+- `config/mtd1000.toml` - Dimensity 1000 series
+- `config/mtd1100.toml` - Dimensity 1100 series
+- `config/mtd1200.toml` - Dimensity 1200 series
+- `config/mtd8100.toml` - Dimensity 8100 series
+- `config/mtd8200.toml` - Dimensity 8200 series
+- `config/mtd9000.toml` - Dimensity 9000 series
+
+### Preset Frequency Table Format
+
+Each preset configuration file uses TOML array format to define the frequency table for specific processors:
+
+```toml
+freq_table = [
+    { freq = 219000, volt = 45000, ddr_opp = 999 },
+    { freq = 280000, volt = 46875, ddr_opp = 999 },
+    { freq = 351000, volt = 48750, ddr_opp = 999 },
+    { freq = 402000, volt = 50000, ddr_opp = 999 },
+    { freq = 487000, volt = 52500, ddr_opp = 999 },
+    { freq = 555000, volt = 55625, ddr_opp = 0 },
+    { freq = 642000, volt = 57500, ddr_opp = 0 },
+    { freq = 721000, volt = 58125, ddr_opp = 0 },
+    { freq = 800000, volt = 59375, ddr_opp = 0 },
+    { freq = 852000, volt = 60000, ddr_opp = 0 }
+]
 ```
 
-**Config Parameter Description**:
-- **Freq**: GPU frequency (KHz)
-- **Volt**: Voltage (μV)
-- **DDR_OPP**: Memory frequency level (999 means no adjustment, 0-3 means different levels)
-- **Margin**: Frequency calculation margin percentage (can be adjusted via WebUI or by editing the config file directly)
-
-**Preset Config Files**:
-- `config/mtd1000.conf` - Dimensity 1000 series
-- `config/mtd1100.conf` - Dimensity 1100
-- `config/mtd1200.conf` - Dimensity 1200
-- `config/mtd8100.conf` - Dimensity 8100
-- `config/mtd8200.conf` - Dimensity 8200
-- `config/mtd9000.conf` - Dimensity 9000 series
+Different processor series have different frequency ranges and voltage configurations. The module will automatically select the matching frequency table configuration based on the device model.
 
 ### Game List Configuration
 
-The game list config file is located at `/data/adb/gpu_governor/game/games.conf`, containing package names of apps to apply game mode. The module will automatically scan installed games and generate this file during installation.
+The game list configuration file is located at `/data/adb/gpu_governor/game/games.toml`, containing game package names and corresponding modes. The module will automatically scan installed games on the device and generate this configuration file during installation.
 
-**Note**: The installation script will check if the game list file exists. If it does, it will not overwrite it, preserving user customizations.
+**Note**: The installation script will check if the game list file already exists, and if so, it will not overwrite it to preserve user's game preferences.
 
 ### Interactive Control Menu
 
@@ -98,52 +187,40 @@ The module provides the `action.sh` script, supporting interactive operations vi
 **Script Features**:
 - **Control Governor Service**: Start or stop the GPU governor service
 - **Set Log Level**: Choose debug, info, warn, or error level
-- **View Module Status**: Display module version, running status, etc.
+- **View Module Status**: Display module version, running status, and other information
 
 **Operation**:
-- Volume Up: Move selection up
-- Volume Down: Move selection down
-- Power: Confirm selection
+- Volume Up Key: Move selection down (increment selection in menu)
+- Volume Down Key: Confirm selection
 
 The script will automatically detect the current system language and display the corresponding Chinese or English interface.
 
 **Module Files**:
 - Log level setting: `/data/adb/gpu_governor/log/log_level`
-- Game list config: `/data/adb/gpu_governor/game/games.conf`
+- Game list configuration: `/data/adb/gpu_governor/game/games.toml`
 - PID management: `/data/adb/gpu_governor/gpu_governor.pid`
 
 ### Log Level Setting
 
-Log level is saved in `/data/adb/gpu_governor/log/log_level`, default is `info`. It can be set in three ways:
-1. Use the interactive menu `./action.sh` to select log level
-2. Adjust via the WebUI settings page
-3. Edit `/data/adb/gpu_governor/log/log_level` directly
+Log level setting is saved in `/data/adb/gpu_governor/log/log_level` file, default is `info` level. It can be set in three ways:
+1. Use interactive menu `./action.sh` to select log level
+2. Adjust via WebUI settings page
+3. Directly edit `/data/adb/gpu_governor/log/log_level` file
 
-Changes take effect immediately, no need to restart the module.
+Changes to log level take effect immediately after saving, without restarting the module.
 
 ## Logging System 📊
 
-Log files are stored in `/data/adb/gpu_governor/log/`, mainly including:
+Log files are stored in `/data/adb/gpu_governor/log/` directory, mainly including:
 
-- **gpu_gov.log**: Main log file, managed by the Rust core, records the governor's running status
-- **initsvc.log**: Initialization service log, records module startup and script initialization info
+- **gpu_gov.log**: Main log file, managed by Rust core, records GPU governor running status
+- **initsvc.log**: Initialization log, records module startup process and script initialization information
 
-Log content can be viewed via the WebUI or directly with a file manager.
-
-### Log Levels
-
-The module supports four log levels, which can be set via `action.sh` or the WebUI:
-
-- **debug**: Debug level, records all details including frequency adjustment, load monitoring, etc.
-- **info**: Info level, records normal operation info, default level
-- **warn**: Warning level, records only warnings and errors
-- **error**: Error level, records only errors
-
-Log level is saved in `/data/adb/gpu_governor/log/log_level`, changes take effect immediately, no need to restart the module.
+Log content can be viewed through the WebUI interface or directly through a file manager.
 
 ### Log Management
 
-The main log is fully managed by the Rust core, including:
+The module's main log has been fully implemented by the Rust core, including:
 - Log file creation and writing
 - Automatic log rotation and size control
 - Real-time monitoring and response to log level changes
@@ -151,87 +228,68 @@ The main log is fully managed by the Rust core, including:
 
 ## Supported Devices 📱
 
-Supports most MediaTek processors with Mali GPU, including but not limited to:
-- Dimensity series (e.g. D700/D800/D900/D1x00/D8x00/D9000, 0 ≤ x ≤ 2)
-- Helio series
-- MT6xxx series
+Supports most MediaTek processors with Mali GPU:
+- Dimensity series (e.g. D700/D800/D900/D1x00/D8x00/D9000, etc.) 0 ≤ x ≤ 2
 
-The module will automatically detect the device model and apply the appropriate config. If your device is not in the supported list, the default config will be used.
+The module will automatically detect the device model and apply the appropriate configuration.
+If your device is not in the adaptation list, the module will use the default configuration.
 
 ## Acknowledgements 🙏
 
-- **Author**: WaliKa @CoolApk, rtools @CoolApk
+- **Authors**: WaliKa @CoolApk, rtools @CoolApk
 - **Special Thanks**: HamJin @CoolApk, asto18089 @CoolApk, helloklf @Github
-- **Testing Feedback**: All members of the internal test group
-- **Config Assistance**: Fiagelia @CoolApk, Wangjian @CoolApk
+- **Testing Feedback**: All members of the internal testing group
+- **Configuration Assistance**: Fiagelia @CoolApk, Wangjian @CoolApk
 
 ## Notes ⚠️
 
 - Modifying GPU frequency and voltage may affect device stability
-- Improper configuration may cause overheating or performance issues
-- It is recommended to back up the original config file for recovery
-- If you encounter problems, check the log files for troubleshooting
+- Improper configuration may cause device performance or stability issues
+- If problems occur, you can check the log files for troubleshooting
 
 ## WebUI Interface 🖥️
 
-This module provides a modern WebUI interface based on KernelSU API and designed in Miuix style, offering users an intuitive GPU governor management and monitoring experience. WebUI supports config hot-reload, real-time log viewing, visual editing of game list and frequency table, and all changes take effect immediately.
+This module provides a modern WebUI interface based on KernelSU API, designed in Miuix style, providing users with an intuitive GPU governor management and monitoring experience.
+WebUI supports configuration file hot-reload, real-time log viewing, visual editing of game lists and frequency tables, with all changes taking effect immediately.
 
 ### Features
 
 #### Core Features
-- **Real-time Status Monitoring**: View module running status, version info, and game mode status
-- **GPU Frequency Config**: View and edit current GPU frequency table, adjust frequency, voltage, and memory level
-- **Game List Management**: View and edit configured game list, add/remove games
-- **Log Viewing**: Real-time log viewing, select different log files and log levels
+- **Real-time Status Monitoring**: View running status, current mode, and version information
+- **GPU Frequency Configuration**: View and edit current GPU frequency table configuration, supporting adjustment of frequency, voltage, and memory levels
+- **Custom Configuration**: View and edit current custom configuration, supporting global configuration and mode configuration
+- **Game List Management**: View and edit configured game list, supporting adding/removing games and selecting corresponding modes
+- **Log Viewing**: Real-time viewing of module running logs, supporting selection of different log files and log levels
 
 #### UI Features
-- **Dark Mode Support**: Automatically adapts to system dark/light mode, can also be switched manually
-- **Multi-language Support**: Supports Chinese and English UI, auto-detects system language
-- **Voltage Adjuster**: Supports rotary selector for voltage adjustment, long press for continuous adjustment (±625 units each time)
-- **Real-time Update**: Checks game mode status every second and updates UI
-- **Toast Notification**: Operation feedback and status tips
+- **Dark Mode Support**: Automatically adapts to system dark/light mode, can also be manually switched
+- **Multi-language Support**: Supports Chinese and English interfaces, automatically detects system language settings
+- **Voltage Adjuster**: Supports using rotary selector for voltage adjustment, long press for continuous adjustment (±625 units each time)
+- **Real-time Updates**: Detects game mode status changes every second and updates the interface
+- **Toast Notifications**: Operation feedback and status tips
 
 ### UI Layout
 
-WebUI uses a multi-page layout, switching pages via the bottom navigation bar:
-
-#### 📊 Status Page
-- Displays module running status and version info
-- Game mode switch control
-
-#### ⚙️ Config Page
-- GPU frequency table editing
-- Voltage and memory level adjustment
-- Game list management
-
-#### 📝 Log Page
-- Real-time log viewing
-- Log file selection (gpu_gov.log, initsvc.log)
-
-#### 🔧 Settings Page
-- Theme settings (dark/light/auto)
-- Language settings (Chinese/English/auto)
-- Log level settings
-- Other advanced options
+WebUI uses a multi-page layout, switching pages through the bottom navigation bar:
 
 ## FAQ ❓
 
-### Basic Usage
+### Basic Usage Questions
 
 **Q: How to confirm the module is working properly?**
-A: Check the `/data/adb/gpu_governor/log/gpu_gov.log` log file for normal frequency adjustment records, or view module status and logs via the WebUI. When working properly, the log should contain GPU load and frequency adjustment records.
+A: Check the `/data/adb/gpu_governor/log/gpu_gov.log` log file, or view the running status and logs through the WebUI interface, confirming no frequent abnormal errors.
 
 **Q: How does game mode work?**
-A: When an app listed in `games.conf` is detected running in the foreground, game mode is automatically applied; in game mode, a more aggressive up-frequency strategy is used (load thresholds: 5/20/60/85), providing a better gaming experience under high load.
+A: When apps listed in `games.toml` are detected running in the foreground, game mode will be automatically applied; in game mode, the corresponding mode in the game list will be used.
 
-**Q: How to add a custom game to the list?**
-A: Edit the `/data/adb/gpu_governor/game/games.conf` file and add the package name of the game, or add it via the WebUI game list page. The module will automatically scan installed games and generate the initial game list during installation.
+**Q: How to add custom games to the list?**
+A: Edit the `/data/adb/gpu_governor/game/games.toml` file, add the game's package name. Or add through the game list page of the WebUI interface. The module will automatically scan installed games on the device and generate the initial game list during installation.
 
 **Q: How to adjust log level?**
-A: Three ways: 1) Use the interactive menu `./action.sh` to select log level; 2) Adjust via the WebUI settings page; 3) Edit `/data/adb/gpu_governor/log/log_level` directly. Changes take effect immediately, no need to restart the module.
+A: Three ways: 1) Use interactive menu `./action.sh` to select log level; 2) Adjust via WebUI settings page; 3) Directly edit `/data/adb/gpu_governor/log/log_level` file. Changes take effect immediately after adjustment, without restarting the module.
 
-**Q: How to use the WebUI?**
-A: KernelSU/APatch users can click the module in the root manager and select "Open WebUI". Magisk users can install [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) or [SSU](https://ssu.oom-wg.dev/base/install) to access the module's WebUI.
+**Q: How to use WebUI?**
+A: KernelSU/APatch users can click this module in the root manager and select "Open WebUI". Magisk users can install [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) or [SSU](https://ssu.oom-wg.dev/base/install) apps to access the module's WebUI.
 
-**Q: Do I need to restart the module after modifying config files and parameters?**
-A: No. The module supports config hot-reload and multithreaded monitoring. All changes (frequency table, game list, log level, etc.) take effect in real time, no restart required.
+**Q: Do I need to restart after modifying configuration files and parameters?**
+A: No. The module supports configuration file hot-reload and multithreaded monitoring. All changes (such as frequency table, game list, log level, etc.) can take effect in real time without restarting.
