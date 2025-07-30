@@ -294,7 +294,7 @@
     transform: scale(0.95);
 }
 
-/* 为主题切换添加音效提示类（可以配合JS使用） */
+/* 为主题切换添加视觉动画效果 */
 .theme-toggle.switching::after {
     content: "";
     position: absolute;
