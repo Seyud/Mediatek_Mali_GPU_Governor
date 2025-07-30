@@ -34,12 +34,13 @@ if [ -n "$LOG_FILE" ]; then
 fi
 
 USER_PATH="/data"
-LOG_PATH="/data/adb/gpu_governor/log"
-LOG_FILE="$LOG_PATH/initsvc.log"
-GPUGOV_LOGPATH="$LOG_PATH/gpu_gov.log" # 主日志文件路径
+GPU_GOVERNOR_LOG_DIR="/data/adb/gpu_governor/log"
+LOG_PATH="$GPU_GOVERNOR_LOG_DIR"
+LOG_FILE="$GPU_GOVERNOR_LOG_DIR/initsvc.log"
+GPUGOV_LOGPATH="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log" # 主日志文件路径
 GAMES_PATH="/data/adb/gpu_governor/game"
 GAMES_FILE="$GAMES_PATH/games.toml"
-LOG_LEVEL_FILE="$LOG_PATH/log_level"
+LOG_LEVEL_FILE="$GPU_GOVERNOR_LOG_DIR/log_level"
 CONFIG_PATH="/data/adb/gpu_governor/config"
 CONFIG_TOML_FILE="$CONFIG_PATH/config.toml"
 GPU_FREQ_TABLE_TOML_FILE="$CONFIG_PATH/gpu_freq_table.toml"
