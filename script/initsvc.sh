@@ -2,9 +2,20 @@
 
 # 获取脚本目录
 MODDIR=${0%/*}
- 
-MODULE_DIR="$MODDIR"
-SCRIPT_DIR="$MODULE_DIR/script"
+if [ "$MODDIR" = "$0" ]; then
+    MODDIR=$(pwd)
+fi
+
+# 确定脚本所在目录
+SCRIPT_DIR="$MODDIR"
+# 如果当前脚本在script目录下，则模块目录是其父目录
+if [ "$(basename "$SCRIPT_DIR")" = "script" ]; then
+    MODULE_DIR="$(dirname "$SCRIPT_DIR")"
+else
+    # 否则假设模块目录就是当前目录，script是其子目录
+    MODULE_DIR="$SCRIPT_DIR"
+    SCRIPT_DIR="$MODULE_DIR/script"
+fi
 
 # 创建初始化日志目录
 GPU_GOVERNOR_LOG_DIR="/data/adb/gpu_governor/log"
