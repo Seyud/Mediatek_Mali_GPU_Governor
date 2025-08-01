@@ -7,7 +7,7 @@ MODULE_PATH=$MODPATH
 . $BASEDIR/libsysinfo.sh
 
 # 定义DATA_PATH变量
-DATA_PATH=${USER_PATH:-/data}
+DATA_PATH="/data/adb"
 
 # 大多数用户是中文用户，默认设置为中文
 language="zh"
