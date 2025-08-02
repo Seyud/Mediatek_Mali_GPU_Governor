@@ -63,7 +63,7 @@
 #### 模式配置
 每种模式都有以下可配置参数：
 - `ultra_simple_threshold`: 极简阈值（百分比），达到此阈值时升频
-- `margin`: 余量，当设置为 N 时，降频阈值为 (100-N)%
+- `margin`: 余量，当设置为 N 时，降频阈值为 (100-N)%，当设置为0时使用基准调频策略
 - `down_counter_threshold`: 降频计数器配置值，0 表示禁用降频计数器功能
 - `aggressive_down`: 是否使用激进降频策略
 - `sampling_interval`: 采样间隔（毫秒）

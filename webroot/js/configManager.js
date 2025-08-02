@@ -501,7 +501,7 @@ export class ConfigManager {
         content += `# 极简阈值（百分比）- 达到此阈值时升频\n`;
         content += `ultra_simple_threshold = ${config.ultra_simple_threshold?.value || 95}\n`;
         content += `# 余量\n`;
-        content += `# 当设置为0时使用原调频策略\n`;
+        content += `# 当设置为0时使用基准调频策略\n`;
         content += `# 当设置为N时，降频阈值为(100-N)%\n`;
         content += `margin = ${config.margin?.value || 10}\n`;
         content += `# 降频计数器配置值（0=禁用降频计数器功能）\n`;

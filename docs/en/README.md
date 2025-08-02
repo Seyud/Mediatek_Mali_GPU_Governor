@@ -62,7 +62,7 @@ Users can customize the behavior of the GPU governor by modifying the `/data/adb
 #### Mode Configuration
 Each mode has the following configurable parameters:
 - `ultra_simple_threshold`: Ultra simple threshold (percentage), frequency increases when this threshold is reached
-- `margin`: Margin, when set to N, the frequency decrease threshold is (100-N)%
+- `margin`: Margin, when set to N, the frequency decrease threshold is (100-N)%，when set to0 use the base frequency strategy
 - `down_counter_threshold`: Down counter threshold, 0 means disable down counter function
 - `aggressive_down`: Whether to use aggressive down frequency strategy
 - `sampling_interval`: Sampling interval (milliseconds)
