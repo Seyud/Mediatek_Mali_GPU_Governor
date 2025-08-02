@@ -1,6 +1,6 @@
 # 天玑 GPU 调速器 🚀
 
-[![Version](https://img.shields.io/badge/Version-v2.8-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
+[![Version](https://img.shields.io/badge/Version-v2.9.0-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
 [![Language](https://img.shields.io/badge/Language-Rust-orange)](https://www.rust-lang.org/)
 [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/MTK_GPU)
 [![QQ群](https://img.shields.io/badge/QQ群-719872309-12B7F5?logo=qq&logoColor=white)](https://qun.qq.com/universal-share/share?ac=1&authKey=zwOHClW5YTIZobOTsqvF6lBaACPvS7%2F2Y0s%2FpQadAMss5d2nxcr46fmsm%2FFreVjt&busi_data=eyJncm91cENvZGUiOiI3MTk4NzIzMDkiLCJ0b2tlbiI6IjhQNUhYM1M4NUs4bFVwQmNsODRrUU1Xc0phR3dra1RUYnE0S0tMVFNzV3JUU2s3elgvSFRyUXJQdWtEQ1NVYSsiLCJ1aW4iOiIxMTA1NzgzMDMzIn0%3D&data=VgJU9DuiAPqB3ocg4Zlh8UShvQmDEgEfH4wvqCVXWOD8qcBSzYDPQuwUKVgLOIzZ-CWhtV69fyTHD4Q0GqWWKw&svctype=4&tempid=h5_group_info)
@@ -13,7 +13,7 @@
 ## 特性 ✨
 
 ### 核心功能
-- 🎮 **智能游戏模式**：自动检测 `games.conf` 中配置的游戏应用，应用性能优化的 GPU 频率策略
+- 🎮 **智能游戏模式**：自动检测 `games.toml` 中配置的游戏应用，应用性能优化的 GPU 频率策略
 - ⚙️ **自定义配置系统**：通过 `config.toml` 配置文件灵活调整调速策略，支持全局配置和四种模式配置项
 - 📊 **实时负载监控**：基于 Rust 高性能实现，实时监控 GPU 负载
 - 🔄 **自适应调频算法**：游戏模式使用激进升频策略，普通模式使用节能降频策略
@@ -50,7 +50,7 @@
     - [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) - 独立的 WebUI 应用
     - [SSU](https://ssu.oom-wg.dev/base/install) - SSU管理器应用
 
-##### 配置文件 ⚙️
+## 配置文件 ⚙️
 
 ### 自定义配置
 
@@ -231,7 +231,7 @@ freq_table = [
 ## 支持的设备 📱
 
 支持大多数搭载 Mali GPU 的联发科处理器：
-- Dimensity 系列（如 D700/D800/D900/D1x00/D8x00/D9000 等）  0 ≤ x ≤ 2
+- Dimensity 系列（如 D700/D800/D900/D1x00/D8x00/D9000，0 ≤ x ≤ 2）
 
 模块会自动检测设备型号并应用适合的配置。
 如果您的设备不在适配列表中，模块会使用默认配置

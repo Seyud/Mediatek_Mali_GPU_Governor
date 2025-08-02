@@ -1,7 +1,7 @@
 # Dimensity GPU Governor 🚀
 
 [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/Mediatek_Mali_GPU_Governor)
-[![Version](https://img.shields.io/badge/Version-v2.8-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
+[![Version](https://img.shields.io/badge/Version-v2.9.0-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
 [![Language](https://img.shields.io/badge/Language-Rust-orange)](https://www.rust-lang.org/)
 
 ## Introduction 📝
@@ -49,7 +49,7 @@ Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor 
     - [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) - Standalone WebUI app
     - [SSU](https://ssu.oom-wg.dev/base/install) - SSU manager app
 
-##### Configuration Files ⚙️
+## Configuration Files ⚙️
 
 ### Custom Configuration
 
