@@ -2,6 +2,10 @@
 
 ## 🚀 v2.8.0 → v2.9.0 (August 3, 2025)
 
+> ⚠️ **Important Notice**
+> 
+> Due to significant configuration file changes, it is recommended to backup old configuration files, uninstall the module, reboot, and then install.
+
 ### ✨ New Features
 
 - **Add custom configuration feature** ⚙️
