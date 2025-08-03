@@ -422,6 +422,31 @@ export class ConfigManager {
             if (this.globalModeSelect && this.customConfig.global.mode) {
                 this.globalModeSelect.value = this.customConfig.global.mode;
             }
+            // 更新全局模式显示文本
+            if (this.selectedGlobalMode && this.customConfig.global.mode) {
+                let modeText = '';
+                let modeI18n = '';
+                switch (this.customConfig.global.mode) {
+                    case 'powersave':
+                        modeText = getTranslation('config_powersave_mode', {}, this.currentLanguage);
+                        modeI18n = 'config_powersave_mode';
+                        break;
+                    case 'performance':
+                        modeText = getTranslation('config_performance_mode', {}, this.currentLanguage);
+                        modeI18n = 'config_performance_mode';
+                        break;
+                    case 'fast':
+                        modeText = getTranslation('config_fast_mode', {}, this.currentLanguage);
+                        modeI18n = 'config_fast_mode';
+                        break;
+                    default: // balance
+                        modeText = getTranslation('config_balance_mode', {}, this.currentLanguage);
+                        modeI18n = 'config_balance_mode';
+                        break;
+                }
+                this.selectedGlobalMode.querySelector('span').textContent = modeText;
+                this.selectedGlobalMode.querySelector('span').setAttribute('data-i18n', modeI18n);
+            }
             if (this.idleThresholdInput && this.customConfig.global.idle_threshold !== undefined) {
                 this.idleThresholdInput.value = this.customConfig.global.idle_threshold;
             }
@@ -468,7 +493,30 @@ export class ConfigManager {
         // 生成全局配置
         content += '[global]\n';
         content += '# 全局模式设置: powersave, balance, performance, fast\n';
-        content += `mode = "${this.globalModeSelect?.value || 'balance'}"\n`;
+        
+        // 确保获取到正确的全局模式值
+        let globalModeValue = 'balance'; // 默认值
+        if (this.globalModeSelect && this.globalModeSelect.value) {
+            globalModeValue = this.globalModeSelect.value;
+        } else if (this.selectedGlobalMode) {
+            // 从显示的选中项中获取模式值
+            const selectedSpan = this.selectedGlobalMode.querySelector('span');
+            if (selectedSpan) {
+                const selectedText = selectedSpan.textContent.trim();
+                // 根据显示文本确定模式值
+                if (selectedText.includes('省电') || selectedText.includes('Power Save')) {
+                    globalModeValue = 'powersave';
+                } else if (selectedText.includes('性能') || selectedText.includes('Performance')) {
+                    globalModeValue = 'performance';
+                } else if (selectedText.includes('极速') || selectedText.includes('Fast')) {
+                    globalModeValue = 'fast';
+                } else {
+                    globalModeValue = 'balance';
+                }
+            }
+        }
+        content += `mode = "${globalModeValue}"\n`;
+        
         content += '# 空闲阈值（百分比）\n';
         content += `idle_threshold = ${this.idleThresholdInput?.value || 5}\n\n`;
         
@@ -657,10 +705,11 @@ export class ConfigManager {
                 this.selectedGlobalMode.querySelector('span').setAttribute('data-i18n', option.getAttribute('data-i18n'));
                 
                 // 更新隐藏的select元素的值
-                this.globalModeSelect.value = value;
-                
-                // 触发change事件以同步模式选项卡
-                this.globalModeSelect.dispatchEvent(new Event('change'));
+                if (this.globalModeSelect) {
+                    this.globalModeSelect.value = value;
+                    // 触发change事件以同步模式选项卡
+                    this.globalModeSelect.dispatchEvent(new Event('change'));
+                }
                 
                 // 隐藏选项容器
                 this.globalModeContainer.classList.remove('open');
