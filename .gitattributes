@@ -13,6 +13,9 @@
 *.conf text eol=lf
 *.prop text eol=lf
 
+# 为 META-INF 目录设置 LF 行尾格式
+META-INF/** text eol=lf
+
 # 声明二进制文件，不应该被修改
 *.png binary
 *.jpg binary
