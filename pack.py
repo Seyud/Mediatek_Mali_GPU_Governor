@@ -20,6 +20,9 @@ SEVEN_ZIP_PATH = r"D:\7-Zip\7z.exe"
 # 获取当前脚本所在目录作为工作目录
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 输出目录路径
+OUTPUT_DIR = os.path.join(WORK_DIR, "output")
+
 # 需要打包的文件夹
 FOLDERS_TO_PACK = ["bin", "config", "docs", "META-INF", "script", "webroot"]
 
@@ -28,32 +31,10 @@ FILES_TO_PACK = [
     "action.sh",
     "customize.sh",
     "module.prop",
-    "post-fs-data.sh",
     "service.sh",
     "uninstall.sh",
     "volt_list.txt",
 ]
-
-
-def fix_path_environment():
-    """修复环境变量Path中的双引号问题"""
-    current_path = os.environ.get("PATH", "")
-
-    if '"' in current_path:
-        print("警告: 检测到环境变量Path中包含双引号字符")
-        print("这可能会导致Python扩展无法正确加载，正在自动修复...")
-
-        # 移除不正确的双引号
-        fixed_path = re.sub(r'"([^"]*?)"', r"\1", current_path)
-
-        # 设置修复后的环境变量
-        os.environ["PATH"] = fixed_path
-
-        print("环境变量Path已临时修复（仅影响当前进程）")
-        print("如需永久修复，请运行fix_path.py或以管理员身份修改系统环境变量")
-        return True
-
-    return False
 
 
 def check_7zip_exists():
@@ -64,10 +45,25 @@ def check_7zip_exists():
     return True
 
 
+def create_output_directory():
+    """创建输出目录"""
+    try:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        print(f"输出目录已创建: {OUTPUT_DIR}")
+        return True
+    except Exception as e:
+        print(f"创建输出目录失败: {str(e)}")
+        return False
+
+
 def create_zip_package(custom_output_filename=None):
     """创建ZIP压缩包"""
     # 检查7-Zip是否存在
     if not check_7zip_exists():
+        return False
+
+    # 创建输出目录
+    if not create_output_directory():
         return False
 
     # 生成输出文件名
@@ -79,7 +75,8 @@ def create_zip_package(custom_output_filename=None):
         # 默认使用固定名称 Mediatek_Mali_GPU_Governor.zip
         output_filename = "Mediatek_Mali_GPU_Governor.zip"
 
-    output_path = os.path.join(WORK_DIR, output_filename)
+    # 输出路径改为在output目录下
+    output_path = os.path.join(OUTPUT_DIR, output_filename)
 
     # 检查所有要打包的文件和文件夹是否存在
     all_items = FOLDERS_TO_PACK + FILES_TO_PACK
@@ -109,7 +106,7 @@ def create_zip_package(custom_output_filename=None):
         if os.path.exists(item_path):
             cmd.append(item)
 
-    print(f"开始打包模块文件到: {output_filename}")
+    print(f"开始打包模块文件到: output/{output_filename}")
     print("正在执行命令:", " ".join(cmd))
 
     try:
@@ -175,6 +172,16 @@ def clean_temp_files():
                 print(f"已删除文件: {file_path}")
             except Exception as e:
                 print(f"删除文件失败: {file_path}, 错误: {str(e)}")
+
+    # 清理output目录中的临时文件
+    if os.path.exists(OUTPUT_DIR):
+        for pattern in temp_files:
+            for file_path in Path(OUTPUT_DIR).glob(f"**/{pattern}"):
+                try:
+                    os.remove(file_path)
+                    print(f"已删除输出目录中的临时文件: {file_path}")
+                except Exception as e:
+                    print(f"删除输出目录中的临时文件失败: {file_path}, 错误: {str(e)}")
 
     print("临时文件清理完成")
 
@@ -269,18 +276,11 @@ def main():
     parser.add_argument(
         "--no-fix-eol", action="store_true", help="跳过换行符检查和修复"
     )
-    parser.add_argument(
-        "--no-fix-path", action="store_true", help="跳过环境变量Path检查和修复"
-    )
     args = parser.parse_args()
 
     print("=" * 60)
     print("天玑GPU调速器模块打包工具")
     print("=" * 60)
-
-    # 检查并修复环境变量Path问题（除非明确指定跳过）
-    if not args.no_fix_path:
-        fix_path_environment()
 
     # 检查当前目录是否是模块根目录
     if not os.path.exists(os.path.join(WORK_DIR, "module.prop")):
@@ -312,7 +312,7 @@ def main():
                 # 默认使用固定名称 Mediatek_Mali_GPU_Governor.zip
                 output_filename = "Mediatek_Mali_GPU_Governor.zip"
 
-            output_path = os.path.join(WORK_DIR, output_filename)
+            output_path = os.path.join(OUTPUT_DIR, output_filename)
             open_output_directory(output_path)
     else:
         print("打包过程失败!")

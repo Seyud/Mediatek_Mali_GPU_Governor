@@ -32,3 +32,6 @@ webroot/node_modules/
 webroot/eslint.config.js
 webroot/package.json
 webroot/package-lock.json
+
+# 忽略output文件夹
+output/
