@@ -3,6 +3,7 @@
 [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/Mediatek_Mali_GPU_Governor)
 [![Version](https://img.shields.io/badge/Version-v2.9.0-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
 [![Language](https://img.shields.io/badge/Language-Rust-orange)](https://www.rust-lang.org/)
+[![GitHub Downloads](https://img.shields.io/github/downloads/Seyud/Mediatek_Mali_GPU_Governor/total)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases)
 
 ## Introduction 📝
 **English** | [简体中文](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/README.md)
