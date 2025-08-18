@@ -27,11 +27,5 @@
 *.iml
 .DS_Store
 
-# 忽略node_modules文件夹
-webroot/node_modules/
-webroot/eslint.config.js
-webroot/package.json
-webroot/package-lock.json
-
 # 忽略output文件夹
 output/
