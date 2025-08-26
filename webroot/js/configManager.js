@@ -43,9 +43,7 @@ export class ConfigManager {
         
         // 省电模式配置元素
         this.powersaveInputs = {
-            ultra_simple_threshold: document.getElementById('powersaveUltraSimple'),
             margin: document.getElementById('powersaveMargin'),
-            down_counter_threshold: document.getElementById('powersaveDownCounter'),
             sampling_interval: document.getElementById('powersaveSamplingInterval'),
             min_adaptive_interval: document.getElementById('powersaveMinAdaptiveInterval'),
             max_adaptive_interval: document.getElementById('powersaveMaxAdaptiveInterval'),
@@ -58,9 +56,7 @@ export class ConfigManager {
         
         // 平衡模式配置元素
         this.balanceInputs = {
-            ultra_simple_threshold: document.getElementById('balanceUltraSimple'),
             margin: document.getElementById('balanceMargin'),
-            down_counter_threshold: document.getElementById('balanceDownCounter'),
             sampling_interval: document.getElementById('balanceSamplingInterval'),
             min_adaptive_interval: document.getElementById('balanceMinAdaptiveInterval'),
             max_adaptive_interval: document.getElementById('balanceMaxAdaptiveInterval'),
@@ -73,9 +69,7 @@ export class ConfigManager {
         
         // 性能模式配置元素
         this.performanceInputs = {
-            ultra_simple_threshold: document.getElementById('performanceUltraSimple'),
             margin: document.getElementById('performanceMargin'),
-            down_counter_threshold: document.getElementById('performanceDownCounter'),
             sampling_interval: document.getElementById('performanceSamplingInterval'),
             min_adaptive_interval: document.getElementById('performanceMinAdaptiveInterval'),
             max_adaptive_interval: document.getElementById('performanceMaxAdaptiveInterval'),
@@ -88,9 +82,7 @@ export class ConfigManager {
         
         // 极速模式配置元素
         this.fastInputs = {
-            ultra_simple_threshold: document.getElementById('fastUltraSimple'),
             margin: document.getElementById('fastMargin'),
-            down_counter_threshold: document.getElementById('fastDownCounter'),
             sampling_interval: document.getElementById('fastSamplingInterval'),
             min_adaptive_interval: document.getElementById('fastMinAdaptiveInterval'),
             max_adaptive_interval: document.getElementById('fastMaxAdaptiveInterval'),
@@ -546,14 +538,8 @@ export class ConfigManager {
     // 生成模式配置内容
     generateModeConfigContent(config) {
         let content = '';
-        content += `# 极简阈值（百分比）- 达到此阈值时升频\n`;
-        content += `ultra_simple_threshold = ${config.ultra_simple_threshold?.value || 95}\n`;
         content += `# 余量\n`;
-        content += `# 当设置为0时使用基准调频策略\n`;
-        content += `# 当设置为N时，降频阈值为(100-N)%\n`;
         content += `margin = ${config.margin?.value || 10}\n`;
-        content += `# 降频计数器配置值（0=禁用降频计数器功能）\n`;
-        content += `down_counter_threshold = ${config.down_counter_threshold?.value || 5}\n`;
         content += `# 是否使用激进降频策略\n`;
         content += `aggressive_down = ${config.aggressive_down?.checked ? 'true' : 'false'}\n`;
         content += `# 采样间隔（毫秒）\n`;

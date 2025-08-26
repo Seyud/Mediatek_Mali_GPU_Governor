@@ -9,8 +9,6 @@ idle_threshold = 5
 # 省电模式 - 更高的升频阈值，更激进的降频
 [powersave]
 # 余量
-# 当设置为0时使用基准调频策略
-# 当设置为N时，降频阈值为(100-N)%
 margin = 0
 # 是否使用激进降频策略
 aggressive_down = true

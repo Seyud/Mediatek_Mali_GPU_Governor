@@ -62,7 +62,7 @@ Users can customize the behavior of the GPU governor by modifying the `/data/adb
 
 #### Mode Configuration
 Each mode has the following configurable parameters:
-- `margin`: Margin, when set to N, the frequency decrease threshold is (100-N)%，when set to0 use the base frequency strategy
+- `margin`: Margin
 - `aggressive_down`: Whether to use aggressive down frequency strategy
 - `sampling_interval`: Sampling interval (milliseconds)
 - `gaming_mode`: Gaming optimization, enable special memory optimization for games
