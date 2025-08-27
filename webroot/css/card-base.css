@@ -1,0 +1,164 @@
+/* ==========================================
+   基础卡片样式模块 (card-base.css)
+   包含容器、卡片、标题、内容等基础样式
+   ========================================== */
+
+.container {
+    max-width: 800px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+.card {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+    overflow: visible;
+    /* 修改为visible，确保弹出内容不会被截断 */
+    outline: none;
+    /* 移除默认焦点轮廓 */
+}
+
+/* 为一般卡片添加焦点样式 */
+.card:focus {
+    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.3), var(--card-shadow);
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+}
+
+.card-content {
+    padding: 16px;
+    overflow: visible;
+    /* 确保弹出内容不会被截断 */
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    position: relative;
+    overflow: visible;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-item:hover {
+    background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.status-item:last-child {
+    margin-bottom: 0;
+}
+
+.status-item > span:first-child {
+    font-weight: 500;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Miuix风格卡片特殊样式 - 应用到所有主要卡片 */
+.card-universal {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-universal::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(var(--accent-color-rgb, 13, 132, 255), 0.03) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.card-universal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+}
+
+.card-universal .card-title {
+    background: linear-gradient(135deg, transparent 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
+    border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+    position: relative;
+}
+
+.card-universal .card-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-color) 0%, transparent 100%);
+    opacity: 0.3;
+}
+
+.card-universal .card-content {
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+}
+
+/* 设置页面中的选项间距更大 */
+#settingsCard .status-item {
+    margin-bottom: 24px;
+    /* 增加间距 */
+    padding: 16px 20px;
+    /* 增加内边距 */
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+}
+
+#settingsCard .status-item:hover {
+    background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.03);
+    transform: none;
+    box-shadow: none;
+}
+
+.setting-description {
+    margin-top: 8px;
+    margin-bottom: 16px;
+    /* 添加底部间距 */
+    color: var(--secondary-text-color);
+    font-size: 12px;
+}
+
+/* 设置页面中的描述文本 */
+#settingsCard .setting-description {
+    margin-bottom: 24px;
+    /* 增加底部间距 */
+}
+
+.select-container {
+    min-width: 150px;
+    position: relative;
+    /* 确保子元素的绝对定位是相对于它 */
+    overflow: visible;
+    /* 确保弹出内容不会被截断 */
+}

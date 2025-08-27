@@ -1,0 +1,174 @@
+/* ==========================================
+   特殊卡片样式模块 (card-special.css)
+   包含应用图标卡片、版权卡片等特殊卡片样式
+   ========================================== */
+
+/* Miuix风格应用图标样式 */
+#appIconCard {
+    margin-bottom: 32px;
+    background: linear-gradient(135deg, var(--accent-bg) 0%, transparent 100%);
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    /* 移除默认的焦点轮廓 */
+    outline: none;
+    /* 确保可访问性的焦点指示 */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 自定义焦点样式，匹配圆角矩形设计 */
+#appIconCard:focus {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.3), 0 12px 32px rgba(13, 132, 255, 0.15);
+    border-color: var(--accent-hover);
+}
+
+/* 鼠标和焦点状态的组合 */
+#appIconCard:focus:hover {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.4), 0 12px 32px rgba(13, 132, 255, 0.2);
+}
+
+#appIconCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(13, 132, 255, 0.15);
+    border-color: var(--accent-hover);
+}
+
+#appIconCard::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#appIconCard:hover::before {
+    opacity: 1.5;
+}
+
+.app-icon-content {
+    padding: 24px 20px !important;
+    position: relative;
+    z-index: 1;
+}
+
+.miuix-app-icon {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-background {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(13, 132, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#appIconCard:hover .icon-background {
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 0 12px 28px rgba(13, 132, 255, 0.4);
+}
+
+.icon-background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    border-radius: 16px;
+    transition: opacity 0.3s ease;
+}
+
+#appIconCard:hover .icon-background::before {
+    opacity: 0.7;
+}
+
+.app-main-icon {
+    color: white;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#appIconCard:hover .app-main-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.app-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.app-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+    transition: color 0.3s ease;
+}
+
+#appIconCard:hover .app-title {
+    color: var(--accent-color);
+}
+
+.app-subtitle {
+    font-size: 14px;
+    color: var(--secondary-text-color);
+    margin: 0;
+    opacity: 0.8;
+    font-weight: 400;
+    transition: opacity 0.3s ease;
+}
+
+#appIconCard:hover .app-subtitle {
+    opacity: 1;
+}
+
+/* Miuix风格版权信息 */
+#copyrightCard {
+    margin-top: 24px;
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+}
+
+.copyright-content {
+    text-align: center;
+    padding: 20px !important;
+    color: var(--secondary-text-color);
+    font-size: 13px;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+.copyright-content p {
+    margin: 0;
+    font-weight: 500;
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+}

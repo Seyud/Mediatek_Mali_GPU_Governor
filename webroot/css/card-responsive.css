@@ -1,0 +1,102 @@
+/* ==========================================
+   响应式样式模块 (card-responsive.css)
+   包含所有响应式样式和媒体查询
+   ========================================== */
+
+/* 移动设备适配 */
+@media (max-width: 480px) {
+    .card-title .title-icon {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 7px !important;
+        margin-right: 10px !important;
+    }
+
+    .card-title .title-icon svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .card:hover .card-title .title-icon {
+        transform: scale(1.1) rotate(2deg) !important;
+    }
+
+    .status-item > span:first-child .miuix-status-icon {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 5px !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+    }
+
+    .status-item > span:first-child .miuix-status-icon svg.status-icon {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .status-item:hover .miuix-status-icon {
+        transform: scale(1.05) !important;
+    }
+
+    .app-icon-content {
+        padding: 20px 16px !important;
+    }
+
+    .miuix-app-icon {
+        gap: 12px;
+    }
+
+    .icon-background {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+    }
+
+    .app-main-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .app-title {
+        font-size: 20px;
+    }
+
+    .app-subtitle {
+        font-size: 13px;
+    }
+
+    #appIconCard:hover {
+        transform: translateY(-1px);
+    }
+}
+
+/* 动画减少偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+    .card-title .title-icon,
+    .card-title .title-icon svg,
+    .card-title .title-icon::before {
+        animation: none !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    .status-item > span:first-child .miuix-status-icon,
+    .status-item > span:first-child .miuix-status-icon svg.status-icon,
+    .status-item > span:first-child .miuix-status-icon svg.status-icon * {
+        animation: none !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    .icon-background {
+        animation: none !important;
+    }
+
+    .app-main-icon path:first-child,
+    .app-main-icon circle,
+    .app-main-icon path:last-child {
+        animation: none !important;
+    }
+
+    .status-running::after {
+        animation: none !important;
+    }
+}

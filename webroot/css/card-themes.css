@@ -1,0 +1,87 @@
+/* ==========================================
+   主题样式模块 (card-themes.css)
+   包含深色模式和主题相关样式
+   ========================================== */
+
+/* 深色模式支持 */
+[data-theme="dark"] .card-title .title-icon {
+    box-shadow: 0 3px 10px rgba(13, 132, 255, 0.4) !important;
+}
+
+[data-theme="dark"] .card:hover .card-title .title-icon {
+    box-shadow: 0 5px 20px rgba(13, 132, 255, 0.5) !important;
+}
+
+/* 深色模式下的特殊效果 */
+[data-theme="dark"] .status-item > span:first-child .miuix-status-icon {
+    box-shadow: 0 3px 8px rgba(13, 132, 255, 0.4) !important;
+}
+
+[data-theme="dark"] .status-item:hover .miuix-status-icon {
+    box-shadow: 0 6px 16px rgba(13, 132, 255, 0.5) !important;
+}
+
+/* 深色模式下的状态项样式调整 */
+[data-theme="dark"] .status-item {
+    background-color: rgba(13, 132, 255, 0.05);
+    border-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .status-item:hover {
+    background-color: rgba(13, 132, 255, 0.08);
+    border-color: rgba(13, 132, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 深色模式下的所有卡片样式 */
+[data-theme="dark"] .card-universal {
+    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .card-universal::before {
+    background: radial-gradient(circle at top right, rgba(13, 132, 255, 0.08) 0%, transparent 70%);
+}
+
+[data-theme="dark"] .card-universal:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: rgba(13, 132, 255, 0.25);
+}
+
+[data-theme="dark"] .card-universal .card-title {
+    background: linear-gradient(135deg, transparent 0%, rgba(13, 132, 255, 0.08) 100%);
+    border-bottom-color: rgba(13, 132, 255, 0.2);
+}
+
+/* 深色模式下的特殊效果 */
+[data-theme="dark"] #appIconCard {
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.15) 0%, transparent 100%);
+    border-color: rgba(13, 132, 255, 0.6);
+}
+
+[data-theme="dark"] #appIconCard:hover {
+    box-shadow: 0 12px 32px rgba(13, 132, 255, 0.25);
+}
+
+[data-theme="dark"] #appIconCard:focus {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.4), 0 12px 32px rgba(13, 132, 255, 0.25);
+    border-color: var(--accent-color);
+}
+
+[data-theme="dark"] #appIconCard:focus:hover {
+    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.5), 0 12px 32px rgba(13, 132, 255, 0.3);
+}
+
+[data-theme="dark"] .icon-background {
+    box-shadow: 0 8px 20px rgba(13, 132, 255, 0.4);
+}
+
+[data-theme="dark"] #appIconCard:hover .icon-background {
+    box-shadow: 0 12px 28px rgba(13, 132, 255, 0.5);
+}
+
+/* 深色模式版权样式 */
+[data-theme="dark"] #copyrightCard {
+    background: linear-gradient(135deg, rgba(13, 132, 255, 0.08) 0%, rgba(13, 132, 255, 0.05) 100%);
+    border-color: rgba(13, 132, 255, 0.2);
+}
