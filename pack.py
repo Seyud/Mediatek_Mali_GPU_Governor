@@ -1,323 +1,238 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-打包程序 - 用于将Mediatek_Mali_GPU_Governor模块文件打包成zip文件
-使用D:\7-Zip\7z.exe进行压缩
+打包程序 - 将Mediatek_Mali_GPU_Governor模块打包成zip文件
+使用7-Zip进行压缩打包
 """
 
 import argparse
-import datetime
 import os
-import re
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
-# 7-Zip可执行文件路径
-SEVEN_ZIP_PATH = r"D:\7-Zip\7z.exe"
+# 配置常量
+SEVEN_ZIP_PATH = Path(r"D:\7-Zip\7z.exe")
+WORK_DIR = Path(__file__).parent
+OUTPUT_DIR = WORK_DIR / "output"
 
-# 获取当前脚本所在目录作为工作目录
-WORK_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# 输出目录路径
-OUTPUT_DIR = os.path.join(WORK_DIR, "output")
-
-# 需要打包的文件夹
-FOLDERS_TO_PACK = ["bin", "config", "docs", "META-INF", "script", "webroot"]
-
-# 需要打包的文件
-FILES_TO_PACK = [
-    "action.sh",
-    "customize.sh",
-    "module.prop",
-    "service.sh",
-    "uninstall.sh",
-    "volt_list.txt",
+# 打包内容配置
+PACK_ITEMS = [
+    "bin", "config", "docs", "META-INF", "script", "webroot",
+    "action.sh", "customize.sh", "module.prop", "service.sh", 
+    "uninstall.sh", "volt_list.txt"
 ]
 
+TEMP_PATTERNS = {
+    "dirs": ["__pycache__", ".idea", ".vscode", "build", "dist"],
+    "files": ["*.pyc", "*.pyo", "*.bak", "*.swp", "*.tmp", "*.log"]
+}
 
-def check_7zip_exists():
-    """检查7-Zip是否存在于指定路径"""
-    if not os.path.exists(SEVEN_ZIP_PATH):
-        print(f"错误: 未找到7-Zip程序，请确认路径: {SEVEN_ZIP_PATH}")
-        return False
-    return True
+LINE_ENDING_FILES = [".sh", ".py", ".js", ".css", ".html", ".md", ".conf", ".prop"]
 
 
-def create_output_directory():
-    """创建输出目录"""
-    try:
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        print(f"输出目录已创建: {OUTPUT_DIR}")
+class Packager:
+    """模块打包器"""
+    
+    def __init__(self):
+        self.output_path = None
+        
+    def _check_requirements(self) -> bool:
+        """检查打包要求"""
+        if not SEVEN_ZIP_PATH.exists():
+            print(f"错误: 未找到7-Zip程序: {SEVEN_ZIP_PATH}")
+            return False
+            
+        if not (WORK_DIR / "module.prop").exists():
+            print("错误: 当前目录不是模块根目录，未找到module.prop文件")
+            return False
+            
         return True
-    except Exception as e:
-        print(f"创建输出目录失败: {str(e)}")
-        return False
-
-
-def create_zip_package(custom_output_filename=None):
-    """创建ZIP压缩包"""
-    # 检查7-Zip是否存在
-    if not check_7zip_exists():
-        return False
-
-    # 创建输出目录
-    if not create_output_directory():
-        return False
-
-    # 生成输出文件名
-    if custom_output_filename:
-        output_filename = custom_output_filename
-        if not output_filename.endswith(".zip"):
-            output_filename += ".zip"
-    else:
-        # 默认使用固定名称 Mediatek_Mali_GPU_Governor.zip
-        output_filename = "Mediatek_Mali_GPU_Governor.zip"
-
-    # 输出路径改为在output目录下
-    output_path = os.path.join(OUTPUT_DIR, output_filename)
-
-    # 检查所有要打包的文件和文件夹是否存在
-    all_items = FOLDERS_TO_PACK + FILES_TO_PACK
-    missing_items = []
-
-    for item in all_items:
-        item_path = os.path.join(WORK_DIR, item)
-        if not os.path.exists(item_path):
-            missing_items.append(item)
-
-    if missing_items:
-        print("警告: 以下文件或文件夹不存在:")
-        for item in missing_items:
-            print(f"  - {item}")
-
-        user_input = input("是否继续打包? (y/n): ")
-        if user_input.lower() != "y":
-            print("打包已取消")
-            return False
-
-    # 构建7-Zip命令
-    cmd = [SEVEN_ZIP_PATH, "a", "-tzip", output_path]
-
-    # 添加所有文件和文件夹到命令中
-    for item in all_items:
-        item_path = os.path.join(WORK_DIR, item)
-        if os.path.exists(item_path):
-            cmd.append(item)
-
-    print(f"开始打包模块文件到: output/{output_filename}")
-    print("正在执行命令:", " ".join(cmd))
-
-    try:
-        # 执行7-Zip命令
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=WORK_DIR
-        )
-
-        # 实时输出7-Zip的进度信息
-        while True:
-            output = process.stdout.readline()
-            if output == "" and process.poll() is not None:
-                break
-            if output:
-                print(output.strip())
-
-        # 获取命令执行结果
-        return_code = process.poll()
-
-        if return_code == 0:
-            print(f"打包成功! 文件已保存到: {output_path}")
-            print(f"文件大小: {os.path.getsize(output_path) / 1024 / 1024:.2f} MB")
+    
+    def _create_output_dir(self) -> bool:
+        """创建输出目录"""
+        try:
+            OUTPUT_DIR.mkdir(exist_ok=True)
+            print(f"输出目录: {OUTPUT_DIR}")
             return True
-        else:
-            error_output = process.stderr.read()
-            print(f"打包失败! 错误代码: {return_code}")
-            print(f"错误信息: {error_output}")
+        except OSError as e:
+            print(f"创建输出目录失败: {e}")
             return False
+    
+    def _validate_pack_items(self) -> list[Path]:
+        """验证打包项目，返回存在的项目列表"""
+        existing_items = []
+        missing_items = []
+        
+        for item in PACK_ITEMS:
+            path = WORK_DIR / item
+            if path.exists():
+                existing_items.append(path)
+            else:
+                missing_items.append(item)
+        
+        if missing_items:
+            print("警告: 以下项目不存在:")
+            for item in missing_items:
+                print(f"  - {item}")
+                
+            if input("是否继续打包? (y/n): ").lower() != 'y':
+                return []
+        
+        return existing_items
+    
+    def _run_7zip(self, items: list[Path], output_filename: str) -> bool:
+        """执行7-Zip压缩"""
+        output_file = OUTPUT_DIR / output_filename
+        
+        cmd = [
+            str(SEVEN_ZIP_PATH), "a", "-tzip", str(output_file),
+            *[item.name for item in items]
+        ]
+        
+        print(f"开始打包: {output_filename}")
+        
+        try:
+            result = subprocess.run(
+                cmd, cwd=WORK_DIR, capture_output=True, text=True
+            )
+            
+            if result.returncode == 0:
+                size_mb = output_file.stat().st_size / (1024 * 1024)
+                print(f"打包成功: {output_file} ({size_mb:.2f} MB)")
+                return True
+            else:
+                print(f"打包失败: {result.stderr}")
+                return False
+                
+        except Exception as e:
+            print(f"打包过程错误: {e}")
+            return False
+    
+    def create_package(self, custom_name: str = None) -> bool:
+        """创建压缩包"""
+        if not self._check_requirements() or not self._create_output_dir():
+            return False
+            
+        items = self._validate_pack_items()
+        if not items:
+            return False
+            
+        filename = (custom_name or "Mediatek_Mali_GPU_Governor") + ".zip"
+        return self._run_7zip(items, filename)
 
-    except Exception as e:
-        print(f"打包过程中发生错误: {str(e)}")
+
+class FileManager:
+    """文件管理器"""
+    
+    @staticmethod
+    def clean_temp_files():
+        """清理临时文件"""
+        print("清理临时文件...")
+        
+        # 清理目录
+        for dir_name in TEMP_PATTERNS["dirs"]:
+            dir_path = WORK_DIR / dir_name
+            if dir_path.exists():
+                try:
+                    shutil.rmtree(dir_path)
+                    print(f"  删除目录: {dir_name}")
+                except OSError as e:
+                    print(f"  删除失败: {dir_name} ({e})")
+        
+        # 清理文件
+        for pattern in TEMP_PATTERNS["files"]:
+            for file_path in WORK_DIR.rglob(pattern):
+                try:
+                    file_path.unlink()
+                    print(f"  删除文件: {file_path.relative_to(WORK_DIR)}")
+                except OSError as e:
+                    print(f"  删除失败: {file_path.name} ({e})")
+        
+        # 清理输出目录中的临时文件
+        if OUTPUT_DIR.exists():
+            for pattern in TEMP_PATTERNS["files"]:
+                for file_path in OUTPUT_DIR.rglob(pattern):
+                    try:
+                        file_path.unlink()
+                        print(f"  清理输出: {file_path.name}")
+                    except OSError as e:
+                        print(f"  清理失败: {file_path.name} ({e})")
+    
+    @staticmethod
+    def fix_line_endings():
+        """修复文件换行符为LF"""
+        print("检查并修复文件换行符...")
+        
+        converted = 0
+        meta_dir = WORK_DIR / "META-INF"
+        
+        # 处理META-INF目录
+        if meta_dir.exists():
+            for file_path in meta_dir.rglob("*"):
+                if file_path.is_file() and FileManager._convert_line_endings(file_path):
+                    converted += 1
+        
+        # 处理其他文件
+        for ext in LINE_ENDING_FILES:
+            for file_path in WORK_DIR.rglob(f"*{ext}"):
+                if meta_dir not in file_path.parents and FileManager._convert_line_endings(file_path):
+                    converted += 1
+        
+        print(f"换行符修复完成，转换了 {converted} 个文件")
+    
+    @staticmethod
+    def _convert_line_endings(file_path: Path) -> bool:
+        """转换单个文件的换行符"""
+        try:
+            content = file_path.read_bytes()
+            if b'\r\n' in content:
+                file_path.write_bytes(content.replace(b'\r\n', b'\n'))
+                print(f"  转换: {file_path.relative_to(WORK_DIR)}")
+                return True
+        except OSError:
+            pass
         return False
 
 
-def clean_temp_files():
-    """清理临时文件"""
-    temp_dirs = [
-        os.path.join(WORK_DIR, "__pycache__"),
-        os.path.join(WORK_DIR, ".idea"),
-        os.path.join(WORK_DIR, ".vscode"),
-        os.path.join(WORK_DIR, "build"),
-        os.path.join(WORK_DIR, "dist"),
-    ]
-
-    temp_files = ["*.pyc", "*.pyo", "*.bak", "*.swp", "*.tmp", "*.log"]
-
-    print("正在清理临时文件...")
-
-    # 删除临时目录
-    for temp_dir in temp_dirs:
-        if os.path.exists(temp_dir):
-            try:
-                shutil.rmtree(temp_dir)
-                print(f"已删除目录: {temp_dir}")
-            except Exception as e:
-                print(f"删除目录失败: {temp_dir}, 错误: {str(e)}")
-
-    # 删除临时文件
-    for pattern in temp_files:
-        for file_path in Path(WORK_DIR).glob(f"**/{pattern}"):
-            try:
-                os.remove(file_path)
-                print(f"已删除文件: {file_path}")
-            except Exception as e:
-                print(f"删除文件失败: {file_path}, 错误: {str(e)}")
-
-    # 清理output目录中的临时文件
-    if os.path.exists(OUTPUT_DIR):
-        for pattern in temp_files:
-            for file_path in Path(OUTPUT_DIR).glob(f"**/{pattern}"):
-                try:
-                    os.remove(file_path)
-                    print(f"已删除输出目录中的临时文件: {file_path}")
-                except Exception as e:
-                    print(f"删除输出目录中的临时文件失败: {file_path}, 错误: {str(e)}")
-
-    print("临时文件清理完成")
-
-
-def ensure_lf_line_endings():
-    """确保所有脚本文件使用LF换行符"""
-    # 需要检查的文件类型
-    file_types = [".sh", ".py", ".js", ".css", ".html", ".md", ".conf", ".prop"]
-
-    # 统计信息
-    total_files = 0
-    converted_files = 0
-
-    print("正在检查文件换行符...")
-
-    # 优先处理 META-INF 目录下的所有文件
-    meta_inf_dir = Path(WORK_DIR) / "META-INF"
-    if meta_inf_dir.exists() and meta_inf_dir.is_dir():
-        for file_path in meta_inf_dir.rglob("*"):
-            if file_path.is_file():
-                try:
-                    with open(file_path, "rb") as f:
-                        content = f.read()
-                    if b"\r\n" in content:
-                        content = content.replace(b"\r\n", b"\n")
-                        with open(file_path, "wb") as f:
-                            f.write(content)
-                        print(f"  已转换: {file_path.relative_to(WORK_DIR)} (CRLF -> LF)")
-                        converted_files += 1
-                    total_files += 1
-                except Exception as e:
-                    print(f"  处理文件失败: {file_path.relative_to(WORK_DIR)}, 错误: {str(e)}")
-
-    # 继续处理其他文件（排除META-INF目录）
-    for file_type in file_types:
-        for file_path in Path(WORK_DIR).glob(f"**/*{file_type}"):
-            # 排除某些目录和已处理的META-INF
-            if any(part.startswith(".") for part in file_path.parts):
-                continue
-            if meta_inf_dir in file_path.parents:
-                continue
-
-            total_files += 1
-
-            # 读取文件内容（二进制模式）
-            try:
-                with open(file_path, "rb") as f:
-                    content = f.read()
-
-                # 检查是否包含CRLF
-                if b"\r\n" in content:
-                    # 转换CRLF为LF
-                    content = content.replace(b"\r\n", b"\n")
-
-                    # 写回文件（二进制模式）
-                    with open(file_path, "wb") as f:
-                        f.write(content)
-
-                    print(f"  已转换: {file_path.relative_to(WORK_DIR)} (CRLF -> LF)")
-                    converted_files += 1
-            except Exception as e:
-                print(
-                    f"  处理文件失败: {file_path.relative_to(WORK_DIR)}, 错误: {str(e)}"
-                )
-
-    print(
-        f"换行符检查完成! 共检查 {total_files} 个文件，转换了 {converted_files} 个文件。"
-    )
-
-
-def open_output_directory(output_path):
-    """打开输出文件所在目录"""
-    output_dir = os.path.dirname(os.path.abspath(output_path))
-
+def open_output_dir():
+    """打开输出目录"""
     try:
-        # 在Windows上使用os.startfile打开目录
-        os.startfile(output_dir)
-        print(f"已打开输出目录: {output_dir}")
-    except Exception as e:
-        print(f"打开输出目录失败: {str(e)}")
+        os.startfile(OUTPUT_DIR)
+        print(f"已打开输出目录: {OUTPUT_DIR}")
+    except OSError as e:
+        print(f"打开目录失败: {e}")
 
 
 def main():
     """主函数"""
-    # 解析命令行参数
     parser = argparse.ArgumentParser(description="天玑GPU调速器模块打包工具")
     parser.add_argument("-o", "--output", help="指定输出文件名")
-    parser.add_argument("-c", "--clean", action="store_true", help="打包前清理临时文件")
-    parser.add_argument(
-        "-d", "--open-dir", action="store_true", help="打包完成后打开输出目录"
-    )
-    parser.add_argument(
-        "--no-fix-eol", action="store_true", help="跳过换行符检查和修复"
-    )
+    parser.add_argument("-c", "--clean", action="store_true", help="清理临时文件")
+    parser.add_argument("-d", "--open-dir", action="store_true", help="打开输出目录")
+    parser.add_argument("--no-fix-eol", action="store_true", help="跳过换行符修复")
+    
     args = parser.parse_args()
-
-    print("=" * 60)
+    
+    print("=" * 50)
     print("天玑GPU调速器模块打包工具")
-    print("=" * 60)
-
-    # 检查当前目录是否是模块根目录
-    if not os.path.exists(os.path.join(WORK_DIR, "module.prop")):
-        print("错误: 当前目录不是模块根目录，未找到module.prop文件")
-        return
-
-    # 如果指定了清理临时文件
+    print("=" * 50)
+    
     if args.clean:
-        clean_temp_files()
-
-    # 检查并修复文件换行符（除非明确指定跳过）
+        FileManager.clean_temp_files()
+    
     if not args.no_fix_eol:
-        ensure_lf_line_endings()
-
-    # 创建ZIP压缩包
-    success = create_zip_package(args.output)
-
-    if success:
-        print("打包过程已完成!")
-
-        # 如果指定了打开输出目录
+        FileManager.fix_line_endings()
+    
+    packager = Packager()
+    if packager.create_package(args.output):
+        print("打包完成!")
         if args.open_dir:
-            # 生成输出文件名
-            if args.output:
-                output_filename = args.output
-                if not output_filename.endswith(".zip"):
-                    output_filename += ".zip"
-            else:
-                # 默认使用固定名称 Mediatek_Mali_GPU_Governor.zip
-                output_filename = "Mediatek_Mali_GPU_Governor.zip"
-
-            output_path = os.path.join(OUTPUT_DIR, output_filename)
-            open_output_directory(output_path)
+            open_output_dir()
     else:
-        print("打包过程失败!")
-
-    print("=" * 60)
+        print("打包失败!")
+    
+    print("=" * 50)
 
 
 if __name__ == "__main__":
