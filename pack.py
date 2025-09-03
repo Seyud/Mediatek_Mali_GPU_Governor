@@ -126,38 +126,36 @@ class FileManager:
     """文件管理器"""
     
     @staticmethod
-    def clean_temp_files():
-        """清理临时文件"""
-        print("清理临时文件...")
-        
+    def _clean_directory(dir_path: Path):
+        """清理指定目录中的临时文件和目录"""
         # 清理目录
         for dir_name in TEMP_PATTERNS["dirs"]:
-            dir_path = WORK_DIR / dir_name
-            if dir_path.exists():
+            sub_dir = dir_path / dir_name
+            if sub_dir.exists():
                 try:
-                    shutil.rmtree(dir_path)
+                    shutil.rmtree(sub_dir)
                     print(f"  删除目录: {dir_name}")
                 except OSError as e:
                     print(f"  删除失败: {dir_name} ({e})")
         
         # 清理文件
         for pattern in TEMP_PATTERNS["files"]:
-            for file_path in WORK_DIR.rglob(pattern):
+            for file_path in dir_path.rglob(pattern):
                 try:
                     file_path.unlink()
-                    print(f"  删除文件: {file_path.relative_to(WORK_DIR)}")
+                    print(f"  删除文件: {file_path.relative_to(dir_path)}")
                 except OSError as e:
                     print(f"  删除失败: {file_path.name} ({e})")
+    
+    @staticmethod
+    def clean_temp_files():
+        """清理临时文件"""
+        print("清理临时文件...")
+        FileManager._clean_directory(WORK_DIR)
         
         # 清理输出目录中的临时文件
         if OUTPUT_DIR.exists():
-            for pattern in TEMP_PATTERNS["files"]:
-                for file_path in OUTPUT_DIR.rglob(pattern):
-                    try:
-                        file_path.unlink()
-                        print(f"  清理输出: {file_path.name}")
-                    except OSError as e:
-                        print(f"  清理失败: {file_path.name} ({e})")
+            FileManager._clean_directory(OUTPUT_DIR)
     
     @staticmethod
     def fix_line_endings():
