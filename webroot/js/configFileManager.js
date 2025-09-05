@@ -229,7 +229,7 @@ export class ConfigFileManager {
         content += '# 全局模式设置: powersave, balance, performance, fast\n';
         content += `mode = "${customConfig.global?.mode || 'balance'}"\n`;
         content += '# 空闲阈值（百分比）\n';
-        content += `idle_threshold = ${customConfig.global?.idle_threshold || 5}\n\n`;
+        content += `idle_threshold = ${customConfig.global?.idle_threshold ?? 5}\n\n`;
         
         // 生成各模式配置
         const modes = ['powersave', 'balance', 'performance', 'fast'];
@@ -253,23 +253,23 @@ export class ConfigFileManager {
     generateModeConfigContent(config) {
         let content = '';
         content += `# 余量\n`;
-        content += `margin = ${config.margin || 10}\n`;
+        content += `margin = ${config.margin ?? 10}\n`;
         content += `# 是否使用激进降频策略\n`;
         content += `aggressive_down = ${config.aggressive_down ? 'true' : 'false'}\n`;
         content += `# 采样间隔（毫秒）\n`;
-        content += `sampling_interval = ${config.sampling_interval || 16}\n`;
+        content += `sampling_interval = ${config.sampling_interval ?? 16}\n`;
         content += `# 游戏优化 - 启用游戏特殊内存优化\n`;
         content += `gaming_mode = ${config.gaming_mode ? 'true' : 'false'}\n`;
         content += `# 自适应采样\n`;
         content += `adaptive_sampling = ${config.adaptive_sampling ? 'true' : 'false'}\n`;
         content += `# 自适应采样最小间隔（毫秒）\n`;
-        content += `min_adaptive_interval = ${config.min_adaptive_interval || 4}\n`;
+        content += `min_adaptive_interval = ${config.min_adaptive_interval ?? 4}\n`;
         content += `# 自适应采样最大间隔（毫秒）\n`;
-        content += `max_adaptive_interval = ${config.max_adaptive_interval || 20}\n`;
+        content += `max_adaptive_interval = ${config.max_adaptive_interval ?? 20}\n`;
         content += `# 升频延迟（毫秒）\n`;
-        content += `up_rate_delay = ${config.up_rate_delay || 1000}\n`;
+        content += `up_rate_delay = ${config.up_rate_delay ?? 1000}\n`;
         content += `# 降频延迟（毫秒）\n`;
-        content += `down_rate_delay = ${config.down_rate_delay || 5000}\n\n`;
+        content += `down_rate_delay = ${config.down_rate_delay ?? 5000}\n\n`;
         return content;
     }
 
