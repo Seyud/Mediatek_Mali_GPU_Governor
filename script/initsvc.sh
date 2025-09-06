@@ -217,16 +217,23 @@ enhanced_log() {
 
 # 更新模块描述
 update_description() {
-    local description
+    local description safe_description prop_file
     [ "$language" = "en" ] && description="$1" || description="$2"
-    sed -i "/^description=/c\description=$description" "$MODDIR/module.prop"
+    prop_file="${MODULE_PATH:-$(dirname "$MODDIR")}/module.prop"
+    [ -f "$prop_file" ] || return
+    # 转义 sed 特殊字符
+    safe_description=$(printf '%s' "$description" | sed 's/[&/]/\\&/g')
+    sed -i "/^description=/c\\description=$safe_description" "$prop_file"
 }
 
-# 追加模块描述
+# 追加模块描述（在原有末尾拼接）
 append_description() {
-    local description
+    local description safe_append prop_file
     [ "$language" = "en" ] && description="$1" || description="$2"
-    sed -i "/^description=/ s|\$|$description|" "$MODDIR/module.prop"
+    prop_file="${MODULE_PATH:-$(dirname "$MODDIR")}/module.prop"
+    [ -f "$prop_file" ] || return
+    safe_append=$(printf '%s' "$description" | sed 's/[&/]/\\&/g')
+    sed -i "/^description=/ s|$|$safe_append|" "$prop_file"
 }
 
 # 获取状态描述
@@ -341,7 +348,7 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
     gov_pid=$!
     sync
 
-    sleep 2
+    sleep 7
 
     # 检查GPU调速器是否成功启动
     if pgrep -f "gpugovernor" > /dev/null; then
@@ -350,12 +357,6 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         echo "$gov_pid" > "$PID_FILE"
         enhanced_log "GPU Governor PID: $gov_pid" "GPU调速器 PID: $gov_pid"
         append_description " PID: $gov_pid" " PID: $gov_pid"
-
-        # 检查配置信息并追加到描述
-        if [ -f "$GPU_GOV_DIR/game/game_list.txt" ]; then
-            game_count=$(wc -l < "$GPU_GOV_DIR/game/game_list.txt" 2> /dev/null || echo "0")
-            append_description " Games: $game_count" " 游戏数: $game_count"
-        fi
 
         rebuild_process_scan_cache
         change_task_cgroup "gpugovernor" "background" "cpuset"
