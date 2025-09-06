@@ -1,13 +1,11 @@
 #!/system/bin/sh
 
 on_install() {
-    # use universal setup.sh
     sh "$MODPATH"/script/setup.sh 2>&1
     [ "$?" != "0" ] && abort
 
-    # use once
     rm "$MODPATH"/script/setup.sh
-    rm "$MODPATH"/customize.sh
+    rm "$MODPATH"/config/
 }
 set_permissions() {
     set_perm_recursive "$MODPATH" 0 0 0755 0644
