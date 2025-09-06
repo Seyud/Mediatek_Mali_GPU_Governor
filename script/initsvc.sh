@@ -1,21 +1,7 @@
 #!/system/bin/sh
 
-# 获取脚本目录
 MODDIR=${0%/*}
-if [ "$MODDIR" = "$0" ]; then
-    MODDIR=$(pwd)
-fi
-
-# 确定脚本所在目录
-SCRIPT_DIR="$MODDIR"
-# 如果当前脚本在script目录下，则模块目录是其父目录
-if [ "$(basename "$SCRIPT_DIR")" = "script" ]; then
-    MODULE_DIR="$(dirname "$SCRIPT_DIR")"
-else
-    # 否则假设模块目录就是当前目录，script是其子目录
-    MODULE_DIR="$SCRIPT_DIR"
-    SCRIPT_DIR="$MODULE_DIR/script"
-fi
+SCRIPT_DIR=$MODDIR
 
 # 创建初始化日志目录
 GPU_GOVERNOR_LOG_DIR="/data/adb/gpu_governor/log"
@@ -31,28 +17,20 @@ fi
 # 记录目录信息到初始化日志（首次写入，覆盖旧内容）
 echo "$(date) - 🚀 Initialization started" > "$INIT_LOG"
 echo "📁 SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
-echo "📁 MODULE_DIR=$MODULE_DIR" >> "$INIT_LOG"
 
 # 确保路径信息正确加载
 if [ -f "$SCRIPT_DIR/pathinfo.sh" ]; then
     . "$SCRIPT_DIR/pathinfo.sh"
     echo "✅ Successfully loaded pathinfo.sh" >> "$INIT_LOG"
 else
-    # 尝试其他可能的位置
-    if [ -f "$MODULE_DIR/script/pathinfo.sh" ]; then
-        . "$MODULE_DIR/script/pathinfo.sh"
-        echo "✅ Successfully loaded pathinfo.sh from module/script" >> "$INIT_LOG"
-    else
-        # 由于pathinfo.sh未加载，log函数不可用，直接写入初始化日志
-        echo "❌ Error: pathinfo.sh not found in $SCRIPT_DIR or $MODULE_DIR/script" >> "$INIT_LOG"
-        exit 1
-    fi
+    # 由于pathinfo.sh未加载，log函数不可用，直接写入初始化日志
+    echo "❌ Error: pathinfo.sh not found in $SCRIPT_DIR" >> "$INIT_LOG"
+    exit 1    
 fi
 
 # 现在可以使用log函数了
 log "Initialization service started running"
 log "SCRIPT_DIR=$SCRIPT_DIR"
-log "MODULE_DIR=$MODULE_DIR"
 
 # 加载其他库
 if [ -f "$SCRIPT_DIR/libcommon.sh" ]; then
@@ -241,14 +219,14 @@ enhanced_log() {
 update_description() {
     local description
     [ "$language" = "en" ] && description="$1" || description="$2"
-    sed -i "/^description=/c\description=$description" "$MODULE_DIR/module.prop"
+    sed -i "/^description=/c\description=$description" "$MODDIR/module.prop"
 }
 
 # 追加模块描述
 append_description() {
     local description
     [ "$language" = "en" ] && description="$1" || description="$2"
-    sed -i "/^description=/ s|\$|$description|" "$MODULE_DIR/module.prop"
+    sed -i "/^description=/ s|\$|$description|" "$MODDIR/module.prop"
 }
 
 # 获取状态描述

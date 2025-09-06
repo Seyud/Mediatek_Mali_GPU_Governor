@@ -5,21 +5,14 @@
 # 2. 设置日志等级
 # 3. 使用音量键进行选择
 
-# 获取脚本所在目录
-SCRIPT_DIR=${0%/*}
-if [ "$SCRIPT_DIR" = "$0" ]; then
-    SCRIPT_DIR=$(dirname "$0")
-fi
-if [ "$SCRIPT_DIR" = "." ]; then
-    SCRIPT_DIR=$(pwd)
-fi
+MODDIR=${0%/*}
 
 # 定义常量
 GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
 LOG_LEVEL_FILE="$GPU_GOVERNOR_LOG_DIR/log_level"
 GPU_GOV_LOG_FILE="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log"
-BIN_PATH="$SCRIPT_DIR/bin"
+BIN_PATH="$MODDIR/bin"
 GPUGOVERNOR_BIN="$BIN_PATH/gpugovernor"
 
 # 语言检测函数
@@ -240,8 +233,8 @@ show_status() {
     # 显示模块版本
     local version=""
     # 尝试从不同位置读取模块版本
-    if [ -f "$SCRIPT_DIR/module.prop" ]; then
-        version=$(grep "^version=" "$SCRIPT_DIR/module.prop" | cut -d= -f2)
+    if [ -f "$MODDIR/module.prop" ]; then
+        version=$(grep "^version=" "$MODDIR/module.prop" | cut -d= -f2)
     elif [ -f "/data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop" ]; then
         version=$(grep "^version=" "/data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop" | cut -d= -f2)
     else
