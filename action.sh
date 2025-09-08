@@ -53,7 +53,6 @@ log_prefix() {
     echo "[$(date "+%Y-%m-%d %H:%M:%S")]"
 }
 
-
 # 确保目录存在并设置适当权限
 mkdir -p "$GPU_GOVERNOR_DIR"
 mkdir -p "$GPU_GOVERNOR_LOG_DIR"

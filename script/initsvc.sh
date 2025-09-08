@@ -25,7 +25,7 @@ if [ -f "$SCRIPT_DIR/pathinfo.sh" ]; then
 else
     # 由于pathinfo.sh未加载，log函数不可用，直接写入初始化日志
     echo "❌ Error: pathinfo.sh not found in $SCRIPT_DIR" >> "$INIT_LOG"
-    exit 1    
+    exit 1
 fi
 
 # 现在可以使用log函数了
@@ -49,7 +49,6 @@ else
     log "Error: libcgroup.sh not found, path: $SCRIPT_DIR"
     exit 1
 fi
-
 
 # 等待系统启动完成
 wait_until_login
@@ -286,7 +285,6 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
         enhanced_log "Error: gpu_freq_table.toml not found at $DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE, please reinstall the module." "错误: 在 $DEFAULT_GPUGOV_DIR/$GPUGOV_FREQ_TABLE 未找到 gpu_freq_table.toml，请重新安装模块。"
     fi
 
-
     # 启动GPU调速器
     # 直接使用 BIN_PATH
     if [ ! -x "$BIN_PATH/gpugovernor" ]; then
@@ -298,7 +296,6 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
             exit 1
         fi
     fi
-
 
     # GPU Governor日志文件现在由Rust程序自己创建和管理
     enhanced_log "GPU Governor will create and manage its own log file" "GPU调速器将自己创建和管理日志文件"
@@ -368,4 +365,3 @@ update_description "$(get_status_description "starting")" "$(get_status_descript
     fi
 
 } >> "$INIT_LOG" 2>&1
-

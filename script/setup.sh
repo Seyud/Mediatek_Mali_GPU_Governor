@@ -214,20 +214,18 @@ install_gov() {
             abort "目标设备 [$target] 不受支持，仅支持联发科(MTK)芯片。" "Target [$target] not supported. Only supports MediaTek(MTK) chips."
         fi
     fi
-    
+
     # 创建config目录
     CONFIG_PATH="$DATA_PATH/gpu_governor/config"
     mkdir -p "$CONFIG_PATH"
     chmod 0755 "$CONFIG_PATH"
-    
+
     mkdir -p "$LOG_PATH"
     mkdir -p "$GAMES_PATH"
 
     # 设置日志目录和游戏目录权限为755
     chmod 0755 "$LOG_PATH"
     chmod 0755 "$GAMES_PATH"
-
-
 
     # 处理TOML格式的GPU频率表文件，支持按键选择是否保留旧文件
     if [ -f "$CONFIG_PATH/gpu_freq_table.toml" ]; then
@@ -256,7 +254,7 @@ install_gov() {
                 echo "$(translate "💾 旧频率表已备份至" "💾 Old frequency table backed up to") $CONFIG_PATH/gpu_freq_table.toml.bak"
                 # 复制新的频率表
                 copy_gpu_freq_table
-            break
+                break
             fi
         done
     else
