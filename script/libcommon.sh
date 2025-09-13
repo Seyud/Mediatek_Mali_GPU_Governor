@@ -100,6 +100,18 @@ log_command() {
 }
 
 # $1:content
+log() {
+    # 写入日志文件
+    echo "$1" >> "$LOG_FILE"
+    sync
+}
+
+clear_log() {
+    true > "$LOG_FILE"
+    sync
+}
+
+# $1:content
 wait_until_login() {
     # in case of /data encryption is disabled
     while [ "$(getprop sys.boot_completed)" != "1" ]; do
