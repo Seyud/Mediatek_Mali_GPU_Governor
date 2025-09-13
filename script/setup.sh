@@ -4,6 +4,7 @@
 MODDIR=${0%/*}
 . $MODDIR/pathinfo.sh
 . $MODDIR/libsysinfo.sh
+. $MODDIR/libcommon.sh
 MODULE_PATH="${MODDIR%/*}"
 
 # 定义DATA_PATH变量
@@ -293,14 +294,6 @@ install_gov() {
         # 生成游戏列表文件
         generate_gamelist
     fi
-}
-
-grep_prop() {
-    REGEX="s/^$1=//p"
-    shift
-    FILES="$@"
-    [ -z "$FILES" ] && FILES='/system/build.prop'
-    cat $FILES 2> /dev/null | dos2unix | sed -n "$REGEX" | head -n 1
 }
 
 # get module version
