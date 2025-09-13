@@ -60,7 +60,7 @@ mkdir -p "$GPU_GOVERNOR_LOG_DIR"
 chmod 0777 "$GPU_GOVERNOR_DIR"
 chmod 0777 "$GPU_GOVERNOR_LOG_DIR"
 
-# 确保日志等级文件存在，默认为info级别
+# 运行时初始化默认日志等级（info），已存在则保持不变
 if [ ! -f "$LOG_LEVEL_FILE" ]; then
     echo "info" > "$LOG_LEVEL_FILE"
     chmod 666 "$LOG_LEVEL_FILE"
@@ -121,31 +121,16 @@ start_governor() {
         return 0
     fi
 
-    # 如果BIN_PATH不存在，尝试查找其他可能的位置
+    # 确保BIN_PATH存在
     if [ ! -d "$BIN_PATH" ]; then
-        echo "$(log_prefix) $(translate "BIN_PATH不存在，尝试查找其他位置" "BIN_PATH does not exist, trying to find alternative locations")"
-
-        # 尝试在模块目录下查找
-        if [ -d "/data/adb/modules/Mediatek_Mali_GPU_Governor/bin" ]; then
-            BIN_PATH="/data/adb/modules/Mediatek_Mali_GPU_Governor/bin"
-            GPUGOVERNOR_BIN="$BIN_PATH/gpugovernor"
-            echo "$(log_prefix) $(translate "找到备选路径" "Found alternative path"): $BIN_PATH"
-        fi
+        echo "$(log_prefix) $(translate "错误: BIN_PATH不存在" "Error: BIN_PATH does not exist"): $BIN_PATH"
+        return 1
     fi
 
     # 确保二进制文件存在并有执行权限
     if [ ! -f "$GPUGOVERNOR_BIN" ]; then
         echo "$(log_prefix) $(translate "错误: 二进制文件不存在" "Error: Binary file does not exist"): $GPUGOVERNOR_BIN"
-
-        # 尝试在系统中查找gpugovernor二进制文件
-        FOUND_BIN=$(find /data/adb/modules -name gpugovernor -type f 2> /dev/null | head -n 1)
-        if [ -n "$FOUND_BIN" ]; then
-            echo "$(log_prefix) $(translate "找到二进制文件" "Found binary file"): $FOUND_BIN"
-            GPUGOVERNOR_BIN="$FOUND_BIN"
-        else
-            echo "$(log_prefix) $(translate "无法找到gpugovernor二进制文件" "Unable to find gpugovernor binary file")"
-            return 1
-        fi
+        return 1
     fi
 
     if [ ! -x "$GPUGOVERNOR_BIN" ]; then
@@ -231,19 +216,11 @@ show_status() {
 
     # 显示模块版本
     local version=""
-    # 尝试从不同位置读取模块版本
+    # 从模块目录读取版本信息
     if [ -f "$MODDIR/module.prop" ]; then
         version=$(grep "^version=" "$MODDIR/module.prop" | cut -d= -f2)
-    elif [ -f "/data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop" ]; then
-        version=$(grep "^version=" "/data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop" | cut -d= -f2)
     else
-        # 尝试查找模块属性文件
-        local module_prop=$(find /data/adb/modules -name module.prop -type f | grep -i gpu | head -n 1)
-        if [ -n "$module_prop" ]; then
-            version=$(grep "^version=" "$module_prop" | cut -d= -f2)
-        else
-            version=$(translate "未知" "Unknown")
-        fi
+        version=$(translate "未知" "Unknown")
     fi
     echo "$(log_prefix) $(translate "模块版本: " "Module Version: ")$version"
     echo "----------------------------------------"
