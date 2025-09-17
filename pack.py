@@ -10,6 +10,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
+from typing import Optional
 
 # 配置常量
 SEVEN_ZIP_PATH = Path(r"D:\7-Zip\7z.exe")
@@ -109,7 +110,7 @@ class Packager:
             print(f"打包过程错误: {e}")
             return False
     
-    def create_package(self, custom_name: str = None) -> bool:
+    def create_package(self, custom_name: Optional[str] = None) -> bool:
         """创建压缩包"""
         if not self._check_requirements() or not self._create_output_dir():
             return False
