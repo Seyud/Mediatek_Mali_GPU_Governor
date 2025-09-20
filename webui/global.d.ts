@@ -4,13 +4,17 @@ interface ImportMetaEnv {
 	readonly PROD: boolean;
 	// 可按需继续扩展
 }
-interface ImportMeta {
-	readonly env: ImportMetaEnv;
-}
-interface ExecResult {
-	errno: number;
-	stdout: string;
-	stderr: string;
+
+declare global {
+	interface ImportMeta {
+		readonly env: ImportMetaEnv;
+	}
+
+	interface ExecResult {
+		errno: number;
+		stdout: string;
+		stderr: string;
+	}
 }
 interface KsuAPI {
 	exec(command: string, optionsJson: string, callbackName: string): void;

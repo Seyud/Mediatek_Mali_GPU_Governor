@@ -1,3 +1,4 @@
+import type { GpuConfig } from "./configFileManager";
 import { getTranslation } from "./i18n";
 import { toast } from "./utils";
 
@@ -13,7 +14,7 @@ export class ModalManager {
 	voltageController: VoltageControllerLike | null;
 	editingIndex = -1;
 	currentLanguage: Lang = "zh";
-	onSaveCallback: ((config: any, index: number) => void) | null = null;
+	onSaveCallback: ((config: GpuConfig, index: number) => void) | null = null;
 	onDeleteCallback: ((index: number) => void) | null = null;
 	editConfigModal: HTMLElement | null;
 	closeModalBtn: Element | null;
@@ -89,7 +90,9 @@ export class ModalManager {
 		ddrOptionElements.forEach((option) => {
 			option.addEventListener("click", (e) => {
 				e.stopPropagation();
-				ddrOptionElements.forEach((opt) => opt.classList.remove("selected"));
+				ddrOptionElements.forEach((opt) => {
+					opt.classList.remove("selected");
+				});
 				option.classList.add("selected");
 				if (this.selectedDdr) this.selectedDdr.textContent = option.textContent;
 				const options = this.ddrContainer?.querySelectorAll(".option");
@@ -110,14 +113,14 @@ export class ModalManager {
 		});
 	}
 
-	openModal(config: any = null, index = -1) {
+	openModal(config: GpuConfig | null = null, index = -1) {
 		if (!this.editConfigModal) {
 			console.error("模态框元素不存在");
 			return;
 		}
 		this.editingIndex = index;
 		if (config) {
-			if (this.freqInput) this.freqInput.value = config.freq;
+			if (this.freqInput) this.freqInput.value = String(config.freq);
 			if (this.voltageController) this.voltageController.setVoltage(config.volt);
 			this.setDdrValue(config.ddr);
 			if (this.deleteItemBtn) this.deleteItemBtn.style.display = "block";
@@ -140,9 +143,13 @@ export class ModalManager {
 			ddrOptions.forEach((option) => {
 				const optionValue = parseInt(option.getAttribute("data-value") || "0", 10);
 				if (optionValue === ddrValue) {
-					this.selectedDdr!.textContent = option.textContent;
+					if (this.selectedDdr) {
+						this.selectedDdr.textContent = option.textContent;
+					}
 					option.classList.add("selected");
-				} else option.classList.remove("selected");
+				} else {
+					option.classList.remove("selected");
+				}
 			});
 		}
 	}
@@ -178,7 +185,7 @@ export class ModalManager {
 		} else toast(getTranslation("toast_index_invalid", {}, this.currentLanguage));
 	}
 
-	setSaveCallback(cb: (config: any, index: number) => void) {
+	setSaveCallback(cb: (config: GpuConfig, index: number) => void) {
 		this.onSaveCallback = cb;
 	}
 	setDeleteCallback(cb: (index: number) => void) {

@@ -205,7 +205,6 @@
 	padding: 8px 12px;
 	font-size: 14px;
 	color: var(--text-color);
-	transition: background-color 0.2s;
 	border-bottom: 1px solid var(--border-color);
 	opacity: 0;
 	transform: translateY(-10px);

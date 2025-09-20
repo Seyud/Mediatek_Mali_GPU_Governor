@@ -1,4 +1,4 @@
-import { ConfigFileManager } from "./configFileManager";
+import { ConfigFileManager, type GpuConfig } from "./configFileManager";
 import { GpuConfigManager } from "./gpuConfigManager";
 import { getTranslation } from "./i18n";
 import { ModalManager } from "./modalManager";
@@ -53,7 +53,7 @@ export class ConfigManager {
 		this.gpuConfigManager.setSaveFileCallback(() => {
 			this.saveGpuConfigToFile();
 		});
-		this.modalManager.setSaveCallback((config: any, index: number) => {
+		this.modalManager.setSaveCallback((config: GpuConfig, index: number) => {
 			this.gpuConfigManager.updateConfig(config, index);
 		});
 		this.modalManager.setDeleteCallback((index: number) => {
@@ -71,7 +71,7 @@ export class ConfigManager {
 			this.saveCustomConfigBtn.addEventListener("click", () => this.saveCustomConfigToFile());
 	}
 	async loadGpuConfig() {
-		const result = (await this.configFileManager.loadGpuConfig()) as LoadResult<any[]>;
+		const result = (await this.configFileManager.loadGpuConfig()) as LoadResult<GpuConfig[]>;
 		if (result.success && result.data) this.gpuConfigManager.loadConfigs(result.data);
 		else {
 			console.error("加载GPU配置失败:", result.error);

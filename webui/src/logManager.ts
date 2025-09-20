@@ -27,7 +27,9 @@ export class LogManager {
 		logTabBtns.forEach((btn) => {
 			btn.addEventListener("click", () => {
 				if (btn.classList.contains("active")) return;
-				logTabBtns.forEach((tab) => tab.classList.remove("active"));
+				logTabBtns.forEach((tab) => {
+					tab.classList.remove("active");
+				});
 				btn.classList.add("active");
 				if (this.logContent) {
 					this.logContent.style.opacity = "0.5";

@@ -5,7 +5,7 @@ type Lang = "zh" | "en";
 
 export class ThemeManager {
 	themeToggle: HTMLElement | null;
-	followSystemThemeToggle: HTMLInputElement | any;
+	followSystemThemeToggle: HTMLInputElement | null;
 	followSystemThemeSuperSwitch: HTMLElement | null;
 	currentLanguage: Lang = "zh";
 

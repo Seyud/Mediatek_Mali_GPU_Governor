@@ -1,19 +1,24 @@
+import type { CustomConfig, ModeConfig } from "./configFileManager";
 import { getTranslation } from "./i18n";
 
 type Lang = "zh" | "en";
 
+interface ModeInputs {
+	[key: string]: HTMLElement | null;
+}
+
 export class ModeConfigManager {
 	currentLanguage: Lang = "zh";
-	customConfig: any = {};
+	customConfig: CustomConfig = {};
 	globalModeSelect: HTMLSelectElement | null;
 	globalModeContainer: HTMLElement | null;
 	selectedGlobalMode: HTMLElement | null;
 	globalModeOptions: HTMLElement | null;
 	idleThresholdInput: HTMLInputElement | null;
-	powersaveInputs: any;
-	balanceInputs: any;
-	performanceInputs: any;
-	fastInputs: any;
+	powersaveInputs: ModeInputs | null = null;
+	balanceInputs: ModeInputs | null = null;
+	performanceInputs: ModeInputs | null = null;
+	fastInputs: ModeInputs | null = null;
 	constructor() {
 		this.globalModeSelect = document.getElementById("globalMode") as HTMLSelectElement | null;
 		this.globalModeContainer = document.getElementById("globalModeContainer");
@@ -78,9 +83,13 @@ export class ModeConfigManager {
 		modeButtons.forEach((button) => {
 			button.addEventListener("click", () => {
 				const mode = button.getAttribute("data-mode");
-				modeButtons.forEach((btn) => btn.classList.remove("active"));
+				modeButtons.forEach((btn) => {
+					btn.classList.remove("active");
+				});
 				button.classList.add("active");
-				modeSections.forEach((section) => section.classList.remove("active"));
+				modeSections.forEach((section) => {
+					section.classList.remove("active");
+				});
 				const target = document.getElementById(`${mode}-config`);
 				if (target) target.classList.add("active");
 			});
@@ -106,22 +115,22 @@ export class ModeConfigManager {
 			if (section.id === `${mode}-config`) section.classList.add("active");
 		});
 	}
-	populateCustomConfigForm(customConfig: any) {
+	populateCustomConfigForm(customConfig: CustomConfig) {
 		this.customConfig = customConfig || {};
 		if (this.customConfig.global) {
 			if (this.globalModeSelect && this.customConfig.global.mode)
-				this.globalModeSelect.value = this.customConfig.global.mode;
+				this.globalModeSelect.value = String(this.customConfig.global.mode);
 			if (this.selectedGlobalMode && this.customConfig.global.mode)
-				this.updateGlobalModeDisplay(this.customConfig.global.mode);
+				this.updateGlobalModeDisplay(String(this.customConfig.global.mode));
 			if (this.idleThresholdInput && this.customConfig.global.idle_threshold !== undefined)
-				this.idleThresholdInput.value = this.customConfig.global.idle_threshold;
+				this.idleThresholdInput.value = String(this.customConfig.global.idle_threshold);
 		}
 		this.populateModeConfig(this.powersaveInputs, this.customConfig.powersave);
 		this.populateModeConfig(this.balanceInputs, this.customConfig.balance);
 		this.populateModeConfig(this.performanceInputs, this.customConfig.performance);
 		this.populateModeConfig(this.fastInputs, this.customConfig.fast);
 		if (this.customConfig.global?.mode)
-			this.syncModeTabsWithGlobalMode(this.customConfig.global.mode);
+			this.syncModeTabsWithGlobalMode(String(this.customConfig.global.mode));
 	}
 	updateGlobalModeDisplay(mode: string) {
 		let modeText = "";
@@ -152,14 +161,17 @@ export class ModeConfigManager {
 			}
 		}
 	}
-	populateModeConfig(inputs: any, config: any) {
+	populateModeConfig(inputs: ModeInputs | null, config: ModeConfig | undefined) {
 		if (!config || !inputs) return;
 		Object.keys(inputs).forEach((key) => {
 			const element = inputs[key];
 			if (element && config[key] !== undefined) {
-				if ((element as HTMLInputElement).type === "checkbox")
-					(element as HTMLInputElement).checked = config[key];
-				else (element as HTMLInputElement).value = config[key];
+				const inputElement = element as HTMLInputElement;
+				if (inputElement.type === "checkbox") {
+					inputElement.checked = Boolean(config[key]);
+				} else {
+					inputElement.value = String(config[key]);
+				}
 			}
 		});
 	}
@@ -189,9 +201,9 @@ export class ModeConfigManager {
 	getIdleThreshold() {
 		return this.idleThresholdInput ? this.idleThresholdInput.value || 5 : 5;
 	}
-	getModeConfig(inputs: any) {
+	getModeConfig(inputs: ModeInputs | null): ModeConfig {
 		if (!inputs) return {};
-		const config: any = {};
+		const config: ModeConfig = {};
 		Object.keys(inputs).forEach((key) => {
 			const element = inputs[key];
 			if (element) {
@@ -207,6 +219,7 @@ export class ModeConfigManager {
 	}
 	setLanguage(language: Lang) {
 		this.currentLanguage = language;
-		if (this.customConfig.global?.mode) this.updateGlobalModeDisplay(this.customConfig.global.mode);
+		if (this.customConfig.global?.mode)
+			this.updateGlobalModeDisplay(String(this.customConfig.global.mode));
 	}
 }

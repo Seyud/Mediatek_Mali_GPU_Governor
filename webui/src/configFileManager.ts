@@ -4,10 +4,23 @@ import { exec, toast, withResult } from "./utils";
 
 type Lang = "zh" | "en";
 
-interface GpuConfig {
+export interface GpuConfig {
 	freq: number;
 	volt: number;
 	ddr: number;
+}
+
+export interface ModeConfig {
+	[key: string]: string | number | boolean;
+}
+
+export interface CustomConfig {
+	global?: ModeConfig;
+	powersave?: ModeConfig;
+	balance?: ModeConfig;
+	performance?: ModeConfig;
+	fast?: ModeConfig;
+	[key: string]: ModeConfig | undefined;
 }
 
 export class ConfigFileManager {
@@ -25,8 +38,9 @@ export class ConfigFileManager {
 					const arrayContent = arrayMatch[1];
 					const itemRegex =
 						/\{\s*freq\s*=\s*(\d+),\s*volt\s*=\s*(\d+),\s*ddr_opp\s*=\s*(\d+)\s*\}/g;
-					let itemMatch;
-					while ((itemMatch = itemRegex.exec(arrayContent)) !== null) {
+					let itemMatch: RegExpExecArray | null;
+					itemMatch = itemRegex.exec(arrayContent);
+					while (itemMatch !== null) {
 						const freq = parseInt(itemMatch[1], 10);
 						const volt = parseInt(itemMatch[2], 10);
 						const ddr = parseInt(itemMatch[3], 10);
@@ -34,13 +48,15 @@ export class ConfigFileManager {
 							gpuConfigs.push({ freq, volt, ddr });
 							hasConfig = true;
 						}
+						itemMatch = itemRegex.exec(arrayContent);
 					}
 				}
 				if (!hasConfig) {
 					const freqTableRegex =
 						/\[\[freq_table\]\][\s\S]*?freq\s*=\s*(\d+)[\s\S]*?volt\s*=\s*(\d+)[\s\S]*?ddr_opp\s*=\s*(\d+)/g;
-					let match;
-					while ((match = freqTableRegex.exec(content)) !== null) {
+					let match: RegExpExecArray | null;
+					match = freqTableRegex.exec(content);
+					while (match !== null) {
 						const freq = parseInt(match[1], 10);
 						const volt = parseInt(match[2], 10);
 						const ddr = parseInt(match[3], 10);
@@ -48,6 +64,7 @@ export class ConfigFileManager {
 							gpuConfigs.push({ freq, volt, ddr });
 							hasConfig = true;
 						}
+						match = freqTableRegex.exec(content);
 					}
 				}
 				if (hasConfig) {
@@ -57,9 +74,10 @@ export class ConfigFileManager {
 				return { success: false, error: "config_not_found" };
 			}
 			return { success: false, error: "config_not_found" };
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("加载GPU配置失败:", error);
-			return { success: false, error: error.message };
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			return { success: false, error: errorMessage };
 		}
 	}
 	async saveGpuConfig(gpuConfigs: GpuConfig[]) {
@@ -100,12 +118,13 @@ export class ConfigFileManager {
 				return { success: true, data: customConfig };
 			}
 			return { success: false, error: "config_not_found" };
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("加载自定义配置失败:", error);
-			return { success: false, error: error.message };
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			return { success: false, error: errorMessage };
 		}
 	}
-	async saveCustomConfig(customConfig: any) {
+	async saveCustomConfig(customConfig: CustomConfig) {
 		const configContent = this.generateCustomConfigContent(customConfig);
 		const b64 = btoa(unescape(encodeURIComponent(configContent)));
 		const result = await withResult(
@@ -123,8 +142,8 @@ export class ConfigFileManager {
 		toast(getTranslation("toast_config_save_fail", {}, this.currentLanguage));
 		return { success: false, error: "save_failed" };
 	}
-	parseCustomConfig(content: string) {
-		const customConfig: any = {};
+	parseCustomConfig(content: string): CustomConfig {
+		const customConfig: CustomConfig = {};
 		const globalMatch = /\[global\]([\s\S]*?)(?=\n\[|$)/.exec(content);
 		if (globalMatch) customConfig.global = this.parseSection(globalMatch[1]);
 		const modes = ["powersave", "balance", "performance", "fast"];
@@ -134,8 +153,8 @@ export class ConfigFileManager {
 		});
 		return customConfig;
 	}
-	parseSection(sectionContent: string) {
-		const config: any = {};
+	parseSection(sectionContent: string): ModeConfig {
+		const config: ModeConfig = {};
 		const lines = sectionContent.split("\n");
 		lines.forEach((line) => {
 			const t = line.trim();
@@ -153,7 +172,7 @@ export class ConfigFileManager {
 		});
 		return config;
 	}
-	generateCustomConfigContent(customConfig: any) {
+	generateCustomConfigContent(customConfig: CustomConfig) {
 		let content = "# GPU调速器配置文件\n\n";
 		content += "[global]\n";
 		content += "# 全局模式设置: powersave, balance, performance, fast\n";
@@ -174,7 +193,7 @@ export class ConfigFileManager {
 		});
 		return content;
 	}
-	generateModeConfigContent(config: any) {
+	generateModeConfigContent(config: ModeConfig) {
 		let c = "";
 		c += "# 余量\n";
 		c += `margin = ${config.margin ?? 10}\n`;

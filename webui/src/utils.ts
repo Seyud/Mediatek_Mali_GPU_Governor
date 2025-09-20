@@ -15,8 +15,8 @@ export function exec(command: string, options: Record<string, unknown> = {}): Pr
 				// @ts-expect-error 删除动态挂载
 				delete window[callbackName];
 			};
-			if ((window as any).ksu) {
-				(window as any).ksu.exec(command, JSON.stringify(options), callbackName);
+			if (window.ksu) {
+				window.ksu.exec(command, JSON.stringify(options), callbackName);
 			} else {
 				console.warn("window.ksu 不存在，返回模拟数据");
 				setTimeout(() => {
@@ -32,8 +32,8 @@ export function exec(command: string, options: Record<string, unknown> = {}): Pr
 
 export function toast(message: string) {
 	try {
-		if ((window as any).ksu) {
-			(window as any).ksu.toast(message);
+		if (window.ksu) {
+			window.ksu.toast(message);
 		} else {
 			console.info("[Toast]", message);
 		}
@@ -42,13 +42,14 @@ export function toast(message: string) {
 	}
 }
 
-export function logError(context: string, error: any, extra: Record<string, unknown> = {}) {
+export function logError(context: string, error: unknown, extra: Record<string, unknown> = {}) {
 	try {
+		const errorObj = error as Error;
 		const payload = {
 			level: "error",
 			context,
-			message: error?.message || String(error),
-			stack: error?.stack,
+			message: errorObj?.message || String(error),
+			stack: errorObj?.stack,
 			...extra,
 		};
 		console.error(`[${context}]`, payload);
@@ -62,7 +63,7 @@ export function logError(context: string, error: any, extra: Record<string, unkn
 export async function withResult<T>(
 	fn: () => Promise<T> | T,
 	context: string
-): Promise<{ ok: true; data: T } | { ok: false; error: any; context: string }> {
+): Promise<{ ok: true; data: T } | { ok: false; error: unknown; context: string }> {
 	try {
 		const data = await fn();
 		return { ok: true, data };

@@ -84,6 +84,24 @@ button:hover svg {
 	}
 }
 
+/* 彻底移除主题切换按钮的默认选中效果 */
+.theme-toggle::selection {
+	background: transparent;
+}
+
+.theme-toggle::-moz-selection {
+	background: transparent;
+}
+
+.theme-toggle,
+.theme-toggle * {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 /* 减少动画模式支持 */
 @media (prefers-reduced-motion: reduce) {
 	.theme-toggle,
@@ -120,23 +138,4 @@ button:hover svg {
 
 [data-theme="dark"] .theme-toggle {
 	border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-/* 彻底移除主题切换按钮的默认选中效果 */
-.theme-toggle::selection {
-	background: transparent;
-}
-
-.theme-toggle::-moz-selection {
-	background: transparent;
-}
-
-.theme-toggle,
-.theme-toggle * {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }

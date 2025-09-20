@@ -4,8 +4,8 @@ export class VoltageController {
 	// 使用 number 明确类型
 	currentVoltValue: number = VOLT_SETTINGS.MAX_VOLT as number;
 	isLongPress = false;
-	decreaseTimer: any = null;
-	increaseTimer: any = null;
+	decreaseTimer: number | null = null;
+	increaseTimer: number | null = null;
 	voltageEventsInitialized = false;
 	voltSelect: HTMLSelectElement | null;
 	selectedVolt: HTMLElement | null;
@@ -94,8 +94,10 @@ export class VoltageController {
 					if (can && this.decreaseTimer) {
 						this.decreaseTimer = setInterval(() => {
 							if (!this.decreaseVolt()) {
-								clearInterval(this.decreaseTimer);
-								this.decreaseTimer = null;
+								if (this.decreaseTimer) {
+									clearInterval(this.decreaseTimer);
+									this.decreaseTimer = null;
+								}
 							}
 						}, 150);
 					}
@@ -118,8 +120,10 @@ export class VoltageController {
 					if (can && this.increaseTimer) {
 						this.increaseTimer = setInterval(() => {
 							if (!this.increaseVolt()) {
-								clearInterval(this.increaseTimer);
-								this.increaseTimer = null;
+								if (this.increaseTimer) {
+									clearInterval(this.increaseTimer);
+									this.increaseTimer = null;
+								}
 							}
 						}, 150);
 					}
@@ -143,8 +147,10 @@ export class VoltageController {
 						this.isLongPress = true;
 						this.decreaseTimer = setInterval(() => {
 							if (!this.decreaseVolt()) {
-								clearInterval(this.decreaseTimer);
-								this.decreaseTimer = null;
+								if (this.decreaseTimer) {
+									clearInterval(this.decreaseTimer);
+									this.decreaseTimer = null;
+								}
 							}
 						}, 150);
 					}, 500);
@@ -163,8 +169,10 @@ export class VoltageController {
 						this.isLongPress = true;
 						this.increaseTimer = setInterval(() => {
 							if (!this.increaseVolt()) {
-								clearInterval(this.increaseTimer);
-								this.increaseTimer = null;
+								if (this.increaseTimer) {
+									clearInterval(this.increaseTimer);
+									this.increaseTimer = null;
+								}
 							}
 						}, 150);
 					}, 500);
@@ -175,12 +183,12 @@ export class VoltageController {
 		document.addEventListener("touchend", () => this.clearTimers());
 	}
 	clearTimers() {
-		if (this.decreaseTimer) {
+		if (this.decreaseTimer !== null) {
 			clearTimeout(this.decreaseTimer);
 			clearInterval(this.decreaseTimer);
 			this.decreaseTimer = null;
 		}
-		if (this.increaseTimer) {
+		if (this.increaseTimer !== null) {
 			clearTimeout(this.increaseTimer);
 			clearInterval(this.increaseTimer);
 			this.increaseTimer = null;

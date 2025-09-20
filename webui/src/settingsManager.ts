@@ -25,7 +25,9 @@ export class SettingsManager {
 			logLevelButtons.forEach((button) => {
 				button.addEventListener("click", (e) => {
 					e.preventDefault();
-					logLevelButtons.forEach((btn) => btn.classList.remove("active"));
+					logLevelButtons.forEach((btn) => {
+						btn.classList.remove("active");
+					});
 					button.classList.add("active");
 					this.saveLogLevel();
 				});
@@ -37,7 +39,9 @@ export class SettingsManager {
 			languageButtons.forEach((button) => {
 				button.addEventListener("click", async (e) => {
 					e.preventDefault();
-					languageButtons.forEach((btn) => btn.classList.remove("active"));
+					languageButtons.forEach((btn) => {
+						btn.classList.remove("active");
+					});
 					button.classList.add("active");
 					const selectedValue = button.getAttribute("data-value") as Lang | "system";
 					localStorage.setItem("languageSetting", selectedValue);
@@ -101,7 +105,9 @@ export class SettingsManager {
 				);
 				if (infoButton) {
 					const logLevelButtons = this.logLevelContainer.querySelectorAll(".settings-tab-btn");
-					logLevelButtons.forEach((btn) => btn.classList.remove("active"));
+					logLevelButtons.forEach((btn) => {
+						btn.classList.remove("active");
+					});
 					infoButton.classList.add("active");
 				}
 			}
@@ -127,9 +133,10 @@ export class SettingsManager {
 						)
 					);
 			} else toast(getTranslation("toast_log_level_fail", {}, this.currentLanguage));
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("保存日志等级失败:", error);
-			toast(`保存日志等级失败: ${error.message}`);
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			toast(`保存日志等级失败: ${errorMessage}`);
 		}
 	}
 

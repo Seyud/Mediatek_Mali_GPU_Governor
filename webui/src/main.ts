@@ -17,7 +17,7 @@ async function loadComponent(url: string, containerId: string) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-	const isDev = Boolean((import.meta as any)?.env?.DEV);
+	const isDev = Boolean(import.meta?.env?.DEV);
 	if (isDev) {
 		await loadComponent("components/header.html", "header-container");
 		await loadComponent("components/status-page.html", "status-page-container");

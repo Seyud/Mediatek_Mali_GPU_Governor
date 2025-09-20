@@ -89,6 +89,12 @@
 	justify-content: center;
 }
 
+.refresh-icon svg {
+	width: 16px;
+	height: 16px;
+	transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .log-tab-btn .tab-icon svg {
 	width: 20px;
 	height: 20px;
@@ -204,12 +210,6 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}
-
-.refresh-icon svg {
-	width: 16px;
-	height: 16px;
-	transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .refresh-btn:hover .refresh-icon {

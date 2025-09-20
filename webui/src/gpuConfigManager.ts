@@ -58,8 +58,8 @@ export class GpuConfigManager {
 	}
 	createTableRow(config: GpuConfig, index: number) {
 		const row = document.createElement("tr");
-		(row as any).dataset.index = String(index);
-		(row as any).dataset.freq = String(config.freq);
+		row.dataset.index = String(index);
+		row.dataset.freq = String(config.freq);
 		const freqCell = document.createElement("td");
 		freqCell.textContent = (config.freq / 1000).toFixed(0);
 		const voltCell = document.createElement("td");

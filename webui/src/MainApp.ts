@@ -7,6 +7,18 @@ import { SettingsManager } from "./settingsManager";
 import { ThemeManager } from "./themeManager";
 import { exec, logError, toast, withResult } from "./utils";
 
+interface LanguageChangeEvent extends CustomEvent {
+	detail: {
+		language: Language;
+	};
+}
+
+interface TranslationsType {
+	[language: string]: {
+		[key: string]: string;
+	};
+}
+
 export class MainApp {
 	currentLanguage: Language = "zh";
 	currentPage = "page-status";
@@ -21,11 +33,11 @@ export class MainApp {
 	navItems: NodeListOf<Element>;
 	languageContainer: HTMLElement | null;
 
-	themeManager: any;
-	configManager: any;
-	gamesManager: any;
-	logManager: any;
-	settingsManager: any;
+	themeManager: ThemeManager;
+	configManager: ConfigManager;
+	gamesManager: GamesManager;
+	logManager: LogManager;
+	settingsManager: SettingsManager;
 
 	constructor() {
 		this.app = document.getElementById("app");
@@ -84,8 +96,9 @@ export class MainApp {
 	}
 
 	setupLanguageEvents() {
-		document.addEventListener("languageChange", (e: any) => {
-			const { language } = e.detail;
+		document.addEventListener("languageChange", (e: Event) => {
+			const customEvent = e as LanguageChangeEvent;
+			const { language } = customEvent.detail;
 			this.currentLanguage = language;
 			this.themeManager.setLanguage(this.currentLanguage);
 			this.configManager.setLanguage(this.currentLanguage);
@@ -124,7 +137,8 @@ export class MainApp {
 
 	async detectSystemLanguage(): Promise<Language> {
 		try {
-			const browserLanguage = navigator.language || (navigator as any).userLanguage || "zh-CN";
+			const navigatorWithLegacy = navigator as Navigator & { userLanguage?: string };
+			const browserLanguage = navigator.language || navigatorWithLegacy.userLanguage || "zh-CN";
 			try {
 				const { errno, stdout } = await exec(
 					'getprop persist.sys.locale || getprop ro.product.locale || echo "zh-CN"'
@@ -177,8 +191,8 @@ export class MainApp {
 				const key = el.getAttribute("data-i18n");
 				if (
 					key &&
-					(translations as any)[this.currentLanguage] &&
-					(translations as any)[this.currentLanguage][key]
+					(translations as TranslationsType)[this.currentLanguage] &&
+					(translations as TranslationsType)[this.currentLanguage][key]
 				) {
 					el.textContent = getTranslation(key, {}, this.currentLanguage);
 				}
@@ -192,7 +206,9 @@ export class MainApp {
 		try {
 			if (!this.languageContainer) return;
 			const languageButtons = this.languageContainer.querySelectorAll(".settings-tab-btn");
-			languageButtons.forEach((btn) => btn.classList.remove("active"));
+			languageButtons.forEach((btn) => {
+				btn.classList.remove("active");
+			});
 			const selectedButton = this.languageContainer.querySelector(
 				`.settings-tab-btn[data-value="${languageSetting}"]`
 			);
@@ -209,7 +225,7 @@ export class MainApp {
 	}
 
 	async loadData() {
-		const tasks: Array<{ fn: () => Promise<any>; context: string; failMsg: string }> = [
+		const tasks: Array<{ fn: () => Promise<unknown>; context: string; failMsg: string }> = [
 			{
 				fn: () => this.checkModuleStatus(),
 				context: "check-module-status",
@@ -253,7 +269,9 @@ export class MainApp {
 	}
 
 	switchPage(pageId: string) {
-		this.pages.forEach((page) => page.classList.remove("active"));
+		this.pages.forEach((page) => {
+			page.classList.remove("active");
+		});
 		const targetPage = document.getElementById(pageId);
 		if (targetPage) targetPage.classList.add("active");
 		this.navItems.forEach((item) => {
@@ -273,20 +291,20 @@ export class MainApp {
 				// 移除 data-i18n 属性，避免语言切换时被覆盖
 				this.runningStatus.removeAttribute("data-i18n");
 				setTimeout(() => {
-					if (newStatus) {
-						this.runningStatus!.textContent = getTranslation(
+					if (newStatus && this.runningStatus) {
+						this.runningStatus.textContent = getTranslation(
 							"status_running_active",
 							{},
 							this.currentLanguage
 						);
-						this.runningStatus!.className = "status-badge status-running";
-					} else {
-						this.runningStatus!.textContent = getTranslation(
+						this.runningStatus.className = "status-badge status-running";
+					} else if (this.runningStatus) {
+						this.runningStatus.textContent = getTranslation(
 							"status_running_inactive",
 							{},
 							this.currentLanguage
 						);
-						this.runningStatus!.className = "status-badge status-stopped";
+						this.runningStatus.className = "status-badge status-stopped";
 					}
 					setTimeout(() => {
 						this.runningStatus?.classList.remove("status-changing");

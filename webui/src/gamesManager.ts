@@ -2,6 +2,12 @@ import { PATHS } from "./constants";
 import { getTranslation, translations } from "./i18n";
 import { exec, logError, toast, withResult } from "./utils";
 
+interface TranslationsType {
+	[language: string]: {
+		[key: string]: string;
+	};
+}
+
 type Lang = "zh" | "en";
 
 interface GameItem {
@@ -9,8 +15,14 @@ interface GameItem {
 	mode: string;
 }
 
+interface GameConfig {
+	package?: string;
+	mode?: string;
+	trim?: () => string;
+}
+
 export class GamesManager {
-	gamesListData: GameItem[] = [];
+	gamesListData: (GameItem | GameConfig)[] = [];
 	currentLanguage: Lang = "zh";
 	gamesList: HTMLElement | null;
 	addGameBtn: HTMLElement | null;
@@ -90,9 +102,9 @@ export class GamesManager {
 	}
 
 	parseTomlGames(tomlString: string) {
-		const games: any[] = [];
+		const games: GameConfig[] = [];
 		const lines = tomlString.split("\n");
-		let currentGame: any = null;
+		let currentGame: GameConfig | null = null;
 		for (const line of lines) {
 			const trimmed = line.trim();
 			if (!trimmed || trimmed.startsWith("#")) continue;
@@ -124,9 +136,7 @@ export class GamesManager {
 			const li = document.createElement("li");
 			const gameText = document.createElement("span");
 			const modeText = this.getModeText(game.mode || "balance");
-			gameText.textContent = game.package
-				? `${game.package} (${modeText})`
-				: (game as any).trim?.();
+			gameText.textContent = game.package ? `${game.package} (${modeText})` : "";
 			li.appendChild(gameText);
 			const buttonContainer = document.createElement("div");
 			buttonContainer.className = "game-button-container";
@@ -221,12 +231,16 @@ export class GamesManager {
 				e.stopPropagation();
 				const value = option.getAttribute("data-value");
 				const text = option.textContent;
-				this.selectedGameMode!.textContent = text;
+				if (this.selectedGameMode) {
+					this.selectedGameMode.textContent = text;
+				}
 				if (this.gameModeSelect && value) {
 					this.gameModeSelect.value = value;
 					this.gameModeSelect.dispatchEvent(new Event("change"));
 				}
-				options.forEach((opt) => opt.classList.remove("selected"));
+				options.forEach((opt) => {
+					opt.classList.remove("selected");
+				});
 				option.classList.add("selected");
 				this.gameModeContainer?.classList.remove("open");
 			});
@@ -242,7 +256,9 @@ export class GamesManager {
 		if (option) {
 			this.selectedGameMode.textContent = option.textContent;
 			const options = this.gameModeOptions.querySelectorAll(".option");
-			options.forEach((opt) => opt.classList.remove("selected"));
+			options.forEach((opt) => {
+				opt.classList.remove("selected");
+			});
 			option.classList.add("selected");
 		}
 	}
@@ -286,8 +302,9 @@ export class GamesManager {
 				const option = options[i];
 				const value = option.value;
 				const key = `status_mode_${value}`;
-				if ((translations as any)[language]?.[key])
-					option.textContent = (translations as any)[language][key];
+				if ((translations as TranslationsType)[language]?.[key]) {
+					option.textContent = (translations as TranslationsType)[language][key];
+				}
 			}
 		}
 		if (this.gameModeOptions) {
@@ -295,15 +312,17 @@ export class GamesManager {
 			customOptions.forEach((option) => {
 				const value = option.getAttribute("data-value");
 				const key = `status_mode_${value}`;
-				if ((translations as any)[language]?.[key])
-					option.textContent = (translations as any)[language][key];
+				if ((translations as TranslationsType)[language]?.[key]) {
+					option.textContent = (translations as TranslationsType)[language][key];
+				}
 			});
 		}
 		if (this.selectedGameMode && this.gameModeSelect) {
 			const selectedValue = this.gameModeSelect.value;
 			const key = `status_mode_${selectedValue}`;
-			if ((translations as any)[language]?.[key])
-				this.selectedGameMode.textContent = (translations as any)[language][key];
+			if ((translations as TranslationsType)[language]?.[key]) {
+				this.selectedGameMode.textContent = (translations as TranslationsType)[language][key];
+			}
 		}
 		this.refreshGamesList();
 	}

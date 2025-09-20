@@ -57,6 +57,20 @@
 	transform: scale(1.1);
 }
 
+/* 悬停效果 - 基础选择器 */
+.status-item:hover .miuix-status-icon {
+	transform: scale(1.1) rotate(2deg);
+	box-shadow: 0 4px 12px rgba(13, 132, 255, 0.4);
+}
+
+.status-item:hover .miuix-status-icon::before {
+	opacity: 1;
+}
+
+.status-item:hover .miuix-status-icon svg.status-icon {
+	transform: scale(1.05);
+}
+
 /* 确保miuix图标容器在文本前正确显示 */
 .status-item > span:first-child .miuix-status-icon {
 	width: 24px;
@@ -98,18 +112,4 @@
 	opacity: 1;
 	z-index: 1;
 	position: relative;
-}
-
-/* 悬停效果 */
-.status-item:hover .miuix-status-icon {
-	transform: scale(1.1) rotate(2deg);
-	box-shadow: 0 4px 12px rgba(13, 132, 255, 0.4);
-}
-
-.status-item:hover .miuix-status-icon::before {
-	opacity: 1;
-}
-
-.status-item:hover .miuix-status-icon svg.status-icon {
-	transform: scale(1.05);
 }
