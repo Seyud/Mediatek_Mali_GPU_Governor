@@ -5,15 +5,19 @@ WebUI 构建辅助脚本
 功能:
  1. 自动检测 Node / 包管理器 (pnpm > yarn > npm)
  2. 可选自动安装依赖 (--install)
- 3. 执行构建 (默认)
- 4. 支持清理 node_modules / dist (--clean)
- 5. 可指定包管理器 (--pm npm|yarn|pnpm)
- 6. Windows / Linux / Mac 通用（使用 subprocess）
- 7. 输出更友好的日志 + 失败时提示可能解决方案
+ 3. Biome 代码检查 (默认在构建前执行)
+ 4. 执行构建 (默认)
+ 5. 支持清理 node_modules / dist (--clean)
+ 6. 可指定包管理器 (--pm npm|yarn|pnpm)
+ 7. Windows / Linux / Mac 通用（使用 subprocess）
+ 8. 输出更友好的日志 + 失败时提示可能解决方案
 
 用法示例:
-  python build_webui.py                 # 直接构建 (若 node_modules 存在则跳过安装)
-  python build_webui.py --install       # 先安装依赖再构建
+  python build_webui.py                 # Biome 检查 + 构建 (若 node_modules 存在则跳过安装)
+  python build_webui.py --install       # 先安装依赖，再 Biome 检查 + 构建
+  python build_webui.py --skip-biome    # 跳过 Biome 检查，直接构建
+  python build_webui.py --biome-fix     # Biome 检查时自动修复问题
+  python build_webui.py --biome-only    # 仅运行 Biome 检查
   python build_webui.py --clean --install
   python build_webui.py --pm pnpm --install
   python build_webui.py --skip-build --install   # 只安装
@@ -111,6 +115,58 @@ def install_dependencies(pm: str, verbose: bool=False) -> None:
         run([exe, 'install', '--no-audit', '--no-fund'], ROOT, verbose=verbose)
 
 
+def biome_check(pm: str, fix: bool=False, verbose: bool=False) -> None:
+    """运行 Biome 代码检查"""
+    print(c('==> 运行 Biome 代码检查', 'green'))
+    exe = resolve_pm_cmd(pm)
+    
+    # 尝试找到 biome 可执行文件
+    if os.name == 'nt':  # Windows
+        biome_paths = [
+            ROOT / 'node_modules' / '.bin' / 'biome.cmd',
+            ROOT / 'node_modules' / '.bin' / 'biome.exe',
+        ]
+    else:  # Unix-like
+        biome_paths = [
+            ROOT / 'node_modules' / '.bin' / 'biome',
+        ]
+    
+    biome_exe = None
+    for path in biome_paths:
+        if path.exists():
+            biome_exe = str(path)
+            break
+    
+    if not biome_exe:
+        # 如果找不到本地 biome，尝试使用包管理器执行
+        if pm == 'yarn':
+            cmd = [exe, 'dlx', '@biomejs/biome', 'check', '.']
+        elif pm == 'pnpm':
+            cmd = [exe, 'dlx', '@biomejs/biome', 'check', '.']
+        else:  # npm - 尝试通过 npm exec
+            npx = which('npx') or which('npx.cmd')
+            if npx:
+                cmd = [npx, '@biomejs/biome', 'check', '.']
+            else:
+                print(c('警告: 无法找到 biome 可执行文件或 npx，尝试使用 npm exec', 'yellow'))
+                cmd = [exe, 'exec', '--', '@biomejs/biome', 'check', '.']
+    else:
+        # 使用本地安装的 biome
+        cmd = [biome_exe, 'check', '.']
+    
+    if fix:
+        cmd.append('--write')
+    
+    try:
+        run(cmd, ROOT, verbose=verbose)
+        print(c('✓ Biome 检查通过', 'green'))
+    except subprocess.CalledProcessError as e:
+        print(c('✗ Biome 检查发现问题', 'red'))
+        if not fix:
+            print(c('提示: 使用 --biome-fix 参数可自动修复部分问题', 'yellow'))
+        raise
+
+
 def build(pm: str, verbose: bool=False) -> None:
     print(c('==> 开始构建', 'green'))
     exe = resolve_pm_cmd(pm)
@@ -137,6 +193,9 @@ def parse_args():
     p.add_argument('--clean', action='store_true', help='删除 dist/ 目录')
     p.add_argument('--deep-clean', action='store_true', help='删除 dist/ 和 node_modules/')
     p.add_argument('--skip-build', action='store_true', help='仅执行依赖安装或清理，不构建')
+    p.add_argument('--skip-biome', action='store_true', help='跳过 Biome 代码检查')
+    p.add_argument('--biome-fix', action='store_true', help='运行 Biome 检查时自动修复问题')
+    p.add_argument('--biome-only', action='store_true', help='仅运行 Biome 检查，不构建')
     p.add_argument('--no-color', action='store_true', help='关闭彩色输出')
     p.add_argument('--verbose', action='store_true', help='输出调试信息 (显示 PATH 等)')
     return p.parse_args()
@@ -171,7 +230,17 @@ def main():
         else:
             print(c('跳过依赖安装 (已存在 node_modules/，若需强制请加 --install)', 'blue'))
 
-        if not args.skip_build:
+        # Biome 代码检查
+        should_run_biome = not args.skip_biome and (not args.skip_build or args.biome_only)
+        if should_run_biome:
+            biome_check(pm, fix=args.biome_fix, verbose=args.verbose)
+        elif args.skip_biome:
+            print(c('已跳过 Biome 检查 (--skip-biome)', 'yellow'))
+
+        # 构建
+        if args.biome_only:
+            print(c('仅运行 Biome 检查 (--biome-only)', 'yellow'))
+        elif not args.skip_build:
             build(pm, verbose=args.verbose)
         else:
             print(c('已跳过构建 (--skip-build)', 'yellow'))
