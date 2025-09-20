@@ -153,7 +153,7 @@
     border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
 }
 
-.copyright-content {
+copyright-content {
     text-align: center;
     padding: 20px !important;
     color: var(--secondary-text-color);
@@ -163,7 +163,7 @@
     z-index: 1;
 }
 
-.copyright-content p {
+copyright-content p {
     margin: 0;
     font-weight: 500;
     background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);

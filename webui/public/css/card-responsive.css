@@ -1,0 +1,136 @@
+/* ==========================================
+   卡片响应式布局模块 (card-responsive.css)
+   处理不同屏幕宽度下卡片的自适应行为
+   ========================================== */
+
+/* 默认布局：假设桌面端宽度 */
+.cards-grid, .settings-grid, .config-grid, .status-grid, .voltage-grid, .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width, 320px), 1fr));
+    gap: var(--grid-gap, 16px);
+    align-items: stretch;
+}
+
+/* 更密集的卡片网格，用于小部件或信息块 */
+.dense-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+/* 针对极宽屏幕：扩大卡片最小尺寸，减少过度分栏 */
+@media (min-width: 1800px) {
+    .cards-grid, .settings-grid, .config-grid, .status-grid, .voltage-grid, .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    }
+}
+
+/* 宽屏到中等屏幕的优化 */
+@media (max-width: 1400px) {
+    .cards-grid, .settings-grid, .config-grid, .status-grid, .voltage-grid, .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+/* 中等屏幕：保持良好可读性 */
+@media (max-width: 1200px) {
+    .cards-grid, .settings-grid, .config-grid, .status-grid, .voltage-grid, .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+/* 平板宽度 */
+@media (max-width: 992px) {
+    :root {
+        --card-min-width: 260px;
+    }
+    .cards-grid, .settings-grid, .config-grid, .status-grid, .voltage-grid, .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 14px;
+    }
+}
+
+/* 窄平板/大屏手机横屏 */
+@media (max-width: 820px) {
+    .cards-grid, .settings-grid, .config-grid, .status-grid, .voltage-grid, .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px;
+    }
+
+    .content-area {
+        padding: 16px 18px 64px 18px;
+    }
+}
+
+/* 手机宽度 */
+@media (max-width: 640px) {
+    :root {
+        --card-min-width: 100%;
+        --grid-gap: 14px;
+    }
+
+    .cards-grid, .settings-grid, .config-grid, .status-grid, .voltage-grid, .games-grid {
+        grid-template-columns: 1fr;
+        gap: var(--grid-gap);
+    }
+
+    /* 全宽卡片 */
+    .card, .cgroup-info, .gpu-info, .games-config-container, .voltage-control-card, .settings-card, .config-card { 
+        width: 100%;
+        margin: 0;
+    }
+
+    #appIconCard .miuix-app-icon {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    #appIconCard .app-title {
+        font-size: 22px;
+    }
+}
+
+/* 小手机 */
+@media (max-width: 480px) {
+    .content-area {
+        padding: 14px 16px 72px 16px;
+    }
+
+    .card, .cgroup-info, .gpu-info, .games-config-container, .voltage-control-card, .settings-card, .config-card {
+        padding: 16px 16px 18px 16px;
+    }
+
+    #appIconCard .app-title {
+        font-size: 20px;
+    }
+
+    .stats-grid, .mode-stats-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+}
+
+/* 超小屏幕 (小折叠屏) */
+@media (max-width: 370px) {
+    .card, .cgroup-info, .gpu-info, .games-config-container, .voltage-control-card, .settings-card, .config-card {
+        padding: 14px 14px 16px 14px;
+    }
+
+    .card h2, .settings-card h2, .config-card h2 {
+        font-size: 18px;
+    }
+}
+
+/* 横屏处理（尤其针对移动设备横屏的高度限制） */
+@media (max-height: 540px) and (orientation: landscape) {
+    .content-area {
+        padding: 12px 16px 48px 16px;
+    }
+
+    .card, .cgroup-info, .gpu-info, .games-config-container, .voltage-control-card, .settings-card, .config-card {
+        padding: 14px 16px 16px 16px;
+    }
+
+    #appIconCard .app-title {
+        font-size: 20px;
+    }
+}

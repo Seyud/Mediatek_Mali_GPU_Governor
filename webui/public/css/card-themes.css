@@ -1,0 +1,226 @@
+/* ==========================================
+   卡片主题与配色模块 (card-themes.css)
+   用于增强不同状态/类别卡片的色彩表达（信息、警告、成功、危险等）
+   ========================================== */
+
+/* 语义色卡片基类 */
+.card-semantic {
+    position: relative;
+    overflow: hidden;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 18px;
+    --semantic-glow-opacity: 0;
+    transition: border-color 0.35s ease, background-color 0.35s ease, box-shadow 0.4s ease;
+}
+
+.card-semantic:hover {
+    --semantic-glow-opacity: 0.18;
+}
+
+/* 背景光晕 */
+.card-semantic::before {
+    content: "";
+    position: absolute;
+    top: -12%;
+    left: -12%;
+    width: 140%;
+    height: 140%;
+    background: radial-gradient(circle at 30% 30%, var(--semantic-glow-color, transparent), transparent 70%);
+    opacity: var(--semantic-glow-opacity);
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    filter: blur(18px);
+}
+
+/* 信息卡片 */
+.card-info {
+    --semantic-color: var(--info-color, #0d84ff);
+    --semantic-bg: rgba(13, 132, 255, 0.07);
+    --semantic-border: rgba(13, 132, 255, 0.35);
+    --semantic-glow-color: rgba(13, 132, 255, 0.6);
+    background: linear-gradient(145deg, var(--semantic-bg), transparent 100%);
+    border-color: var(--semantic-border);
+}
+
+.card-info:hover {
+    box-shadow: 0 6px 20px rgba(13, 132, 255, 0.25), 0 2px 8px rgba(13, 132, 255, 0.18);
+    border-color: var(--semantic-color);
+}
+
+/* 成功卡片 */
+.card-success {
+    --semantic-color: var(--success-color, #2bbf6a);
+    --semantic-bg: rgba(43, 191, 106, 0.07);
+    --semantic-border: rgba(43, 191, 106, 0.35);
+    --semantic-glow-color: rgba(43, 191, 106, 0.6);
+    background: linear-gradient(145deg, var(--semantic-bg), transparent 100%);
+    border-color: var(--semantic-border);
+}
+
+.card-success:hover {
+    box-shadow: 0 6px 20px rgba(43, 191, 106, 0.25), 0 2px 8px rgba(43, 191, 106, 0.18);
+    border-color: var(--semantic-color);
+}
+
+/* 警告卡片 */
+.card-warning {
+    --semantic-color: var(--warning-color, #ffaf00);
+    --semantic-bg: rgba(255, 175, 0, 0.09);
+    --semantic-border: rgba(255, 175, 0, 0.38);
+    --semantic-glow-color: rgba(255, 175, 0, 0.6);
+    background: linear-gradient(145deg, var(--semantic-bg), transparent 100%);
+    border-color: var(--semantic-border);
+}
+
+.card-warning:hover {
+    box-shadow: 0 6px 20px rgba(255, 175, 0, 0.25), 0 2px 8px rgba(255, 175, 0, 0.18);
+    border-color: var(--semantic-color);
+}
+
+/* 危险卡片 */
+.card-danger {
+    --semantic-color: var(--danger-color, #ff3b30);
+    --semantic-bg: rgba(255, 59, 48, 0.07);
+    --semantic-border: rgba(255, 59, 48, 0.35);
+    --semantic-glow-color: rgba(255, 59, 48, 0.6);
+    background: linear-gradient(145deg, var(--semantic-bg), transparent 100%);
+    border-color: var(--semantic-border);
+}
+
+.card-danger:hover {
+    box-shadow: 0 6px 20px rgba(255, 59, 48, 0.25), 0 2px 8px rgba(255, 59, 48, 0.18);
+    border-color: var(--semantic-color);
+}
+
+/* 中性卡片 */
+.card-neutral {
+    --semantic-color: var(--neutral-color, #8899aa);
+    --semantic-bg: rgba(136, 153, 170, 0.07);
+    --semantic-border: rgba(136, 153, 170, 0.3);
+    --semantic-glow-color: rgba(136, 153, 170, 0.55);
+    background: linear-gradient(145deg, var(--semantic-bg), transparent 100%);
+    border-color: var(--semantic-border);
+}
+
+.card-neutral:hover {
+    box-shadow: 0 6px 20px rgba(136, 153, 170, 0.25), 0 2px 8px rgba(136, 153, 170, 0.18);
+    border-color: var(--semantic-color);
+}
+
+/* 低强调卡片（用于备用、占位或暂无数据） */
+.card-muted {
+    --semantic-color: var(--muted-color, #94a2b8);
+    --semantic-bg: rgba(148, 162, 184, 0.05);
+    --semantic-border: rgba(148, 162, 184, 0.25);
+    --semantic-glow-color: rgba(148, 162, 184, 0.45);
+    background: linear-gradient(145deg, var(--semantic-bg), transparent 100%);
+    border-color: var(--semantic-border);
+    opacity: 0.85;
+}
+
+.card-muted:hover {
+    opacity: 1;
+    box-shadow: 0 6px 20px rgba(148, 162, 184, 0.25), 0 2px 8px rgba(148, 162, 184, 0.18);
+    border-color: var(--semantic-color);
+}
+
+/* 强调状态边条（可与语义卡片组合） */
+.card-semantic .accent-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(var(--semantic-color), transparent);
+    opacity: 0.8;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+/* 标题配色 */
+.card-semantic h2, .card-semantic h3, .card-semantic h4 {
+    color: var(--semantic-color);
+}
+
+/* 语义文本强调 */
+.semantic-text {
+    color: var(--semantic-color, var(--accent-color));
+    font-weight: 600;
+}
+
+/* 具有语义背景的徽章 */
+.semantic-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    background: linear-gradient(135deg, var(--semantic-bg, rgba(13,132,255,0.1)), transparent 100%);
+    border: 1px solid var(--semantic-border, rgba(13,132,255,0.4));
+    color: var(--semantic-color, var(--accent-color));
+    backdrop-filter: blur(6px);
+}
+
+.semantic-badge.glow {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px var(--semantic-border, rgba(13,132,255,0.4));
+}
+
+/* 状态点 */
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--semantic-color, var(--accent-color));
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.08), 0 0 0 1px var(--semantic-border, rgba(13,132,255,0.4));
+    margin-right: 6px;
+    position: relative;
+}
+
+.status-dot.pulse::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--semantic-color, var(--accent-color));
+    animation: statusPulse 2.4s ease-out infinite;
+    opacity: 0.6;
+}
+
+@keyframes statusPulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    70% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+}
+
+/* 强调标题行 */
+.semantic-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0 12px 0;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--semantic-border, rgba(13,132,255,0.35));
+}
+
+.semantic-header .icon {
+    width: 22px;
+    height: 22px;
+    fill: var(--semantic-color, var(--accent-color));
+    opacity: 0.9;
+}
+
+/* 渐变分隔线（用于分区） */
+.semantic-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right, transparent, var(--semantic-border, rgba(13,132,255,0.4)), transparent);
+    margin: 14px 0;
+    opacity: 0.7;
+}

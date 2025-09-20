@@ -1,0 +1,17 @@
+{
+  "name": "mediatek-mali-gpu-governor-webui-dev",
+  "private": true,
+  "version": "2.9.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/postbuild-css.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0",
+    "csso": "^5.0.5"
+  }
+}

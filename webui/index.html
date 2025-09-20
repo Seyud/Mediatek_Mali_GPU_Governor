@@ -7,7 +7,7 @@
   <meta name="description" content="Mediatek Mali GPU Governor 控制面板" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <!-- 统一入口样式：main.css 内部使用 @import 链接其余模块 -->
-  <link rel="stylesheet" href="/assets/app-ba73d2c494.css" />
+  <link rel="stylesheet" href="/css/main.css" />
   <script>
     // 初始主题设置（与生产一致）
     (function() {
@@ -23,7 +23,6 @@
       } catch (e) { console.warn('无法设置初始主题', e); }
     })();
   </script>
-  <script type="module" crossorigin src="/assets/index-YQjo692a.js"></script>
 </head>
 <body>
   <div id="loading">加载中</div>
@@ -41,5 +40,6 @@
     <div id="modals-container"></div>
     <div id="navigation-container"></div>
   </div>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

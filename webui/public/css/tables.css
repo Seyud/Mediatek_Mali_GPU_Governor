@@ -134,7 +134,7 @@ tbody tr:last-child td {
     background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%);
 }
 
-.delete-btn:hover {
+delete-btn:hover {
     border-color: rgba(231, 76, 60, 0.3);
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
@@ -204,7 +204,7 @@ tbody tr:last-child td {
     margin-bottom: 0;
 }
 
-.games-actions {
+games-actions {
     display: flex;
     justify-content: space-between;
     gap: 12px;
@@ -239,7 +239,7 @@ tbody tr:last-child td {
     box-shadow: 0 4px 8px rgba(13, 132, 255, 0.2);
 }
 
-.game-edit-btn:hover svg, .game-delete-btn:hover svg {
+game-edit-btn:hover svg, .game-delete-btn:hover svg {
     transform: scale(1.1);
 }
 
