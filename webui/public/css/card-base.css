@@ -124,6 +124,24 @@
     padding: 20px;
 }
 
+/* =============================
+   配置页板块间距优化
+   说明: 用户反馈配置页多个板块(频率表/自定义配置/游戏列表)之间无明显间隔
+   采用 flex + gap 方式，避免 margin 折叠及不同浏览器渲染差异
+   仅作用于 #page-config，避免影响其它页面布局
+   ============================= */
+/* 仅在该页面被激活时应用 flex + gap，避免覆盖 .page 的初始 display:none */
+.page.active#page-config {
+    display: flex;
+    flex-direction: column;
+    gap: 28px; /* 统一垂直间距，可根据需要在 :root 变量中抽象 */
+}
+
+/* 由于使用了统一 gap，这里移除内部 card 自带的底部 margin，防止额外空白 */
+.page.active#page-config > .card {
+    margin-bottom: 0;
+}
+
 /* 设置页面中的选项间距更大 */
 #settingsCard .status-item {
     margin-bottom: 24px;
