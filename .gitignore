@@ -1,23 +1,15 @@
 # 忽略log文件夹中的所有内容
 /log/
 
-# 忽略miuix-main文件夹中的所有内容，避免与miuix-main项目冲突
+# 忽略参考
 /miuix-main/
 /KernelSU_API/
 
-# 忽略编译生成的文件
-/target/
-/build/
-
-# 忽略临时文件
-*.tmp
-*.temp
-
 # 忽略IDE和编辑器相关文件
-.idea/
 .vscode/
-*.iml
-.DS_Store
 
-# 忽略output文件夹
+# 前端依赖目录
+/webui/node_modules/
+
+# 忽略输出文件夹
 output/
