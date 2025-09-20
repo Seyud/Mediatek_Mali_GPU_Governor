@@ -204,7 +204,7 @@ delete-btn:hover {
     margin-bottom: 0;
 }
 
-games-actions {
+.games-actions {
     display: flex;
     justify-content: space-between;
     gap: 12px;

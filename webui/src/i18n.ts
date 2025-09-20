@@ -130,9 +130,9 @@ export const translations = {
 		config_games_list_not_found: '未找到游戏列表'
 	},
 	en: {
-		title: 'Dimensity GPU Governor',
+		title: 'Mediatek Mali GPU Governor',
 		loading: 'Loading',
-		header_title: 'Dimensity GPU Governor',
+		header_title: 'Mediatek Mali GPU Governor',
 		nav_status: 'Status',
 		nav_config: 'Config',
 		nav_log: 'Log',
@@ -254,7 +254,7 @@ export const translations = {
 		toast_log_level_fail: 'Failed to save log level, please check permissions',
 		toast_language_changed: 'Language changed to {language}',
 		toast_language_follow_system: 'Language set to follow system',
-		copyright_text: 'Dimensity GPU Governor © 2025 Coolapk@Walika = Github@Seyud',
+		copyright_text: 'Mediatek Mali GPU Governor © 2025 Coolapk@Walika = Github@Seyud',
 		config_games_not_found: 'No games found',
 		config_games_list_not_found: 'No games list found'
 	}

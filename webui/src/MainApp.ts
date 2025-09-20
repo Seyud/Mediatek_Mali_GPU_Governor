@@ -95,6 +95,10 @@ export class MainApp {
 			this.logManager.setLanguage(this.currentLanguage);
 			this.settingsManager.setLanguage(this.currentLanguage);
 			this.applyTranslations();
+			// 重新加载状态信息以确保正确的翻译
+			this.loadModuleVersion();
+			this.loadCurrentMode();
+			this.checkModuleStatus();
 		});
 	}
 
@@ -227,6 +231,8 @@ export class MainApp {
 			const currentStatus = this.runningStatus && this.runningStatus.classList.contains('status-running');
 			if (newStatus !== currentStatus && this.runningStatus) {
 				this.runningStatus.classList.add('status-changing');
+				// 移除 data-i18n 属性，避免语言切换时被覆盖
+				this.runningStatus.removeAttribute('data-i18n');
 				setTimeout(() => {
 					if (newStatus) {
 						this.runningStatus!.textContent = getTranslation('status_running_active', {}, this.currentLanguage);
@@ -243,6 +249,8 @@ export class MainApp {
 			if (this.runningStatus) {
 				this.runningStatus.textContent = getTranslation('status_checking', {}, this.currentLanguage);
 				this.runningStatus.className = 'status-badge status-stopped';
+				// 移除 data-i18n 属性，避免语言切换时被覆盖
+				this.runningStatus.removeAttribute('data-i18n');
 			}
 		}
 	}
@@ -251,18 +259,32 @@ export class MainApp {
 		try {
 			const { errno, stdout } = await exec('grep -i "^version=" /data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2');
 			if (errno === 0 && stdout.trim()) {
-				if (this.moduleVersion) this.moduleVersion.textContent = stdout.trim();
+				if (this.moduleVersion) {
+					this.moduleVersion.textContent = stdout.trim();
+					// 移除 data-i18n 属性，避免语言切换时被覆盖
+					this.moduleVersion.removeAttribute('data-i18n');
+				}
 			} else {
 				const { errno: errno2, stdout: stdout2 } = await exec('grep -i "^version=" /data/adb/ksu/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2');
 				if (errno2 === 0 && stdout2.trim()) {
-					if (this.moduleVersion) this.moduleVersion.textContent = stdout2.trim();
+					if (this.moduleVersion) {
+						this.moduleVersion.textContent = stdout2.trim();
+						// 移除 data-i18n 属性，避免语言切换时被覆盖
+						this.moduleVersion.removeAttribute('data-i18n');
+					}
 				} else if (this.moduleVersion) {
 					this.moduleVersion.textContent = this.currentLanguage === 'en' ? 'Unknown' : '未知';
+					// 移除 data-i18n 属性，避免语言切换时被覆盖
+					this.moduleVersion.removeAttribute('data-i18n');
 				}
 			}
 		} catch (error) {
 			console.error('加载模块版本失败:', error);
-			if (this.moduleVersion) this.moduleVersion.textContent = this.currentLanguage === 'en' ? 'Unknown' : '未知';
+			if (this.moduleVersion) {
+				this.moduleVersion.textContent = this.currentLanguage === 'en' ? 'Unknown' : '未知';
+				// 移除 data-i18n 属性，避免语言切换时被覆盖
+				this.moduleVersion.removeAttribute('data-i18n');
+			}
 		}
 	}
 
@@ -283,12 +305,16 @@ export class MainApp {
 				};
 				this.currentMode.textContent = modeText[mode] || modeText['unknown'];
 				this.currentMode.className = `mode-badge ${mode}`;
+				// 移除 data-i18n 属性，避免语言切换时被覆盖
+				this.currentMode.removeAttribute('data-i18n');
 			}
 		} catch (error) {
 			console.error('加载当前模式失败:', error);
 			if (this.currentMode) {
 				this.currentMode.textContent = getTranslation('status_mode_unknown', {}, this.currentLanguage);
 				this.currentMode.className = 'mode-badge default';
+				// 移除 data-i18n 属性，避免语言切换时被覆盖
+				this.currentMode.removeAttribute('data-i18n');
 			}
 		}
 	}

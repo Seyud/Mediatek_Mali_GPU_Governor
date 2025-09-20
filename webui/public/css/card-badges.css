@@ -84,7 +84,7 @@
 }
 
 .version-badge {
-    padding: 6px 16px;
+    padding: 6px 16px 6px 20px; /* 左侧增加padding为红点留出空间 */
     border-radius: 16px;
     font-size: 13px;
     font-weight: 600;
@@ -120,6 +120,19 @@
 
 .version-badge:hover::before {
     opacity: 1;
+}
+
+.version-badge::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    left: 8px;
+    /* 红点位置保持在左侧边缘 */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 /* 当前模式显示样式 */
