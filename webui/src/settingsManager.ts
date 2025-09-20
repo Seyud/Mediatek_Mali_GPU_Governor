@@ -41,26 +41,29 @@ export class SettingsManager {
 						button.classList.add('active');
 					const selectedValue = button.getAttribute('data-value') as Lang | 'system';
 					localStorage.setItem('languageSetting', selectedValue);
-					let currentLanguage: Lang = 'zh';
+					let newLanguage: Lang = 'zh';
 					if (selectedValue === 'system') {
 						try {
 							const { errno, stdout } = await exec('getprop persist.sys.locale || getprop ro.product.locale || echo "zh-CN"');
 							if (errno === 0 && stdout.trim()) {
 								const locale = stdout.trim().toLowerCase();
-								currentLanguage = locale.startsWith('en') ? 'en' : 'zh';
+								newLanguage = locale.startsWith('en') ? 'en' : 'zh';
 							}
 						} catch {
-							currentLanguage = 'zh';
+							newLanguage = 'zh';
 						}
-						localStorage.setItem('language', currentLanguage);
-						toast(getTranslation('toast_language_follow_system', {}, this.currentLanguage));
+						localStorage.setItem('language', newLanguage);
+						// 使用新语言显示 toast
+						toast(getTranslation('toast_language_follow_system', {}, newLanguage));
 					} else {
-						currentLanguage = selectedValue;
+						newLanguage = selectedValue;
 						localStorage.setItem('language', selectedValue);
 						const languageName = selectedValue === 'zh' ? '中文' : 'English';
-						toast(getTranslation('toast_language_changed', { language: languageName }, this.currentLanguage));
+						toast(getTranslation('toast_language_changed', { language: languageName }, newLanguage));
 					}
-					const languageChangeEvent = new CustomEvent('languageChange', { detail: { language: currentLanguage } });
+					// 先更新当前对象的语言，保证后续逻辑中立即使用新语言
+					this.currentLanguage = newLanguage;
+					const languageChangeEvent = new CustomEvent('languageChange', { detail: { language: newLanguage } });
 					document.dispatchEvent(languageChangeEvent);
 				});
 			});

@@ -1,7 +1,7 @@
 import { VOLT_SETTINGS, VOLT_LIST } from './constants';
 
 export class VoltageController {
-	// 使用 number 明确类型，避免被推断为字面量 65000
+	// 使用 number 明确类型
 	currentVoltValue: number = VOLT_SETTINGS.MAX_VOLT as number;
 	isLongPress = false;
 	decreaseTimer: any = null;

@@ -1,5 +1,4 @@
-// MainApp TS 版本：从原 main.js 抽出，去掉最终 DOMContentLoaded 绑定
-import { exec, toast } from './utils';
+import { exec, toast, withResult, logError } from './utils';
 import { PATHS } from './constants';
 import { translations, getTranslation, Language } from './i18n';
 
@@ -191,16 +190,22 @@ export class MainApp {
 	}
 
 	async loadData() {
-		const safeExecute = async (fn: () => Promise<any> | void, fallbackMessage: string) => {
-			try { await fn(); } catch (err) { console.error(`${fallbackMessage}:`, err); }
-		};
-		await safeExecute(() => this.checkModuleStatus(), '检查模块状态失败');
-		await safeExecute(() => this.loadModuleVersion(), '加载模块版本失败');
-		await safeExecute(() => this.loadCurrentMode(), '加载当前模式失败');
-		await safeExecute(() => this.configManager.loadGpuConfig(), '加载GPU配置失败');
-		await safeExecute(() => this.gamesManager.loadGamesList(), '加载游戏列表失败');
-		await safeExecute(() => this.logManager.loadLog(), '加载日志失败');
-		await safeExecute(() => this.settingsManager.loadLogLevel(), '加载日志等级设置失败');
+		const tasks: Array<{ fn: () => Promise<any>; context: string; failMsg: string }> = [
+			{ fn: () => this.checkModuleStatus(), context: 'check-module-status', failMsg: '检查模块状态失败' },
+			{ fn: () => this.loadModuleVersion(), context: 'load-module-version', failMsg: '加载模块版本失败' },
+			{ fn: () => this.loadCurrentMode(), context: 'load-current-mode', failMsg: '加载当前模式失败' },
+			{ fn: () => this.configManager.loadGpuConfig(), context: 'load-gpu-config', failMsg: '加载GPU配置失败' },
+			{ fn: () => this.gamesManager.loadGamesList(), context: 'load-games-list', failMsg: '加载游戏列表失败' },
+			{ fn: () => this.logManager.loadLog(), context: 'load-log', failMsg: '加载日志失败' },
+			{ fn: () => this.settingsManager.loadLogLevel(), context: 'load-log-level', failMsg: '加载日志等级设置失败' }
+		];
+		for (const task of tasks) {
+			const r = await withResult(task.fn, task.context);
+			if (!r.ok) {
+				logError(task.context, r.error);
+				console.error(task.failMsg, r.error);
+			}
+		}
 		this.switchPage('page-status');
 	}
 

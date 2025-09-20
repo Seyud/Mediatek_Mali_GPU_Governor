@@ -1,4 +1,4 @@
-import { exec, toast } from './utils';
+import { exec, toast, withResult, logError } from './utils';
 import { PATHS } from './constants';
 import { translations, getTranslation } from './i18n';
 
@@ -52,18 +52,22 @@ export class GamesManager {
 	}
 
 	async loadGamesList() {
-		try {
+		const result = await withResult(async () => {
 			const { errno, stdout } = await exec(`cat ${PATHS.GAMES_FILE}`);
-			if (errno === 0 && stdout.trim()) {
-				const games = this.parseTomlGames(stdout.trim());
-				this.gamesListData = games as GameItem[];
-				if (games.length > 0) this.refreshGamesList();
-				else if (this.gamesList) this.gamesList.innerHTML = `<li class="loading-text">${getTranslation('config_games_not_found', {}, this.currentLanguage)}</li>`;
-			} else if (this.gamesList) this.gamesList.innerHTML = `<li class="loading-text">${getTranslation('config_games_list_not_found', {}, this.currentLanguage)}</li>`;
-		} catch (error) {
-			console.error('加载游戏列表失败:', error);
+			return { errno, stdout };
+		}, 'games-load');
+		if (!result.ok) {
+			logError('games-load', result.error);
 			if (this.gamesList) this.gamesList.innerHTML = '<li class="loading-text">加载失败</li>';
+			return;
 		}
+		const { errno, stdout } = result.data;
+		if (errno === 0 && stdout.trim()) {
+			const games = this.parseTomlGames(stdout.trim());
+			this.gamesListData = games as GameItem[];
+			if (games.length > 0) this.refreshGamesList();
+			else if (this.gamesList) this.gamesList.innerHTML = `<li class="loading-text">${getTranslation('config_games_not_found', {}, this.currentLanguage)}</li>`;
+		} else if (this.gamesList) this.gamesList.innerHTML = `<li class="loading-text">${getTranslation('config_games_list_not_found', {}, this.currentLanguage)}</li>`;
 	}
 
 	parseTomlGames(tomlString: string) {
@@ -106,6 +110,29 @@ export class GamesManager {
 	initGameModeSelect() { if (!this.gameModeContainer || !this.selectedGameMode || !this.gameModeOptions) return; this.selectedGameMode.addEventListener('click', (e) => { e.stopPropagation(); this.gameModeContainer!.classList.toggle('open'); }); const options = this.gameModeOptions.querySelectorAll('.option'); options.forEach(option => { option.addEventListener('click', (e) => { e.stopPropagation(); const value = option.getAttribute('data-value'); const text = option.textContent; this.selectedGameMode!.textContent = text; if (this.gameModeSelect && value) { this.gameModeSelect.value = value; this.gameModeSelect.dispatchEvent(new Event('change')); } options.forEach(opt => opt.classList.remove('selected')); option.classList.add('selected'); this.gameModeContainer!.classList.remove('open'); }); }); document.addEventListener('click', (e) => { if (!this.gameModeContainer!.contains(e.target as Node)) this.gameModeContainer!.classList.remove('open'); }); }
 	updateGameModeSelectDisplay(mode: string) { if (!this.selectedGameMode || !this.gameModeOptions) return; const option = this.gameModeOptions.querySelector(`.option[data-value="${mode}"]`); if (option) { this.selectedGameMode.textContent = option.textContent; const options = this.gameModeOptions.querySelectorAll('.option'); options.forEach(opt => opt.classList.remove('selected')); option.classList.add('selected'); } }
 	deleteGameItem(index: number) { if (index>=0 && index < this.gamesListData.length) { this.gamesListData.splice(index,1); this.refreshGamesList(); toast(getTranslation('toast_game_deleted', {}, this.currentLanguage)); } else toast(getTranslation('toast_index_invalid', {}, this.currentLanguage)); }
-	async saveGamesToFile() { try { if (this.gamesListData.length===0) { toast(getTranslation('toast_games_empty', {}, this.currentLanguage)); return; } let gamesContent = '# GPU调速器游戏列表配置文件\n\n'; this.gamesListData.forEach(game => { gamesContent += '[[games]]\n'; gamesContent += `package = "${game.package}"\n`; gamesContent += `mode = "${game.mode || 'balance'}"\n\n`; }); const { errno } = await exec(`echo '${gamesContent}' > ${PATHS.GAMES_FILE}`); if (errno === 0) toast(getTranslation('toast_games_saved', {}, this.currentLanguage)); else toast(getTranslation('toast_games_save_fail', {}, this.currentLanguage)); } catch (error: any) { console.error('保存游戏列表失败:', error); toast(`保存游戏列表失败: ${error.message}`); } }
+	async saveGamesToFile() {
+		if (this.gamesListData.length === 0) {
+			toast(getTranslation('toast_games_empty', {}, this.currentLanguage));
+			return;
+		}
+		// 生成 TOML 内容
+		let gamesContent = '# GPU调速器游戏列表配置文件\n\n';
+		this.gamesListData.forEach(game => {
+			gamesContent += '[[games]]\n';
+			gamesContent += `package = "${game.package}"\n`;
+			gamesContent += `mode = "${game.mode || 'balance'}"\n\n`;
+		});
+		// 使用 base64 写入以避免引号转义问题
+		const b64 = btoa(unescape(encodeURIComponent(gamesContent)));
+		const writeResult = await withResult(async () => {
+			return await exec(`echo '${b64}' | base64 -d > ${PATHS.GAMES_FILE}`);
+		}, 'games-save');
+		if (!writeResult.ok) {
+			toast(getTranslation('toast_games_save_fail', {}, this.currentLanguage));
+			return;
+		}
+		if (writeResult.data.errno === 0) toast(getTranslation('toast_games_saved', {}, this.currentLanguage));
+		else toast(getTranslation('toast_games_save_fail', {}, this.currentLanguage));
+	}
 	setLanguage(language: Lang) { this.currentLanguage = language; if (this.gameModeSelect) { const options = this.gameModeSelect.options; for (let i=0;i<options.length;i++){ const option=options[i]; const value=option.value; const key=`status_mode_${value}`; if ((translations as any)[language] && (translations as any)[language][key]) option.textContent=(translations as any)[language][key]; } } if (this.gameModeOptions) { const customOptions = this.gameModeOptions.querySelectorAll('.option'); customOptions.forEach(option => { const value = option.getAttribute('data-value'); const key = `status_mode_${value}`; if ((translations as any)[language] && (translations as any)[language][key]) option.textContent = (translations as any)[language][key]; }); } if (this.selectedGameMode && this.gameModeSelect) { const selectedValue = this.gameModeSelect.value; const key = `status_mode_${selectedValue}`; if ((translations as any)[language] && (translations as any)[language][key]) this.selectedGameMode.textContent = (translations as any)[language][key]; } this.refreshGamesList(); }
 }

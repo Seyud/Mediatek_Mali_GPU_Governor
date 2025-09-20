@@ -1,4 +1,4 @@
-// 常量定义模块 (TypeScript 版本)
+// 常量定义模块
 export const PATHS = {
 	LOG_PATH: '/data/adb/gpu_governor/log',
 	CONFIG_PATH: '/data/adb/gpu_governor/config/gpu_freq_table.toml',
