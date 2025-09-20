@@ -165,6 +165,7 @@ class FileManager:
         
         converted = 0
         meta_dir = WORK_DIR / "META-INF"
+        webui_dir = WORK_DIR / "webui"
         
         # 处理META-INF目录
         if meta_dir.exists():
@@ -175,7 +176,9 @@ class FileManager:
         # 处理其他文件
         for ext in LINE_ENDING_FILES:
             for file_path in WORK_DIR.rglob(f"*{ext}"):
-                if meta_dir not in file_path.parents and FileManager._convert_line_endings(file_path):
+                if (meta_dir not in file_path.parents and 
+                    webui_dir not in file_path.parents and 
+                    FileManager._convert_line_endings(file_path)):
                     converted += 1
         
         print(f"换行符修复完成，转换了 {converted} 个文件")
