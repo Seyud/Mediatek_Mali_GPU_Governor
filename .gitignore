@@ -10,6 +10,7 @@
 
 # 前端依赖目录
 /webui/node_modules/
+node_modules/
 
 # 忽略输出文件夹
 output/

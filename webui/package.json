@@ -8,12 +8,10 @@
     "build": "vite build && node scripts/postbuild-html.mjs && node scripts/postbuild-css.mjs && node scripts/postbuild-htmlmin.mjs",
     "preview": "vite preview"
   },
-  "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.9.2",
-    "vite": "^5.4.0",
     "csso": "^5.0.5",
     "html-minifier-terser": "^7.2.0",
-    "esbuild": "^0.25.4"
+    "typescript": "^5.9.2",
+    "vite": "^7.1.6"
   }
 }
