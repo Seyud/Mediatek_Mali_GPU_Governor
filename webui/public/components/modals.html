@@ -2,15 +2,15 @@
 <div id="editConfigModal" class="modal">
     <div class="modal-content">
         <span class="close-modal">&times;</span>
-        <h3>编辑GPU频率表</h3>
+        <h3 data-i18n="edit_config_title">编辑GPU频率表</h3>
         <div class="form-group">
-            <label for="freqInput">频率 (MHz):</label>
+            <label for="freqInput" data-i18n="edit_config_freq">频率 (MHz):</label>
             <input type="number" id="freqInput" min="100000" max="1000000" step="1000"
-                placeholder="例如: 350000 (KHz)">
-            <small class="input-hint">请输入KHz值，表格中显示为MHz</small>
+                placeholder="例如: 350000 (KHz)" data-i18n-placeholder="edit_config_freq_example">
+            <small class="input-hint" data-i18n="edit_config_freq_hint">请输入KHz值，表格中显示为MHz</small>
         </div>
         <div class="form-group">
-            <label for="voltSelect">电压 (uV):</label>
+            <label for="voltSelect" data-i18n="edit_config_volt">电压 (uV):</label>
             <div class="number-spinner">
                 <button class="spinner-btn" id="voltDecreaseBtn">-</button>
                 <div class="spinner-value" id="selectedVolt">65000</div>
@@ -21,24 +21,24 @@
             </div>
         </div>
         <div class="form-group">
-            <label>内存档位:</label>
+            <label data-i18n="edit_config_ddr">内存档位:</label>
             <div class="select-container">
                 <div class="custom-select" id="ddrContainer">
-                    <div class="selected-option" id="selectedDdr">999 (不调整)</div>
+                    <div class="selected-option" id="selectedDdr" data-i18n="edit_config_ddr_default">999 (不调整)</div>
                     <div class="options-container" id="ddrOptions">
-                        <div class="option" data-value="999">999 (不调整)</div>
-                        <div class="option" data-value="0">0 (最高)</div>
-                        <div class="option" data-value="1">1</div>
-                        <div class="option" data-value="2">2</div>
-                        <div class="option" data-value="3">3</div>
+                        <div class="option" data-value="999" data-i18n="edit_config_ddr_default">999 (不调整)</div>
+                        <div class="option" data-value="0" data-i18n="edit_config_ddr_highest">0 (最高)</div>
+                        <div class="option" data-value="1" data-i18n="edit_config_ddr_high">1</div>
+                        <div class="option" data-value="2" data-i18n="edit_config_ddr_medium">2</div>
+                        <div class="option" data-value="3" data-i18n="edit_config_ddr_low">3</div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="form-actions">
-            <button id="saveItemBtn" class="btn">保存</button>
-            <button id="cancelEditBtn" class="btn btn-secondary">取消</button>
-            <button id="deleteItemBtn" class="btn btn-danger">删除</button>
+            <button id="saveItemBtn" class="btn" data-i18n="edit_config_save">保存</button>
+            <button id="cancelEditBtn" class="btn btn-secondary" data-i18n="edit_config_cancel">取消</button>
+            <button id="deleteItemBtn" class="btn btn-danger" data-i18n="edit_config_delete">删除</button>
         </div>
     </div>
 </div>
@@ -56,12 +56,12 @@
             <label for="gameModeSelect" data-i18n="edit_game_mode">对应模式:</label>
             <div class="select-container">
                 <div class="custom-select" id="gameModeContainer">
-                    <div class="selected-option" id="selectedGameMode">均衡</div>
+                    <div class="selected-option" id="selectedGameMode" data-i18n="status_mode_balance">均衡</div>
                     <div class="options-container" id="gameModeOptions">
-                        <div class="option" data-value="powersave">省电</div>
-                        <div class="option" data-value="balance">均衡</div>
-                        <div class="option" data-value="performance">性能</div>
-                        <div class="option" data-value="fast">极速</div>
+                        <div class="option" data-value="powersave" data-i18n="status_mode_powersave">省电</div>
+                        <div class="option" data-value="balance" data-i18n="status_mode_balance">均衡</div>
+                        <div class="option" data-value="performance" data-i18n="status_mode_performance">性能</div>
+                        <div class="option" data-value="fast" data-i18n="status_mode_fast">极速</div>
                     </div>
                 </div>
                 <select id="gameModeSelect" class="form-select" style="display: none;">
