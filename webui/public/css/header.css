@@ -1,269 +1,266 @@
-@import url('./variables.css');
+@import url("./variables.css");
 
 .app-header {
-    background-color: var(--header-background);
-    box-shadow: var(--header-shadow);
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border-color);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+	background-color: var(--header-background);
+	box-shadow: var(--header-shadow);
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--border-color);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 }
 
 .header-content {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+	max-width: 800px;
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .header-content h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--accent-color);
-    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 1px 2px rgba(13, 132, 255, 0.1);
+	font-size: 20px;
+	font-weight: 600;
+	color: var(--accent-color);
+	background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	text-shadow: 0 1px 2px rgba(13, 132, 255, 0.1);
 }
 
 /* 深色模式下Header的特殊效果 */
 [data-theme="dark"] .app-header {
-    background: linear-gradient(135deg, var(--header-background) 0%, rgba(13, 132, 255, 0.02) 100%);
-    border-bottom-color: rgba(13, 132, 255, 0.2);
+	background: linear-gradient(135deg, var(--header-background) 0%, rgba(13, 132, 255, 0.02) 100%);
+	border-bottom-color: rgba(13, 132, 255, 0.2);
 }
 
 [data-theme="dark"] .header-content h1 {
-    text-shadow: 0 2px 4px rgba(13, 132, 255, 0.2);
+	text-shadow: 0 2px 4px rgba(13, 132, 255, 0.2);
 }
 
 .theme-toggle {
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+	cursor: pointer;
+	padding: 10px;
+	border-radius: 50%;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 .theme-toggle:hover {
-    background-color: var(--accent-bg);
-    transform: scale(1.05);
+	background-color: var(--accent-bg);
+	transform: scale(1.05);
 }
 
 .theme-toggle:active {
-    transform: scale(0.95);
-    background-color: var(--accent-bg);
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
+	transform: scale(0.95);
+	background-color: var(--accent-bg);
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .theme-toggle svg {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .theme-toggle:hover svg {
-    filter: drop-shadow(0 2px 4px rgba(13, 132, 255, 0.3));
+	filter: drop-shadow(0 2px 4px rgba(13, 132, 255, 0.3));
 }
 
 /* 太阳图标动画效果 */
 .light-icon svg circle {
-    animation: sunPulse 3s ease-in-out infinite;
-    transform-origin: center;
+	animation: sunPulse 3s ease-in-out infinite;
+	transform-origin: center;
 }
 
 .light-icon svg path {
-    animation: sunRays 4s linear infinite;
-    transform-origin: center;
+	animation: sunRays 4s linear infinite;
+	transform-origin: center;
 }
 
 .theme-toggle:hover .light-icon svg circle {
-    animation-duration: 1.5s;
+	animation-duration: 1.5s;
 }
 
 .theme-toggle:hover .light-icon svg path {
-    animation-duration: 2s;
+	animation-duration: 2s;
 }
 
 /* 月亮图标动画效果 */
 .dark-icon svg {
-    position: relative;
+	position: relative;
 }
 
 .dark-icon svg path:first-child {
-    animation: moonGlow 4s ease-in-out infinite;
+	animation: moonGlow 4s ease-in-out infinite;
 }
 
 .dark-icon svg circle {
-    animation: crater 6s ease-in-out infinite;
+	animation: crater 6s ease-in-out infinite;
 }
 
 .dark-icon svg path:not(:first-child) {
-    animation: twinkle 2s ease-in-out infinite;
+	animation: twinkle 2s ease-in-out infinite;
 }
 
 .theme-toggle:hover .dark-icon svg path:first-child {
-    animation-duration: 2s;
+	animation-duration: 2s;
 }
 
 .theme-toggle:hover .dark-icon svg path:not(:first-child) {
-    animation-duration: 1s;
+	animation-duration: 1s;
 }
 
 /* 动画关键帧 */
 @keyframes sunPulse {
+	0%,
+	100% {
+		opacity: 0.9;
+		transform: scale(1);
+	}
 
-    0%,
-    100% {
-        opacity: 0.9;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1.1);
-    }
+	50% {
+		opacity: 1;
+		transform: scale(1.1);
+	}
 }
 
 @keyframes sunRays {
-    0% {
-        transform: rotate(0deg);
-        opacity: 0.8;
-    }
+	0% {
+		transform: rotate(0deg);
+		opacity: 0.8;
+	}
 
-    50% {
-        opacity: 1;
-    }
+	50% {
+		opacity: 1;
+	}
 
-    100% {
-        transform: rotate(360deg);
-        opacity: 0.8;
-    }
+	100% {
+		transform: rotate(360deg);
+		opacity: 0.8;
+	}
 }
 
 @keyframes moonGlow {
+	0%,
+	100% {
+		opacity: 0.9;
+		filter: brightness(1);
+	}
 
-    0%,
-    100% {
-        opacity: 0.9;
-        filter: brightness(1);
-    }
-
-    50% {
-        opacity: 1;
-        filter: brightness(1.1);
-    }
+	50% {
+		opacity: 1;
+		filter: brightness(1.1);
+	}
 }
 
 @keyframes crater {
+	0%,
+	100% {
+		opacity: 0.3;
+		transform: scale(1);
+	}
 
-    0%,
-    100% {
-        opacity: 0.3;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.5;
-        transform: scale(1.05);
-    }
+	50% {
+		opacity: 0.5;
+		transform: scale(1.05);
+	}
 }
 
 @keyframes twinkle {
+	0%,
+	100% {
+		opacity: 0.5;
+		transform: scale(1);
+	}
 
-    0%,
-    100% {
-        opacity: 0.5;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.8;
-        transform: scale(1.2);
-    }
+	50% {
+		opacity: 0.8;
+		transform: scale(1.2);
+	}
 }
 
 /* 主题图标显示控制 */
 .light-icon {
-    display: inline-block;
+	display: inline-block;
 }
 
 .dark-icon {
-    display: none;
+	display: none;
 }
 
 [data-theme="dark"] .light-icon {
-    display: none;
+	display: none;
 }
 
 [data-theme="dark"] .dark-icon {
-    display: inline-block;
+	display: inline-block;
 }
 
 /* 深色模式下的主题切换按钮特殊效果 */
 [data-theme="dark"] .theme-toggle {
-    background: radial-gradient(circle at center, rgba(13, 132, 255, 0.1) 0%, transparent 70%);
+	background: radial-gradient(circle at center, rgba(13, 132, 255, 0.1) 0%, transparent 70%);
 }
 
 [data-theme="dark"] .theme-toggle:hover {
-    background: radial-gradient(circle at center, rgba(13, 132, 255, 0.2) 0%, transparent 70%);
-    box-shadow: 0 0 12px rgba(13, 132, 255, 0.3);
+	background: radial-gradient(circle at center, rgba(13, 132, 255, 0.2) 0%, transparent 70%);
+	box-shadow: 0 0 12px rgba(13, 132, 255, 0.3);
 }
 
 [data-theme="dark"] .theme-toggle svg {
-    color: #e0e0e0;
-    filter: drop-shadow(0 2px 4px rgba(13, 132, 255, 0.2));
+	color: #e0e0e0;
+	filter: drop-shadow(0 2px 4px rgba(13, 132, 255, 0.2));
 }
 
 [data-theme="dark"] .theme-toggle:hover svg {
-    color: #ffffff;
-    filter: drop-shadow(0 3px 6px rgba(13, 132, 255, 0.4));
+	color: #ffffff;
+	filter: drop-shadow(0 3px 6px rgba(13, 132, 255, 0.4));
 }
 
 /* 主题切换过渡动画 */
 .theme-toggle .light-icon,
 .theme-toggle .dark-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .theme-toggle .light-icon {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+	opacity: 1;
+	transform: translate(-50%, -50%) scale(1) rotate(0deg);
 }
 
 .theme-toggle .dark-icon {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8) rotate(-30deg);
+	opacity: 0;
+	transform: translate(-50%, -50%) scale(0.8) rotate(-30deg);
 }
 
 [data-theme="dark"] .theme-toggle .light-icon {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8) rotate(30deg);
+	opacity: 0;
+	transform: translate(-50%, -50%) scale(0.8) rotate(30deg);
 }
 
 [data-theme="dark"] .theme-toggle .dark-icon {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+	opacity: 1;
+	transform: translate(-50%, -50%) scale(1) rotate(0deg);
 }
 
 /* 主题切换时的全局过渡效果 */
 * {
-    transition: background-color 0.3s ease,
-        color 0.3s ease,
-        border-color 0.3s ease,
-        box-shadow 0.3s ease;
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease,
+		border-color 0.3s ease,
+		box-shadow 0.3s ease;
 }
 
 /* 确保某些元素不受全局过渡影响 */
@@ -273,56 +270,56 @@
 .app-main-icon *,
 .nav-icon svg,
 .tab-icon svg {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 主题切换按钮的高级交互效果 */
 .theme-toggle {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	position: relative;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .theme-toggle:hover {
-    transform: scale(1.05);
+	transform: scale(1.05);
 }
 
 .theme-toggle:active {
-    transform: scale(0.95);
+	transform: scale(0.95);
 }
 
 /* 为主题切换添加视觉动画效果 */
 .theme-toggle.switching::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    background: var(--accent-color);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    animation: themeSwitch 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    z-index: -1;
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 20px;
+	height: 20px;
+	background: var(--accent-color);
+	border-radius: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	animation: themeSwitch 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+	pointer-events: none;
+	z-index: -1;
 }
 
 @keyframes themeSwitch {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0.8;
-    }
+	0% {
+		transform: translate(-50%, -50%) scale(0);
+		opacity: 0.8;
+	}
 
-    50% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0.4;
-    }
+	50% {
+		transform: translate(-50%, -50%) scale(1.5);
+		opacity: 0.4;
+	}
 
-    100% {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-    }
+	100% {
+		transform: translate(-50%, -50%) scale(2);
+		opacity: 0;
+	}
 }

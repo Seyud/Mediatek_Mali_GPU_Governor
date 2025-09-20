@@ -1,71 +1,75 @@
-@import url('./variables.css');
+@import url("./variables.css");
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 /* 移除默认的焦点轮廓，为自定义样式让路 */
 *:focus {
-    outline: none;
+	outline: none;
 }
 
 /* 为可点击元素添加统一的焦点样式 */
 button:focus,
 .card:focus {
-    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.3);
+	box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.3);
 }
 
 /* 主题切换按钮的特殊圆形焦点样式 */
 .theme-toggle:focus {
-    box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.4);
-    background-color: var(--accent-bg);
+	box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.4);
+	background-color: var(--accent-bg);
 }
 
 /* 移除底部导航栏按钮的焦点样式 */
 .nav-item:focus {
-    box-shadow: none;
+	box-shadow: none;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    transition: background-color 0.3s, color 0.3s;
-    padding-bottom: 90px;
-    /* 增加底部空间，适应更高的导航栏 */
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+		"Helvetica Neue", sans-serif;
+	background-color: var(--background-color);
+	color: var(--text-color);
+	line-height: 1.6;
+	transition:
+		background-color 0.3s,
+		color 0.3s;
+	padding-bottom: 90px;
+	/* 增加底部空间，适应更高的导航栏 */
 }
 
 #loading {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 18px;
-    font-weight: 500;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 18px;
+	font-weight: 500;
 }
 
 #loading::after {
-    content: '.';
-    animation: ellipsis 1.5s infinite;
+	content: ".";
+	animation: ellipsis 1.5s infinite;
 }
 
 @keyframes ellipsis {
-    0% {
-        content: '.';
-    }
+	0% {
+		content: ".";
+	}
 
-    33% {
-        content: '..';
-    }
+	33% {
+		content: "..";
+	}
 
-    66% {
-        content: '...';
-    }
+	66% {
+		content: "...";
+	}
 
-    100% {
-        content: '.';
-    }
+	100% {
+		content: ".";
+	}
 }

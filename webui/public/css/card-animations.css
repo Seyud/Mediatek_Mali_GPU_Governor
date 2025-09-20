@@ -4,136 +4,189 @@
    ========================================== */
 
 /* 基础过渡效果：所有卡片共享 */
-.card, .cgroup-info, .gpu-info, .games-config-container, .voltage-control-card, .settings-card, .config-card, .modal-content {
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+.card,
+.cgroup-info,
+.gpu-info,
+.games-config-container,
+.voltage-control-card,
+.settings-card,
+.config-card,
+.modal-content {
+	transition:
+		background-color 0.3s ease,
+		border-color 0.3s ease,
+		box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+		transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+		opacity 0.4s ease;
 }
 
 /* 浮动卡片进入动画 */
 @keyframes cardFloatIn {
-    0% {
-        opacity: 0;
-        transform: translateY(24px) scale(0.98);
-        filter: blur(6px);
-    }
-    60% {
-        opacity: 1;
-        transform: translateY(-4px) scale(1.01);
-        filter: blur(0);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-    }
+	0% {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+		filter: blur(6px);
+	}
+	60% {
+		opacity: 1;
+		transform: translateY(-4px) scale(1.01);
+		filter: blur(0);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		filter: blur(0);
+	}
 }
 
 /* 卡片光晕动画 */
 @keyframes cardGlow {
-    0% {
-        box-shadow: 0 0 0 rgba(var(--accent-color-rgb, 13, 132, 255), 0);
-    }
-    50% {
-        box-shadow: 0 0 32px rgba(var(--accent-color-rgb, 13, 132, 255), 0.22);
-    }
-    100% {
-        box-shadow: 0 0 0 rgba(var(--accent-color-rgb, 13, 132, 255), 0);
-    }
+	0% {
+		box-shadow: 0 0 0 rgba(var(--accent-color-rgb, 13, 132, 255), 0);
+	}
+	50% {
+		box-shadow: 0 0 32px rgba(var(--accent-color-rgb, 13, 132, 255), 0.22);
+	}
+	100% {
+		box-shadow: 0 0 0 rgba(var(--accent-color-rgb, 13, 132, 255), 0);
+	}
 }
 
 /* 卡片渐隐消失 */
 @keyframes cardFadeOut {
-    0% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(8px) scale(0.97);
-        filter: blur(4px);
-    }
+	0% {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		filter: blur(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(8px) scale(0.97);
+		filter: blur(4px);
+	}
 }
 
 /* 提示条滑入 */
 @keyframes toastSlideIn {
-    0% {
-        transform: translateY(12px) scale(.96);
-        opacity: 0;
-    }
-    60% {
-        transform: translateY(-3px) scale(1.02);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
+	0% {
+		transform: translateY(12px) scale(0.96);
+		opacity: 0;
+	}
+	60% {
+		transform: translateY(-3px) scale(1.02);
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
 }
 
 /* 动画辅助类 */
 .animate-float-in {
-    animation: cardFloatIn .75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+	animation: cardFloatIn 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .animate-glow {
-    animation: cardGlow 3.2s ease-in-out infinite;
+	animation: cardGlow 3.2s ease-in-out infinite;
 }
 
 .animate-fade-out {
-    animation: cardFadeOut .45s ease forwards;
+	animation: cardFadeOut 0.45s ease forwards;
 }
 
 /* 悬浮强化 */
-.card:hover, .cgroup-info:hover, .gpu-info:hover, .games-config-container:hover, .voltage-control-card:hover, .settings-card:hover, .config-card:hover {
-    transform: translateY(-4px) scale(1.012);
-    box-shadow: 0 8px 32px rgba(var(--shadow-rgb, 0,0,0), 0.18), 0 4px 12px rgba(var(--shadow-rgb, 0,0,0), 0.08);
+.card:hover,
+.cgroup-info:hover,
+.gpu-info:hover,
+.games-config-container:hover,
+.voltage-control-card:hover,
+.settings-card:hover,
+.config-card:hover {
+	transform: translateY(-4px) scale(1.012);
+	box-shadow:
+		0 8px 32px rgba(var(--shadow-rgb, 0, 0, 0), 0.18),
+		0 4px 12px rgba(var(--shadow-rgb, 0, 0, 0), 0.08);
 }
 
 /* 特殊卡片悬浮 */
 #appIconCard:hover {
-    animation: none; /* 阻止进入动画与悬浮冲突 */
+	animation: none; /* 阻止进入动画与悬浮冲突 */
 }
 
 /* 点击反馈缩放 */
-.card:active, .cgroup-info:active, .gpu-info:active, .games-config-container:active, .voltage-control-card:active, .settings-card:active, .config-card:active {
-    transform: translateY(0) scale(0.99);
-    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+.card:active,
+.cgroup-info:active,
+.gpu-info:active,
+.games-config-container:active,
+.voltage-control-card:active,
+.settings-card:active,
+.config-card:active {
+	transform: translateY(0) scale(0.99);
+	transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 宽度变化的响应动画（补充给 JS 动态调节宽度的场景） */
 .responsive-width-transition {
-    transition: width .5s cubic-bezier(0.4, 0, 0.2, 1), flex-basis .5s cubic-bezier(0.4, 0, 0.2, 1);
+	transition:
+		width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+		flex-basis 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 延迟级联动画助手 */
 [class*="stagger-"] {
-    opacity: 0;
-    transform: translateY(18px) scale(.97);
+	opacity: 0;
+	transform: translateY(18px) scale(0.97);
 }
 
-.stagger-1 { animation: cardFloatIn .7s .05s forwards cubic-bezier(0.34, 1.56, 0.64, 1); }
-.stagger-2 { animation: cardFloatIn .7s .12s forwards cubic-bezier(0.34, 1.56, 0.64, 1); }
-.stagger-3 { animation: cardFloatIn .7s .18s forwards cubic-bezier(0.34, 1.56, 0.64, 1); }
-.stagger-4 { animation: cardFloatIn .7s .24s forwards cubic-bezier(0.34, 1.56, 0.64, 1); }
-.stagger-5 { animation: cardFloatIn .7s .30s forwards cubic-bezier(0.34, 1.56, 0.64, 1); }
-.stagger-6 { animation: cardFloatIn .7s .36s forwards cubic-bezier(0.34, 1.56, 0.64, 1); }
+.stagger-1 {
+	animation: cardFloatIn 0.7s 0.05s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.stagger-2 {
+	animation: cardFloatIn 0.7s 0.12s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.stagger-3 {
+	animation: cardFloatIn 0.7s 0.18s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.stagger-4 {
+	animation: cardFloatIn 0.7s 0.24s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.stagger-5 {
+	animation: cardFloatIn 0.7s 0.3s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.stagger-6 {
+	animation: cardFloatIn 0.7s 0.36s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
 /* 模态层出现动画 */
 @keyframes modalOverlayIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 @keyframes modalContentIn {
-    0% { transform: translateY(24px) scale(.95); opacity: 0; }
-    60% { transform: translateY(-6px) scale(1.01); opacity: 1; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
+	0% {
+		transform: translateY(24px) scale(0.95);
+		opacity: 0;
+	}
+	60% {
+		transform: translateY(-6px) scale(1.01);
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
 }
 
 .modal-overlay.show {
-    animation: modalOverlayIn .35s ease forwards;
+	animation: modalOverlayIn 0.35s ease forwards;
 }
 
 .modal-content.show {
-    animation: modalContentIn .55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+	animation: modalContentIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }

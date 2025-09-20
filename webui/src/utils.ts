@@ -18,10 +18,10 @@ export function exec(command: string, options: Record<string, unknown> = {}): Pr
 			if ((window as any).ksu) {
 				(window as any).ksu.exec(command, JSON.stringify(options), callbackName);
 			} else {
-				console.warn('window.ksu 不存在，返回模拟数据');
+				console.warn("window.ksu 不存在，返回模拟数据");
 				setTimeout(() => {
 					// @ts-expect-error 调用模拟 callback
-						window[callbackName](0, '', '');
+					window[callbackName](0, "", "");
 				}, 10);
 			}
 		} catch (error) {
@@ -35,31 +35,34 @@ export function toast(message: string) {
 		if ((window as any).ksu) {
 			(window as any).ksu.toast(message);
 		} else {
-			console.info('[Toast]', message);
+			console.info("[Toast]", message);
 		}
 	} catch (error) {
-		console.error('Toast 失败:', error);
+		console.error("Toast 失败:", error);
 	}
 }
 
 export function logError(context: string, error: any, extra: Record<string, unknown> = {}) {
 	try {
 		const payload = {
-			level: 'error',
+			level: "error",
 			context,
 			message: error?.message || String(error),
 			stack: error?.stack,
-			...extra
+			...extra,
 		};
 		console.error(`[${context}]`, payload);
 	} catch (e) {
 		// 最终兜底，避免日志本身抛错
-		console.error('logError failed', e);
+		console.error("logError failed", e);
 	}
 }
 
 // 通用执行包装：捕获异常并返回统一结果
-export async function withResult<T>(fn: () => Promise<T> | T, context: string): Promise<{ ok: true; data: T } | { ok: false; error: any; context: string }> {
+export async function withResult<T>(
+	fn: () => Promise<T> | T,
+	context: string
+): Promise<{ ok: true; data: T } | { ok: false; error: any; context: string }> {
 	try {
 		const data = await fn();
 		return { ok: true, data };

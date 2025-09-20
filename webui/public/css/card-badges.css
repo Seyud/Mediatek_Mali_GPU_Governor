@@ -5,244 +5,244 @@
 
 /* Miuix风格状态徽章 */
 .status-badge {
-    padding: 6px 16px 6px 20px;
-    /* 左侧增加padding为红点留出空间 */
-    border-radius: 16px;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    transform: translateZ(0);
-    /* 启用硬件加速 */
+	padding: 6px 16px 6px 20px;
+	/* 左侧增加padding为红点留出空间 */
+	border-radius: 16px;
+	font-size: 13px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+	transform: translateZ(0);
+	/* 启用硬件加速 */
 }
 
 .status-badge::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-    border-radius: 16px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+	border-radius: 16px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .status-badge:hover {
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	transform: translateY(-1px) scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .status-badge:hover::before {
-    opacity: 1;
+	opacity: 1;
 }
 
 .status-badge::after {
-    content: "";
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    left: 8px;
-    /* 红点位置保持在左侧边缘 */
-    top: 50%;
-    transform: translateY(-50%);
+	content: "";
+	position: absolute;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	left: 8px;
+	/* 红点位置保持在左侧边缘 */
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 .status-running {
-    background: linear-gradient(135deg, var(--success-color) 0%, #66bb6a 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+	background: linear-gradient(135deg, var(--success-color) 0%, #66bb6a 100%);
+	color: white;
+	box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 .status-running:hover {
-    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+	box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
 }
 
 .status-running::after {
-    background-color: rgba(255, 255, 255, 0.8);
+	background-color: rgba(255, 255, 255, 0.8);
 }
 
 .status-stopped {
-    background: linear-gradient(135deg, var(--error-color) 0%, #ef5350 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+	background: linear-gradient(135deg, var(--error-color) 0%, #ef5350 100%);
+	color: white;
+	box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
 }
 
 .status-stopped:hover {
-    box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
+	box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
 }
 
 .status-stopped::after {
-    background-color: rgba(255, 255, 255, 0.6);
+	background-color: rgba(255, 255, 255, 0.6);
 }
 
 .version-badge {
-    padding: 6px 16px 6px 20px; /* 左侧增加padding为红点留出空间 */
-    border-radius: 16px;
-    font-size: 13px;
-    font-weight: 600;
-    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
-    color: white;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 8px rgba(13, 132, 255, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    transform: translateZ(0);
+	padding: 6px 16px 6px 20px; /* 左侧增加padding为红点留出空间 */
+	border-radius: 16px;
+	font-size: 13px;
+	font-weight: 600;
+	background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+	color: white;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	box-shadow: 0 2px 8px rgba(13, 132, 255, 0.3);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+	transform: translateZ(0);
 }
 
 .version-badge::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-    border-radius: 16px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+	border-radius: 16px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .version-badge:hover {
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 4px 16px rgba(13, 132, 255, 0.4);
+	transform: translateY(-1px) scale(1.02);
+	box-shadow: 0 4px 16px rgba(13, 132, 255, 0.4);
 }
 
 .version-badge:hover::before {
-    opacity: 1;
+	opacity: 1;
 }
 
 .version-badge::after {
-    content: "";
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    left: 8px;
-    /* 红点位置保持在左侧边缘 */
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(255, 255, 255, 0.8);
+	content: "";
+	position: absolute;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	left: 8px;
+	/* 红点位置保持在左侧边缘 */
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: rgba(255, 255, 255, 0.8);
 }
 
 /* 当前模式显示样式 */
 .mode-badge {
-    padding: 6px 16px 6px 20px; /* 左侧增加padding为红点留出空间 */
-    border-radius: 16px;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
-    color: white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    transform: translateZ(0);
+	padding: 6px 16px 6px 20px; /* 左侧增加padding为红点留出空间 */
+	border-radius: 16px;
+	font-size: 13px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+	color: white;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+	transform: translateZ(0);
 }
 
 .mode-badge.powersave {
-    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+	background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+	color: white;
+	box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 .mode-badge.balance {
-    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+	background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+	color: white;
+	box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
 }
 
 .mode-badge.performance {
-    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+	background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+	color: white;
+	box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
 }
 
 .mode-badge.fast {
-    background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+	background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+	color: white;
+	box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
 }
 
 .mode-badge.default {
-    background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(158, 158, 158, 0.3);
+	background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+	color: white;
+	box-shadow: 0 2px 8px rgba(158, 158, 158, 0.3);
 }
 
 .mode-badge:hover {
-    transform: translateY(-1px) scale(1.02);
+	transform: translateY(-1px) scale(1.02);
 }
 
 .mode-badge.powersave:hover {
-    background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+	background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+	box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
 }
 
 .mode-badge.balance:hover {
-    background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
-    box-shadow: 0 4px 16px rgba(33, 150, 243, 0.4);
+	background: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
+	box-shadow: 0 4px 16px rgba(33, 150, 243, 0.4);
 }
 
 .mode-badge.performance:hover {
-    background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
-    box-shadow: 0 4px 16px rgba(255, 152, 0, 0.4);
+	background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+	box-shadow: 0 4px 16px rgba(255, 152, 0, 0.4);
 }
 
 .mode-badge.fast:hover {
-    background: linear-gradient(135deg, #EF5350 0%, #F44336 100%);
-    box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
+	background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+	box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
 }
 
 /* 为模式徽章添加小圆点 */
 .mode-badge::after {
-    content: "";
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    left: 8px;
-    /* 红点位置保持在左侧边缘 */
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(255, 255, 255, 0.8);
+	content: "";
+	position: absolute;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	left: 8px;
+	/* 红点位置保持在左侧边缘 */
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: rgba(255, 255, 255, 0.8);
 }
 
 /* 为不同模式设置不同的小圆点颜色，使用更浅的色调 */
 .mode-badge.powersave::after {
-    background-color: rgba(129, 199, 132, 0.8); /* 浅绿色 */
+	background-color: rgba(129, 199, 132, 0.8); /* 浅绿色 */
 }
 
 .mode-badge.balance::after {
-    background-color: rgba(79, 195, 247, 0.8); /* 浅蓝色 */
+	background-color: rgba(79, 195, 247, 0.8); /* 浅蓝色 */
 }
 
 .mode-badge.performance::after {
-    background-color: rgba(255, 183, 77, 0.8); /* 浅橙色 */
+	background-color: rgba(255, 183, 77, 0.8); /* 浅橙色 */
 }
 
 .mode-badge.fast::after {
-    background-color: rgba(239, 154, 154, 0.8); /* 浅红色 */
+	background-color: rgba(239, 154, 154, 0.8); /* 浅红色 */
 }
 
 .mode-badge.default::after {
-    background-color: rgba(189, 189, 189, 0.8); /* 浅灰色 */
+	background-color: rgba(189, 189, 189, 0.8); /* 浅灰色 */
 }
 
 /* 添加状态切换时的动画效果 */
 .status-badge.status-changing {
-    animation: statusChange 0.6s ease-in-out;
+	animation: statusChange 0.6s ease-in-out;
 }

@@ -1,739 +1,759 @@
-@import url('./variables.css');
+@import url("./variables.css");
 
 /* Miuix风格按钮 */
 .btn {
-    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 24px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-    position: relative;
-    overflow: hidden;
-    transform: translateZ(0);
-    min-height: 44px;
+	background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+	color: white;
+	border: none;
+	border-radius: 12px;
+	padding: 12px 24px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	outline: none;
+	position: relative;
+	overflow: hidden;
+	transform: translateZ(0);
+	min-height: 44px;
 }
 
 .btn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+	border-radius: 12px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .btn:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
-    background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 6px 20px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+	background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
 }
 
 .btn:hover::before {
-    opacity: 1;
+	opacity: 1;
 }
 
 .btn:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+	transform: translateY(0) scale(0.98);
+	box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
 }
 
 .btn:focus {
-    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3), 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+	box-shadow:
+		0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3),
+		0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
 }
 
 /* 按钮图标样式 */
 .btn .btn-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .btn .btn-icon svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
 }
 
 /* 主要按钮样式 */
 .btn-primary {
-    background: linear-gradient(135deg, #00c853 0%, #4caf50 100%);
-    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+	background: linear-gradient(135deg, #00c853 0%, #4caf50 100%);
+	box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #00e676 0%, #66bb6a 100%);
-    box-shadow: 0 6px 20px rgba(0, 200, 83, 0.4);
+	background: linear-gradient(135deg, #00e676 0%, #66bb6a 100%);
+	box-shadow: 0 6px 20px rgba(0, 200, 83, 0.4);
 }
 
 .select {
-    background-color: var(--card-background);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 8px;
-    font-size: 14px;
+	background-color: var(--card-background);
+	color: var(--text-color);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	padding: 8px;
+	font-size: 14px;
 }
 
 /* 自定义下拉菜单样式 */
 .custom-select {
-    position: relative;
-    width: 100%;
-    cursor: pointer;
-    z-index: 10;
-    /* 默认z-index */
+	position: relative;
+	width: 100%;
+	cursor: pointer;
+	z-index: 10;
+	/* 默认z-index */
 }
 
 /* 为语言选择器设置更高的z-index */
 #languageContainer {
-    z-index: 30;
+	z-index: 30;
 }
 
 /* 为日志等级选择器设置较低的z-index */
 #logLevelContainer {
-    z-index: 20;
+	z-index: 20;
 }
 
 /* 为全局模式选择器设置z-index */
 #globalModeContainer {
-    z-index: 15;
+	z-index: 15;
 }
 
 /* 为全局模式选择器的选项容器设置z-index */
 #globalModeOptions {
-    z-index: 16;
+	z-index: 16;
 }
 
 /* 为游戏模式选择器设置z-index */
 #gameModeContainer {
-    z-index: 10;
+	z-index: 10;
 }
 
 /* 为游戏模式选择器的选项容器设置z-index */
 #gameModeOptions {
-    z-index: 11;
+	z-index: 11;
 }
 
 .selected-option {
-    background-color: transparent;
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s;
+	background-color: transparent;
+	color: var(--text-color);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	padding: 8px 12px;
+	font-size: 14px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	transition: all 0.3s;
 }
 
 /* 鼠标悬停时的样式 */
 .selected-option:hover {
-    border-color: var(--accent-color);
+	border-color: var(--accent-color);
 }
 
 /* 打开状态时的样式 */
 .custom-select.open .selected-option {
-    background-color: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
+	background-color: var(--accent-color);
+	color: white;
+	border-color: var(--accent-color);
 }
 
 .selected-option::after {
-    content: "▼";
-    font-size: 10px;
-    margin-left: 8px;
-    transition: transform 0.3s;
-    color: var(--secondary-text-color);
+	content: "▼";
+	font-size: 10px;
+	margin-left: 8px;
+	transition: transform 0.3s;
+	color: var(--secondary-text-color);
 }
 
 .custom-select.open .selected-option::after {
-    transform: rotate(180deg);
-    color: white;
+	transform: rotate(180deg);
+	color: white;
 }
 
 .options-container {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    margin-top: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 11;
-    /* 默认比选择器高1 */
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    opacity: 0;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background-color: var(--card-background);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	margin-top: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	z-index: 11;
+	/* 默认比选择器高1 */
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease;
+	opacity: 0;
 }
 
 /* 为语言选择器的选项容器设置更高的z-index */
 #languageOptions {
-    z-index: 31;
+	z-index: 31;
 }
 
 /* 为日志等级选择器的选项容器设置较低的z-index */
 #logLevelOptions {
-    z-index: 21;
+	z-index: 21;
 }
 
 .custom-select.open .options-container {
-    max-height: 200px;
-    overflow: visible;
-    /* 确保内容不会被截断 */
-    opacity: 1;
+	max-height: 200px;
+	overflow: visible;
+	/* 确保内容不会被截断 */
+	opacity: 1;
 }
 
 .option {
-    padding: 8px 12px;
-    font-size: 14px;
-    color: var(--text-color);
-    transition: background-color 0.2s;
-    border-bottom: 1px solid var(--border-color);
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	padding: 8px 12px;
+	font-size: 14px;
+	color: var(--text-color);
+	transition: background-color 0.2s;
+	border-bottom: 1px solid var(--border-color);
+	opacity: 0;
+	transform: translateY(-10px);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .custom-select.open .option {
-    opacity: 1;
-    transform: translateY(0);
+	opacity: 1;
+	transform: translateY(0);
 }
 
 .option:last-child {
-    border-bottom: none;
+	border-bottom: none;
 }
 
 .option:hover {
-    background-color: var(--border-color);
+	background-color: var(--border-color);
 }
 
 .option.selected {
-    background-color: var(--accent-color);
-    color: white;
+	background-color: var(--accent-color);
+	color: white;
 }
 
 /* Miuix风格数值选择器样式 */
 .number-spinner {
-    display: flex;
-    align-items: center;
-    border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
-    border-radius: 12px;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--card-background) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+	border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+	border-radius: 12px;
+	overflow: hidden;
+	background: linear-gradient(
+		135deg,
+		var(--card-background) 0%,
+		rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%
+	);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	transition: all 0.3s ease;
 }
 
 .number-spinner:hover {
-    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .spinner-btn {
-    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
-    color: white;
-    border: none;
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    position: relative;
-    overflow: hidden;
+	background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+	color: white;
+	border: none;
+	width: 44px;
+	height: 44px;
+	font-size: 18px;
+	font-weight: 600;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	position: relative;
+	overflow: hidden;
 }
 
 .spinner-btn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .spinner-btn:hover {
-    background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+	background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+	transform: scale(1.05);
+	box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
 }
 
 .spinner-btn:hover::before {
-    opacity: 1;
+	opacity: 1;
 }
 
 .spinner-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 6px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+	transform: scale(0.95);
+	box-shadow: 0 2px 6px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
 }
 
 .spinner-btn:disabled {
-    background: linear-gradient(135deg, var(--border-color) 0%, var(--secondary-text-color) 100%);
-    cursor: not-allowed;
-    opacity: 0.7;
-    transform: none;
-    box-shadow: none;
+	background: linear-gradient(135deg, var(--border-color) 0%, var(--secondary-text-color) 100%);
+	cursor: not-allowed;
+	opacity: 0.7;
+	transform: none;
+	box-shadow: none;
 }
 
 .spinner-btn:disabled::before {
-    display: none;
+	display: none;
 }
 
 .spinner-value {
-    flex: 1;
-    text-align: center;
-    padding: 12px 16px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-color);
-    background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
-    border-left: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
-    border-right: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
-    transition: all 0.3s ease;
+	flex: 1;
+	text-align: center;
+	padding: 12px 16px;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-color);
+	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+	border-left: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+	border-right: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
+	transition: all 0.3s ease;
 }
 
 /* 深色模式数字旋转器样式 */
 [data-theme="dark"] .number-spinner {
-    background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
-    border-color: rgba(13, 132, 255, 0.15);
+	background: linear-gradient(135deg, var(--card-background) 0%, rgba(13, 132, 255, 0.05) 100%);
+	border-color: rgba(13, 132, 255, 0.15);
 }
 
 [data-theme="dark"] .number-spinner:hover {
-    border-color: rgba(13, 132, 255, 0.25);
+	border-color: rgba(13, 132, 255, 0.25);
 }
 
 [data-theme="dark"] .spinner-value {
-    background: rgba(13, 132, 255, 0.08);
-    border-left-color: rgba(13, 132, 255, 0.2);
-    border-right-color: rgba(13, 132, 255, 0.2);
+	background: rgba(13, 132, 255, 0.08);
+	border-left-color: rgba(13, 132, 255, 0.2);
+	border-right-color: rgba(13, 132, 255, 0.2);
 }
 
 .form-group {
-    margin-bottom: 16px;
+	margin-bottom: 16px;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
+	display: block;
+	margin-bottom: 8px;
+	font-weight: 500;
 }
 
 /* Miuix风格表单输入框 */
 .form-group input,
 .form-group select {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--background-color) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%);
-    color: var(--text-color);
-    font-size: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+	width: 100%;
+	padding: 12px 16px;
+	border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+	border-radius: 12px;
+	background: linear-gradient(
+		135deg,
+		var(--background-color) 0%,
+		rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%
+	);
+	color: var(--text-color);
+	font-size: 14px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .form-group input:focus,
 .form-group select:focus {
-    outline: none;
-    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
-    background: linear-gradient(135deg, var(--background-color) 0%, rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%);
-    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2), 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-1px);
+	outline: none;
+	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+	background: linear-gradient(
+		135deg,
+		var(--background-color) 0%,
+		rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%
+	);
+	box-shadow:
+		0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2),
+		0 4px 12px rgba(0, 0, 0, 0.08);
+	transform: translateY(-1px);
 }
 
 .form-group input:hover,
 .form-group select:hover {
-    border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* 深色模式表单输入框 */
 [data-theme="dark"] .form-group input,
 [data-theme="dark"] .form-group select {
-    background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.05) 100%);
-    border-color: rgba(13, 132, 255, 0.15);
+	background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.05) 100%);
+	border-color: rgba(13, 132, 255, 0.15);
 }
 
 [data-theme="dark"] .form-group input:focus,
 [data-theme="dark"] .form-group select:focus {
-    border-color: rgba(13, 132, 255, 0.5);
-    background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.08) 100%);
-    box-shadow: 0 0 0 3px rgba(13, 132, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+	border-color: rgba(13, 132, 255, 0.5);
+	background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.08) 100%);
+	box-shadow:
+		0 0 0 3px rgba(13, 132, 255, 0.3),
+		0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] .form-group input:hover,
 [data-theme="dark"] .form-group select:hover {
-    border-color: rgba(13, 132, 255, 0.25);
+	border-color: rgba(13, 132, 255, 0.25);
 }
 
 .input-hint {
-    display: block;
-    margin-top: 4px;
-    font-size: 12px;
-    color: var(--secondary-text-color);
+	display: block;
+	margin-top: 4px;
+	font-size: 12px;
+	color: var(--secondary-text-color);
 }
 
 .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 16px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 16px;
 }
 
 /* 次要按钮样式 */
 .btn-secondary {
-    background: linear-gradient(135deg, var(--border-color) 0%, var(--secondary-text-color) 100%);
-    color: var(--text-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	background: linear-gradient(135deg, var(--border-color) 0%, var(--secondary-text-color) 100%);
+	color: var(--text-color);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary:hover {
-    background: linear-gradient(135deg, var(--secondary-text-color) 0%, var(--border-color) 100%);
-    color: var(--card-background);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+	background: linear-gradient(135deg, var(--secondary-text-color) 0%, var(--border-color) 100%);
+	color: var(--card-background);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* 危险按钮样式 */
 .btn-danger {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    color: white;
-    margin-left: auto;
-    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+	background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+	color: white;
+	margin-left: auto;
+	box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
 .btn-danger:hover {
-    background: linear-gradient(135deg, #ec7063 0%, #e74c3c 100%);
-    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+	background: linear-gradient(135deg, #ec7063 0%, #e74c3c 100%);
+	box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
 }
 
 /* Miuix风格的SuperSwitch组件 */
 .miuix-super-switch {
-    background: var(--card-background);
-    border-radius: 14px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 12px;
-    overflow: hidden;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
+	background: var(--card-background);
+	border-radius: 14px;
+	border: 1px solid var(--border-color);
+	margin-bottom: 12px;
+	overflow: hidden;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	user-select: none;
+	position: relative;
 }
 
 .miuix-super-switch:hover {
-    background: color-mix(in srgb, var(--card-background) 92%, var(--accent-color));
-    border-color: color-mix(in srgb, var(--border-color) 70%, var(--accent-color));
+	background: color-mix(in srgb, var(--card-background) 92%, var(--accent-color));
+	border-color: color-mix(in srgb, var(--border-color) 70%, var(--accent-color));
 }
 
 .miuix-super-switch:active {
-    transform: scale(0.98);
-    background: color-mix(in srgb, var(--card-background) 88%, var(--accent-color));
+	transform: scale(0.98);
+	background: color-mix(in srgb, var(--card-background) 88%, var(--accent-color));
 }
 
 .miuix-super-switch-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    min-height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	min-height: 64px;
 }
 
 .miuix-super-switch-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-    /* 允许文本截断 */
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+	/* 允许文本截断 */
 }
 
 .miuix-super-switch-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text-color);
-    line-height: 1.3;
-    word-wrap: break-word;
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--text-color);
+	line-height: 1.3;
+	word-wrap: break-word;
 }
 
 .miuix-super-switch-summary {
-    font-size: 13px;
-    color: var(--secondary-text-color);
-    line-height: 1.4;
-    opacity: 0.8;
-    word-wrap: break-word;
+	font-size: 13px;
+	color: var(--secondary-text-color);
+	line-height: 1.4;
+	opacity: 0.8;
+	word-wrap: break-word;
 }
 
 /* Miuix风格的Switch组件 */
 .miuix-switch {
-    position: relative;
-    width: 48px;
-    height: 28px;
-    flex-shrink: 0;
-    margin-left: 16px;
+	position: relative;
+	width: 48px;
+	height: 28px;
+	flex-shrink: 0;
+	margin-left: 16px;
 }
 
 .miuix-switch-input {
-    opacity: 0;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    cursor: pointer;
-    z-index: 2;
+	opacity: 0;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	cursor: pointer;
+	z-index: 2;
 }
 
 .miuix-switch-track {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: color-mix(in srgb, var(--text-color) 20%, transparent);
-    border-radius: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: color-mix(in srgb, var(--text-color) 20%, transparent);
+	border-radius: 14px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	overflow: hidden;
 }
 
 .miuix-switch-thumb {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 24px;
-    height: 24px;
-    background: #ffffff;
-    border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transform: translateX(0);
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 24px;
+	height: 24px;
+	background: #ffffff;
+	border-radius: 12px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	transform: translateX(0);
 }
 
 /* 深色模式下的thumb颜色调整 */
 [data-theme="dark"] .miuix-switch-thumb {
-    background: #f0f0f0;
+	background: #f0f0f0;
 }
 
 /* Switch选中状态 */
-.miuix-switch-input:checked+.miuix-switch-track {
-    background: var(--accent-color);
+.miuix-switch-input:checked + .miuix-switch-track {
+	background: var(--accent-color);
 }
 
-.miuix-switch-input:checked+.miuix-switch-track .miuix-switch-thumb {
-    transform: translateX(20px);
-    background: #ffffff;
+.miuix-switch-input:checked + .miuix-switch-track .miuix-switch-thumb {
+	transform: translateX(20px);
+	background: #ffffff;
 }
 
 /* Switch悬停效果 */
 .miuix-switch:hover .miuix-switch-track {
-    box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent-color) 12%, transparent);
+	box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent-color) 12%, transparent);
 }
 
-.miuix-switch-input:checked:hover+.miuix-switch-track {
-    background: color-mix(in srgb, var(--accent-color) 90%, #000000);
+.miuix-switch-input:checked:hover + .miuix-switch-track {
+	background: color-mix(in srgb, var(--accent-color) 90%, #000000);
 }
 
 /* Switch按下效果 */
-.miuix-switch-input:active+.miuix-switch-track .miuix-switch-thumb {
-    width: 26px;
+.miuix-switch-input:active + .miuix-switch-track .miuix-switch-thumb {
+	width: 26px;
 }
 
-.miuix-switch-input:checked:active+.miuix-switch-track .miuix-switch-thumb {
-    transform: translateX(18px);
+.miuix-switch-input:checked:active + .miuix-switch-track .miuix-switch-thumb {
+	transform: translateX(18px);
 }
 
 /* Switch禁用状态 */
-.miuix-switch-input:disabled+.miuix-switch-track {
-    opacity: 0.5;
-    cursor: not-allowed;
+.miuix-switch-input:disabled + .miuix-switch-track {
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 
-.miuix-switch-input:disabled+.miuix-switch-track .miuix-switch-thumb {
-    background: color-mix(in srgb, var(--text-color) 40%, transparent);
+.miuix-switch-input:disabled + .miuix-switch-track .miuix-switch-thumb {
+	background: color-mix(in srgb, var(--text-color) 40%, transparent);
 }
 
 .miuix-super-switch:has(.miuix-switch-input:disabled) {
-    opacity: 0.6;
-    cursor: not-allowed;
+	opacity: 0.6;
+	cursor: not-allowed;
 }
 
 .miuix-super-switch:has(.miuix-switch-input:disabled):hover {
-    transform: none;
-    background: var(--card-background);
-    border-color: var(--border-color);
+	transform: none;
+	background: var(--card-background);
+	border-color: var(--border-color);
 }
 
 /* 焦点状态 */
-.miuix-switch-input:focus-visible+.miuix-switch-track {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
+.miuix-switch-input:focus-visible + .miuix-switch-track {
+	outline: 2px solid var(--accent-color);
+	outline-offset: 2px;
 }
 
 /* 为SuperSwitch添加焦点状态 */
 .miuix-super-switch:focus-within {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
+	outline: 2px solid var(--accent-color);
+	outline-offset: 2px;
 }
 
 /* 移动端优化 */
 @media (max-width: 768px) {
-    .miuix-super-switch-content {
-        padding: 14px 16px;
-        min-height: 60px;
-    }
+	.miuix-super-switch-content {
+		padding: 14px 16px;
+		min-height: 60px;
+	}
 
-    .miuix-super-switch-title {
-        font-size: 15px;
-    }
+	.miuix-super-switch-title {
+		font-size: 15px;
+	}
 
-    .miuix-super-switch-summary {
-        font-size: 12px;
-    }
+	.miuix-super-switch-summary {
+		font-size: 12px;
+	}
 
-    .miuix-switch {
-        margin-left: 12px;
-    }
+	.miuix-switch {
+		margin-left: 12px;
+	}
 }
 
 /* 动画增强 */
 @media (prefers-reduced-motion: no-preference) {
-    .miuix-super-switch {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+	.miuix-super-switch {
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
 
-    .miuix-switch-thumb {
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+	.miuix-switch-thumb {
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
 
-    .miuix-switch-track {
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+	.miuix-switch-track {
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
 }
 
 /* 为SuperSwitch添加点击波纹效果 */
 .miuix-super-switch::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--accent-color) 20%, transparent);
-    transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease;
-    pointer-events: none;
-    z-index: 1;
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+	transform: translate(-50%, -50%);
+	transition:
+		width 0.3s ease,
+		height 0.3s ease;
+	pointer-events: none;
+	z-index: 1;
 }
 
 .miuix-super-switch:active::before {
-    width: 100%;
-    height: 100%;
+	width: 100%;
+	height: 100%;
 }
 
 /* 确保内容在波纹效果之上 */
 .miuix-super-switch-content {
-    position: relative;
-    z-index: 2;
+	position: relative;
+	z-index: 2;
 }
 
 /* 高对比度模式支持 */
 @media (prefers-contrast: high) {
-    .miuix-super-switch {
-        border-width: 2px;
-    }
+	.miuix-super-switch {
+		border-width: 2px;
+	}
 
-    .miuix-switch-track {
-        border: 1px solid var(--text-color);
-    }
+	.miuix-switch-track {
+		border: 1px solid var(--text-color);
+	}
 
-    .miuix-switch-thumb {
-        border: 1px solid var(--text-color);
-    }
+	.miuix-switch-thumb {
+		border: 1px solid var(--text-color);
+	}
 }
 
 /* 深色模式下的特殊优化 */
 [data-theme="dark"] .miuix-super-switch:hover {
-    background: color-mix(in srgb, var(--card-background) 85%, var(--accent-color));
+	background: color-mix(in srgb, var(--card-background) 85%, var(--accent-color));
 }
 
 [data-theme="dark"] .miuix-super-switch:active {
-    background: color-mix(in srgb, var(--card-background) 75%, var(--accent-color));
+	background: color-mix(in srgb, var(--card-background) 75%, var(--accent-color));
 }
 
 /* 为color-mix不支持的浏览器提供fallback */
 @supports not (color: color-mix(in srgb, red, blue)) {
-    .miuix-super-switch:hover {
-        background: var(--accent-bg);
-    }
+	.miuix-super-switch:hover {
+		background: var(--accent-bg);
+	}
 
-    .miuix-switch-track {
-        background: rgba(128, 128, 128, 0.3);
-    }
+	.miuix-switch-track {
+		background: rgba(128, 128, 128, 0.3);
+	}
 
-    .miuix-switch-input:checked+.miuix-switch-track {
-        background: var(--accent-color);
-    }
+	.miuix-switch-input:checked + .miuix-switch-track {
+		background: var(--accent-color);
+	}
 }
 
 /* 模式配置区域 */
 .mode-config-container {
-    margin-top: 20px;
+	margin-top: 20px;
 }
 
 .mode-config-section {
-    display: none;
+	display: none;
 }
 
 .mode-config-section.active {
-    display: block;
-    animation: fadeIn 0.3s ease-in-out;
+	display: block;
+	animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 /* 模式切换按钮网格 */
 .mode-tabs-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px;
+	margin-bottom: 20px;
 }
 
 /* 响应式设计 - 在小屏幕上使用两列布局 */
 @media (max-width: 768px) {
-    .mode-tabs-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+	.mode-tabs-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
 }

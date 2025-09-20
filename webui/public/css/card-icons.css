@@ -5,111 +5,111 @@
 
 /* 为所有卡片标题图标添加miuix风格 */
 .card-title .title-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 32px !important;
-    height: 32px !important;
-    background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 8px rgba(13, 132, 255, 0.3) !important;
-    color: white !important;
-    position: relative !important;
-    overflow: hidden !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    flex-shrink: 0 !important;
-    margin-right: 12px !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(13, 132, 255, 0.3);
+	color: white;
+	position: relative;
+	overflow: hidden;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	flex-shrink: 0;
+	margin-right: 12px;
 }
 
 .card-title .title-icon::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
-    border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+	border-radius: 8px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .card-title .title-icon svg {
-    width: 18px !important;
-    height: 18px !important;
-    color: white !important;
-    fill: white !important;
-    transition: all 0.3s ease;
-    z-index: 1;
-    position: relative;
+	width: 18px;
+	height: 18px;
+	color: white;
+	fill: white;
+	transition: all 0.3s ease;
+	z-index: 1;
+	position: relative;
 }
 
 .card:hover .card-title .title-icon {
-    transform: scale(1.15) rotate(3deg) !important;
-    box-shadow: 0 4px 16px rgba(13, 132, 255, 0.4) !important;
+	transform: scale(1.15) rotate(3deg);
+	box-shadow: 0 4px 16px rgba(13, 132, 255, 0.4);
 }
 
 .card:hover .card-title .title-icon::before {
-    opacity: 1 !important;
+	opacity: 1;
 }
 
 .card:hover .card-title .title-icon svg {
-    transform: scale(1.1) !important;
+	transform: scale(1.1);
 }
 
 /* 确保miuix图标容器在文本前正确显示 */
 .status-item > span:first-child .miuix-status-icon {
-    width: 24px !important;
-    height: 24px !important;
-    background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%) !important;
-    border-radius: 6px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: 0 2px 6px rgba(13, 132, 255, 0.3) !important;
-    position: relative !important;
-    overflow: hidden !important;
-    flex-shrink: 0 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    min-width: 24px !important;
-    min-height: 24px !important;
-    margin-right: 8px !important;
+	width: 24px;
+	height: 24px;
+	background: linear-gradient(135deg, #0d84ff 0%, #147ce5 100%);
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 6px rgba(13, 132, 255, 0.3);
+	position: relative;
+	overflow: hidden;
+	flex-shrink: 0;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	min-width: 24px;
+	min-height: 24px;
+	margin-right: 8px;
 }
 
 /* Miuix风格状态图标容器的伪元素和内部SVG */
 .status-item > span:first-child .miuix-status-icon::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-    border-radius: 6px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+	border-radius: 6px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .status-item > span:first-child .miuix-status-icon svg.status-icon {
-    width: 14px !important;
-    height: 14px !important;
-    color: white !important;
-    fill: white !important;
-    opacity: 1 !important;
-    z-index: 1 !important;
-    position: relative !important;
+	width: 14px;
+	height: 14px;
+	color: white;
+	fill: white;
+	opacity: 1;
+	z-index: 1;
+	position: relative;
 }
 
 /* 悬停效果 */
 .status-item:hover .miuix-status-icon {
-    transform: scale(1.1) rotate(2deg) !important;
-    box-shadow: 0 4px 12px rgba(13, 132, 255, 0.4) !important;
+	transform: scale(1.1) rotate(2deg);
+	box-shadow: 0 4px 12px rgba(13, 132, 255, 0.4);
 }
 
 .status-item:hover .miuix-status-icon::before {
-    opacity: 1 !important;
+	opacity: 1;
 }
 
 .status-item:hover .miuix-status-icon svg.status-icon {
-    transform: scale(1.05) !important;
+	transform: scale(1.05);
 }

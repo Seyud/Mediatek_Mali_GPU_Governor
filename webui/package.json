@@ -1,17 +1,18 @@
 {
-  "name": "mediatek-mali-gpu-governor-webui-dev",
-  "private": true,
-  "version": "2.9.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/postbuild-html.mjs && node scripts/postbuild-css.mjs && node scripts/postbuild-htmlmin.mjs",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "csso": "^5.0.5",
-    "html-minifier-terser": "^7.2.0",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.6"
-  }
+	"name": "mediatek-mali-gpu-governor-webui-dev",
+	"private": true,
+	"version": "2.9.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build && node scripts/postbuild-html.mjs && node scripts/postbuild-css.mjs && node scripts/postbuild-htmlmin.mjs",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.4",
+		"csso": "^5.0.5",
+		"html-minifier-terser": "^7.2.0",
+		"typescript": "^5.9.2",
+		"vite": "^7.1.6"
+	}
 }

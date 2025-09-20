@@ -4,29 +4,26 @@
    ========================================== */
 
 /* 导入变量定义 */
-@import url('./variables.css');
+@import url("./variables.css");
 
 /* 导入模块化组件 - 按依赖顺序 */
 /* 1. 基础样式 - 其他所有模块都依赖的基础元素 */
-@import url('./card-base.css');
+@import url("./card-base.css");
 
 /* 2. 图标样式 - 依赖基础卡片样式 */
-@import url('./card-icons.css');
+@import url("./card-icons.css");
 
 /* 3. 徽章组件 - 独立的视觉元素 */
-@import url('./card-badges.css');
+@import url("./card-badges.css");
 
 /* 4. 特殊卡片 - 依赖基础样式和图标 */
-@import url('./card-special.css');
+@import url("./card-special.css");
 
 /* 5. 动画效果 - 最后加载以覆盖其他样式 */
-@import url('./card-animations.css');
+@import url("./card-animations.css");
 
 /* 6. 响应式样式 - 需要覆盖基础样式 */
-@import url('./card-responsive.css');
+@import url("./card-responsive.css");
 
 /* 7. 主题样式 - 最后加载以覆盖所有默认样式 */
-@import url('./card-themes.css');
-
-
-
+@import url("./card-themes.css");
