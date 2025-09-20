@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/postbuild-css.mjs",
+    "build": "vite build && node scripts/postbuild-html.mjs && node scripts/postbuild-css.mjs && node scripts/postbuild-htmlmin.mjs",
     "preview": "vite preview"
   },
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.5.4",
     "vite": "^5.4.0",
-    "csso": "^5.0.5"
+    "csso": "^5.0.5",
+    "html-minifier-terser": "^7.2.0"
   }
 }
