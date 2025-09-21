@@ -1,0 +1,41 @@
+/* 模式配置样式模块 */
+
+/* 模式配置区域 */
+.mode-config-container {
+	margin-top: 20px;
+}
+
+.mode-config-section {
+	display: none;
+}
+
+.mode-config-section.active {
+	display: block;
+	animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* 模式切换按钮网格 */
+.mode-tabs-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+/* 响应式设计 - 在小屏幕上使用两列布局 */
+@media (max-width: 768px) {
+	.mode-tabs-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}

@@ -1,0 +1,230 @@
+/* 表单控件样式模块 */
+
+/* 基础选择器样式 */
+.select {
+	background-color: var(--card-background);
+	color: var(--text-color);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	padding: 8px;
+	font-size: 14px;
+}
+
+/* 自定义下拉菜单样式 */
+.custom-select {
+	position: relative;
+	width: 100%;
+	cursor: pointer;
+	z-index: 10;
+	/* 默认z-index */
+}
+
+/* 为语言选择器设置更高的z-index */
+#languageContainer {
+	z-index: 30;
+}
+
+/* 为日志等级选择器设置较低的z-index */
+#logLevelContainer {
+	z-index: 20;
+}
+
+/* 为全局模式选择器设置z-index */
+#globalModeContainer {
+	z-index: 15;
+}
+
+/* 为全局模式选择器的选项容器设置z-index */
+#globalModeOptions {
+	z-index: 16;
+}
+
+/* 为游戏模式选择器设置z-index */
+#gameModeContainer {
+	z-index: 10;
+}
+
+/* 为游戏模式选择器的选项容器设置z-index */
+#gameModeOptions {
+	z-index: 11;
+}
+
+.selected-option {
+	background-color: transparent;
+	color: var(--text-color);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	padding: 8px 12px;
+	font-size: 14px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	transition: all 0.3s;
+}
+
+/* 鼠标悬停时的样式 */
+.selected-option:hover {
+	border-color: var(--accent-color);
+}
+
+/* 打开状态时的样式 */
+.custom-select.open .selected-option {
+	background-color: var(--accent-color);
+	color: white;
+	border-color: var(--accent-color);
+}
+
+.selected-option::after {
+	content: "▼";
+	font-size: 10px;
+	margin-left: 8px;
+	transition: transform 0.3s;
+	color: var(--secondary-text-color);
+}
+
+.custom-select.open .selected-option::after {
+	transform: rotate(180deg);
+	color: white;
+}
+
+.options-container {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background-color: var(--card-background);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	margin-top: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	z-index: 11;
+	/* 默认比选择器高1 */
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease;
+	opacity: 0;
+}
+
+/* 为语言选择器的选项容器设置更高的z-index */
+#languageOptions {
+	z-index: 31;
+}
+
+/* 为日志等级选择器的选项容器设置较低的z-index */
+#logLevelOptions {
+	z-index: 21;
+}
+
+.custom-select.open .options-container {
+	max-height: 200px;
+	overflow: visible;
+	/* 确保内容不会被截断 */
+	opacity: 1;
+}
+
+.option {
+	padding: 8px 12px;
+	font-size: 14px;
+	color: var(--text-color);
+	border-bottom: 1px solid var(--border-color);
+	opacity: 0;
+	transform: translateY(-10px);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-select.open .option {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.option:last-child {
+	border-bottom: none;
+}
+
+.option:hover {
+	background-color: var(--border-color);
+}
+
+.option.selected {
+	background-color: var(--accent-color);
+	color: white;
+}
+
+/* 表单组样式 */
+.form-group {
+	margin-bottom: 16px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: 500;
+}
+
+/* Miuix风格表单输入框 */
+.form-group input,
+.form-group select {
+	width: 100%;
+	padding: 12px 16px;
+	border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+	border-radius: 12px;
+	background: linear-gradient(
+		135deg,
+		var(--background-color) 0%,
+		rgba(var(--accent-color-rgb, 13, 132, 255), 0.02) 100%
+	);
+	color: var(--text-color);
+	font-size: 14px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+	outline: none;
+	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+	background: linear-gradient(
+		135deg,
+		var(--background-color) 0%,
+		rgba(var(--accent-color-rgb, 13, 132, 255), 0.05) 100%
+	);
+	box-shadow:
+		0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2),
+		0 4px 12px rgba(0, 0, 0, 0.08);
+	transform: translateY(-1px);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 深色模式表单输入框 */
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select {
+	background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.05) 100%);
+	border-color: rgba(13, 132, 255, 0.15);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus {
+	border-color: rgba(13, 132, 255, 0.5);
+	background: linear-gradient(135deg, var(--background-color) 0%, rgba(13, 132, 255, 0.08) 100%);
+	box-shadow:
+		0 0 0 3px rgba(13, 132, 255, 0.3),
+		0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .form-group input:hover,
+[data-theme="dark"] .form-group select:hover {
+	border-color: rgba(13, 132, 255, 0.25);
+}
+
+/* 输入提示样式 */
+.input-hint {
+	display: block;
+	margin-top: 4px;
+	font-size: 12px;
+	color: var(--secondary-text-color);
+}

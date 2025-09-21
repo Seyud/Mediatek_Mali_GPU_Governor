@@ -1,0 +1,115 @@
+/* Miuix风格按钮样式模块 */
+
+/* 基础按钮样式 */
+.btn {
+	background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+	color: white;
+	border: none;
+	border-radius: 12px;
+	padding: 12px 24px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	outline: none;
+	position: relative;
+	overflow: hidden;
+	transform: translateZ(0);
+	min-height: 44px;
+}
+
+.btn::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+	border-radius: 12px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.btn:hover {
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 6px 20px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+	background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+}
+
+.btn:hover::before {
+	opacity: 1;
+}
+
+.btn:active {
+	transform: translateY(0) scale(0.98);
+	box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
+}
+
+.btn:focus {
+	box-shadow:
+		0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3),
+		0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+}
+
+/* 按钮图标样式 */
+.btn .btn-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn .btn-icon svg {
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
+}
+
+/* 主要按钮样式 */
+.btn-primary {
+	background: linear-gradient(135deg, #00c853 0%, #4caf50 100%);
+	box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+}
+
+.btn-primary:hover {
+	background: linear-gradient(135deg, #00e676 0%, #66bb6a 100%);
+	box-shadow: 0 6px 20px rgba(0, 200, 83, 0.4);
+}
+
+/* 次要按钮样式 */
+.btn-secondary {
+	background: linear-gradient(135deg, var(--border-color) 0%, var(--secondary-text-color) 100%);
+	color: var(--text-color);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+	background: linear-gradient(135deg, var(--secondary-text-color) 0%, var(--border-color) 100%);
+	color: var(--card-background);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 危险按钮样式 */
+.btn-danger {
+	background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+	color: white;
+	margin-left: auto;
+	box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-danger:hover {
+	background: linear-gradient(135deg, #ec7063 0%, #e74c3c 100%);
+	box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* 表单操作按钮容器 */
+.form-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 16px;
+}

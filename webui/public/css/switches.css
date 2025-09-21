@@ -1,0 +1,270 @@
+/* Miuix开关组件样式模块 */
+
+/* Miuix风格的SuperSwitch组件 */
+.miuix-super-switch {
+	background: var(--card-background);
+	border-radius: 14px;
+	border: 1px solid var(--border-color);
+	margin-bottom: 12px;
+	overflow: hidden;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	user-select: none;
+	position: relative;
+}
+
+.miuix-super-switch:hover {
+	background: color-mix(in srgb, var(--card-background) 92%, var(--accent-color));
+	border-color: color-mix(in srgb, var(--border-color) 70%, var(--accent-color));
+}
+
+.miuix-super-switch:active {
+	transform: scale(0.98);
+	background: color-mix(in srgb, var(--card-background) 88%, var(--accent-color));
+}
+
+.miuix-super-switch-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	min-height: 64px;
+}
+
+.miuix-super-switch-text {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+	/* 允许文本截断 */
+}
+
+.miuix-super-switch-title {
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--text-color);
+	line-height: 1.3;
+	word-wrap: break-word;
+}
+
+.miuix-super-switch-summary {
+	font-size: 13px;
+	color: var(--secondary-text-color);
+	line-height: 1.4;
+	opacity: 0.8;
+	word-wrap: break-word;
+}
+
+/* Miuix风格的Switch组件 */
+.miuix-switch {
+	position: relative;
+	width: 48px;
+	height: 28px;
+	flex-shrink: 0;
+	margin-left: 16px;
+}
+
+.miuix-switch-input {
+	opacity: 0;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	cursor: pointer;
+	z-index: 2;
+}
+
+.miuix-switch-track {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: color-mix(in srgb, var(--text-color) 20%, transparent);
+	border-radius: 14px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	overflow: hidden;
+}
+
+.miuix-switch-thumb {
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 24px;
+	height: 24px;
+	background: #ffffff;
+	border-radius: 12px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	transform: translateX(0);
+}
+
+/* 深色模式下的thumb颜色调整 */
+[data-theme="dark"] .miuix-switch-thumb {
+	background: #f0f0f0;
+}
+
+/* Switch选中状态 */
+.miuix-switch-input:checked + .miuix-switch-track {
+	background: var(--accent-color);
+}
+
+.miuix-switch-input:checked + .miuix-switch-track .miuix-switch-thumb {
+	transform: translateX(20px);
+	background: #ffffff;
+}
+
+/* Switch悬停效果 */
+.miuix-switch:hover .miuix-switch-track {
+	box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent-color) 12%, transparent);
+}
+
+.miuix-switch-input:checked:hover + .miuix-switch-track {
+	background: color-mix(in srgb, var(--accent-color) 90%, #000000);
+}
+
+/* Switch按下效果 */
+.miuix-switch-input:active + .miuix-switch-track .miuix-switch-thumb {
+	width: 26px;
+}
+
+.miuix-switch-input:checked:active + .miuix-switch-track .miuix-switch-thumb {
+	transform: translateX(18px);
+}
+
+/* Switch禁用状态 */
+.miuix-switch-input:disabled + .miuix-switch-track {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.miuix-switch-input:disabled + .miuix-switch-track .miuix-switch-thumb {
+	background: color-mix(in srgb, var(--text-color) 40%, transparent);
+}
+
+.miuix-super-switch:has(.miuix-switch-input:disabled) {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.miuix-super-switch:has(.miuix-switch-input:disabled):hover {
+	transform: none;
+	background: var(--card-background);
+	border-color: var(--border-color);
+}
+
+/* 焦点状态 */
+.miuix-switch-input:focus-visible + .miuix-switch-track {
+	outline: 2px solid var(--accent-color);
+	outline-offset: 2px;
+}
+
+/* 为SuperSwitch添加焦点状态 */
+.miuix-super-switch:focus-within {
+	outline: 2px solid var(--accent-color);
+	outline-offset: 2px;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+	.miuix-super-switch-content {
+		padding: 14px 16px;
+		min-height: 60px;
+	}
+
+	.miuix-super-switch-title {
+		font-size: 15px;
+	}
+
+	.miuix-super-switch-summary {
+		font-size: 12px;
+	}
+
+	.miuix-switch {
+		margin-left: 12px;
+	}
+}
+
+/* 动画增强 */
+@media (prefers-reduced-motion: no-preference) {
+	.miuix-super-switch {
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.miuix-switch-thumb {
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.miuix-switch-track {
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+}
+
+/* 为SuperSwitch添加点击波纹效果 */
+.miuix-super-switch::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+	transform: translate(-50%, -50%);
+	transition:
+		width 0.3s ease,
+		height 0.3s ease;
+	pointer-events: none;
+	z-index: 1;
+}
+
+.miuix-super-switch:active::before {
+	width: 100%;
+	height: 100%;
+}
+
+/* 确保内容在波纹效果之上 */
+.miuix-super-switch-content {
+	position: relative;
+	z-index: 2;
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+	.miuix-super-switch {
+		border-width: 2px;
+	}
+
+	.miuix-switch-track {
+		border: 1px solid var(--text-color);
+	}
+
+	.miuix-switch-thumb {
+		border: 1px solid var(--text-color);
+	}
+}
+
+/* 深色模式下的特殊优化 */
+[data-theme="dark"] .miuix-super-switch:hover {
+	background: color-mix(in srgb, var(--card-background) 85%, var(--accent-color));
+}
+
+[data-theme="dark"] .miuix-super-switch:active {
+	background: color-mix(in srgb, var(--card-background) 75%, var(--accent-color));
+}
+
+/* 为color-mix不支持的浏览器提供fallback */
+@supports not (color: color-mix(in srgb, red, blue)) {
+	.miuix-super-switch:hover {
+		background: var(--accent-bg);
+	}
+
+	.miuix-switch-track {
+		background: rgba(128, 128, 128, 0.3);
+	}
+
+	.miuix-switch-input:checked + .miuix-switch-track {
+		background: var(--accent-color);
+	}
+}
