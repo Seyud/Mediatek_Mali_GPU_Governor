@@ -200,6 +200,22 @@ export class MainApp {
 		} catch {
 			console.error("批量应用 data-i18n 国际化失败");
 		}
+
+		// 处理 data-i18n-placeholder 属性
+		try {
+			document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+				const key = el.getAttribute("data-i18n-placeholder");
+				if (
+					key &&
+					(translations as TranslationsType)[this.currentLanguage] &&
+					(translations as TranslationsType)[this.currentLanguage][key]
+				) {
+					(el as HTMLInputElement).placeholder = getTranslation(key, {}, this.currentLanguage);
+				}
+			});
+		} catch {
+			console.error("批量应用 data-i18n-placeholder 国际化失败");
+		}
 	}
 
 	updateSelectedLanguageText(languageSetting: string) {
