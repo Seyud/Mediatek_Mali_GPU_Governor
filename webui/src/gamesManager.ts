@@ -167,7 +167,7 @@ export class GamesManager {
 		const modeTexts: Record<Lang, Record<string, string>> = {
 			zh: { powersave: "省电", balance: "均衡", performance: "性能", fast: "极速" },
 			en: {
-				powersave: "Power Saving",
+				powersave: "Powersave",
 				balance: "Balance",
 				performance: "Performance",
 				fast: "Fast",
