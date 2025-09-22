@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url)
 const pkg = require('vitepress/package.json')
 
 export default defineConfig({
-  lang: 'zh-CN',
+  lang: 'zh',
   description: '专为联发科处理器设计的先进 GPU 调速器。',
 
   themeConfig: {

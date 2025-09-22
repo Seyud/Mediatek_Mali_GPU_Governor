@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url)
 const pkg = require('vitepress/package.json')
 
 export default defineConfig({
-  lang: 'en-US',
+  lang: 'en',
   description: 'Advanced GPU governor designed specifically for MediaTek processors.',
 
   themeConfig: {

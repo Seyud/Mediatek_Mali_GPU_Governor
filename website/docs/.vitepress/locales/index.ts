@@ -1,14 +1,20 @@
 import { defineConfig } from 'vitepress'
 import en from './en'
-import zh_CN from './zh'
+import zh from './zh'
 
 export default defineConfig({
   locales: {
+    root: {
+      label: '中文',
+      lang: zh.lang,
+      themeConfig: zh.themeConfig,
+      description: zh.description
+    },
     zh: {
-      label: '简体中文',
-      lang: zh_CN.lang,
-      themeConfig: zh_CN.themeConfig,
-      description: zh_CN.description
+      label: '中文',
+      lang: zh.lang,
+      themeConfig: zh.themeConfig,
+      description: zh.description
     },
     en: {
       label: 'English',

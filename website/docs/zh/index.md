@@ -19,18 +19,20 @@ hero:
     - theme: brand
       text: 查看源码
       link: https://github.com/Seyud/Mediatek_Mali_GPU_Governor
+    - theme: alt
+      text: 📱 加入QQ群
+      link: https://qun.qq.com/universal-share/share?ac=1&authKey=zwOHClW5YTIZobOTsqvF6lBaACPvS7%2F2Y0s%2FpQadAMss5d2nxcr46fmsm%2FFreVjt&busi_data=eyJncm91cENvZGUiOiI3MTk4NzIzMDkiLCJ0b2tlbiI6IjhQNUhYM1M4NUs4bFVwQmNsODRrUU1Xc0phR3dra1RUYnE0S0tMVFNzV3JUU2s3elgvSFRyUXJQdWtEQ1NVYSsiLCJ1aW4iOiIxMTA1NzgzMDMzIn0%3D&data=VgJU9DuiAPqB3ocg4Zlh8UShvQmDEgEfH4wvqCVXWOD8qcBSzYDPQuwUKVgLOIzZ-CWhtV69fyTHD4Q0GqWWKw&svctype=4&tempid=h5_group_info
+    - theme: alt
+      text: 💬 Telegram群
+      link: https://t.me/MTK_GPU
 
 features:
-  - title: 🚀 高性能优化
-    details: 基于 Rust 开发，提供快速响应的 GPU 频率调节
-  - title: ⚡ 智能调频
-    details: 根据实际负载动态调整 GPU 频率，实现性能与功耗的最佳平衡
-  - title: 🎯 专为联发科优化
-    details: 针对天玑系列处理器深度定制，完美支持 Mali GPU 架构
-  - title: 🛡️ 稳定可靠
-    details: 经过大量测试验证，确保系统稳定性和安全性
-  - title: 🔧 易于配置
-    details: 提供友好的配置界面和详细的文档说明
-  - title: 🌐 开源免费
-    details: 完全开源，持续更新，社区支持
----
+  - title: 🦀 Rust 核心引擎
+    details: 使用 Rust 语言开发的高性能核心引擎，多线程监控架构确保内存安全和零成本抽象。
+  - title: 🎮 智能游戏模式
+    details: 自动检测游戏应用并应用性能优化的 GPU 频率策略，为游戏体验提供最佳性能。
+  - title: 🖥️ 现代化 WebUI
+    details: 基于 KernelSU API 的 Miuix 风格图形化管理界面，支持深色/浅色主题和多语言界面。
+  - title: ⚙️ 高度可定制
+    details: 灵活的配置系统，支持自定义 GPU 频率表、电压设置和四种不同的性能模式。
+
