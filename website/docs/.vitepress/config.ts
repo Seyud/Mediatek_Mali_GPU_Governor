@@ -12,7 +12,27 @@ export default defineConfig( {
     locales: locales.locales,
     head: [
         ['link', { rel: 'icon', href: '/logo.png' }],
-        ['meta', { name: 'theme-color', content: '#646cff' }],
+        ['meta', { name: 'theme-color', content: '#0d84ff' }],
+        ['style', {}, `
+        :root {
+          --vp-c-brand-1: #0d84ff;
+          --vp-c-brand-2: #0d84ff;
+          --vp-c-brand-3: #0d84ff;
+          --vp-c-brand-soft: rgba(13, 132, 255, 0.14);
+          --vp-c-text-accent-1: #0d84ff;
+          --vp-button-brand-bg: #0d84ff;
+          --vp-button-brand-hover-bg: #0a6edb;
+        }
+        .dark {
+          --vp-c-brand-1: #0d84ff;
+          --vp-c-brand-2: #0d84ff;
+          --vp-c-brand-3: #0d84ff;
+          --vp-c-brand-soft: rgba(13, 132, 255, 0.16);
+          --vp-c-text-accent-1: #0d84ff;
+          --vp-button-brand-bg: #0d84ff;
+          --vp-button-brand-hover-bg: #3a9bff;
+        }
+        `],
     ],
     sitemap: {
         hostname: 'https://seyud.github.io/Mediatek_Mali_GPU_Governor'
