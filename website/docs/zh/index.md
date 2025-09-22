@@ -11,7 +11,7 @@ hero:
     alt: 天玑 GPU 调速器
   actions:
     - theme: brand
-      text: 开始使用
+      text: 开始了解
       link: /zh/guide/introduction
     - theme: alt
       text: 安装指南

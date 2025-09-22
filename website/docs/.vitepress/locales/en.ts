@@ -22,8 +22,8 @@ export default defineConfig({
     ],
 
     footer: {
-        message: 'Released under the MIT License.',
-        copyright: 'Copyright © 2024-present Seyud.'
+        message: 'Released under the GPL-3.0 License.',
+        copyright: 'Copyright © 2025 Seyud.'
     },
 
     editLink: {
