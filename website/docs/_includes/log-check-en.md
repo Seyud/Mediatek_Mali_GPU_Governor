@@ -1,0 +1,1 @@
+Check `/data/adb/gpu_governor/log/gpu_gov.log` log file, or view running status and logs through WebUI interface, confirm there are no frequent abnormal errors.
