@@ -15,7 +15,6 @@
 After installation, you can verify the module is working properly by:
 
 - @@include(../_includes/log-check-en.md)
-- Viewing running status through WebUI interface
 - Using `action.sh` script to check module status
 
-If you encounter issues, please check the log files or contact technical support.
+If you encounter issues, please check the log files or contact [technical support](./faq.md#technical-support).

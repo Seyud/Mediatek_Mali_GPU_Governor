@@ -86,7 +86,7 @@ The module automatically detects game applications configured in `games.toml`, a
 
 ### Performance Optimization
 
-Game mode applies the following optimizations:
+Game Mode can apply the following optimizations:
 
 - Use aggressive up-frequency strategy
 - Enable special memory optimization for games

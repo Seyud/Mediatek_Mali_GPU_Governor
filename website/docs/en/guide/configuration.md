@@ -4,7 +4,7 @@
 
 Dimensity GPU Governor uses multiple configuration files to control its behavior:
 
-- `/data/adb/gpu_governor/config/config.toml` - Main configuration file
+- `/data/adb/gpu_governor/config/config.toml` - Custom configuration
 - `/data/adb/gpu_governor/config/gpu_freq_table.toml` - GPU frequency table configuration
 - `/data/adb/gpu_governor/game/games.toml` - Games list configuration
 - `/data/adb/gpu_governor/log/log_level` - Log level setting

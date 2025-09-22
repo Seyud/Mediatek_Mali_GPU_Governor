@@ -41,8 +41,8 @@ Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor 
 - **Testing & Feedback**: All members of the beta testing groups
 - **Configuration Assistance**: Fiagelia @CoolApk, 忘渐 @CoolApk
 
-## Important Notes
+## ⚠️ Warning
 
-- Modifying GPU frequency and voltage may affect device stability
-- Improper configuration may cause device performance or stability issues
-- If you encounter problems, check the log files for troubleshooting
+You may experience crashes, screen flickering, or sudden stuttering during use, which is usually caused by inappropriate frequency or voltage configurations. If screen artifacts occur frequently, it is recommended to increase the voltage corresponding to each GPU frequency level or set the DDR configuration to 999 for automatic voltage.
+
+Reducing/limiting memory frequency can slightly reduce power consumption, but GPU performance will be severely impaired, and low memory voltage may cause crashes and reboots.

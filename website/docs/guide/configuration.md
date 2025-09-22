@@ -4,7 +4,7 @@
 
 天玑 GPU 调速器使用多个配置文件来控制其行为：
 
-- `/data/adb/gpu_governor/config/config.toml` - 主配置文件
+- `/data/adb/gpu_governor/config/config.toml` - 自定义配置
 - `/data/adb/gpu_governor/config/gpu_freq_table.toml` - GPU 频率表配置
 - `/data/adb/gpu_governor/game/games.toml` - 游戏列表配置
 - `/data/adb/gpu_governor/log/log_level` - 日志等级设置
