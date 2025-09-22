@@ -160,7 +160,6 @@ ddr_opp = 0
 
 **预设配置文件**：
 
-- `config/mtd720.toml` - Dimensity 720 系列
 - `config/mtd1000.toml` - Dimensity 1000 系列
 - `config/mtd1100.toml` - Dimensity 1100 系列
 - `config/mtd1200.toml` - Dimensity 1200 系列

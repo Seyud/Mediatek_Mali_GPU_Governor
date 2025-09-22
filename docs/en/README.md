@@ -191,8 +191,6 @@ ddr_opp = 0
 
 **Preset Configuration Files**:
 
-- `config/mtd720.toml` - Dimensity 720 series
-
 - `config/mtd1000.toml` - Dimensity 1000 series
 
 - `config/mtd1100.toml` - Dimensity 1100 series
