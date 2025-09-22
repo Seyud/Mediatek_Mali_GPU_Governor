@@ -24,11 +24,6 @@ PACK_ITEMS = [
     "uninstall.sh", "volt_list.txt"
 ]
 
-TEMP_PATTERNS = {
-    "dirs": ["__pycache__", ".idea", ".vscode", "build", "dist"],
-    "files": ["*.pyc", "*.pyo", "*.bak", "*.swp", "*.tmp", "*.log"]
-}
-
 LINE_ENDING_FILES = [".sh", ".py", ".js", ".css", ".html", ".md", ".conf", ".prop"]
 
 
@@ -127,38 +122,6 @@ class FileManager:
     """文件管理器"""
     
     @staticmethod
-    def _clean_directory(dir_path: Path):
-        """清理指定目录中的临时文件和目录"""
-        # 清理目录
-        for dir_name in TEMP_PATTERNS["dirs"]:
-            sub_dir = dir_path / dir_name
-            if sub_dir.exists():
-                try:
-                    shutil.rmtree(sub_dir)
-                    print(f"  删除目录: {dir_name}")
-                except OSError as e:
-                    print(f"  删除失败: {dir_name} ({e})")
-        
-        # 清理文件
-        for pattern in TEMP_PATTERNS["files"]:
-            for file_path in dir_path.rglob(pattern):
-                try:
-                    file_path.unlink()
-                    print(f"  删除文件: {file_path.relative_to(dir_path)}")
-                except OSError as e:
-                    print(f"  删除失败: {file_path.name} ({e})")
-    
-    @staticmethod
-    def clean_temp_files():
-        """清理临时文件"""
-        print("清理临时文件...")
-        FileManager._clean_directory(WORK_DIR)
-        
-        # 清理输出目录中的临时文件
-        if OUTPUT_DIR.exists():
-            FileManager._clean_directory(OUTPUT_DIR)
-    
-    @staticmethod
     def fix_line_endings():
         """修复文件换行符为LF"""
         print("检查并修复文件换行符...")
@@ -210,7 +173,6 @@ def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="天玑GPU调速器模块打包工具")
     parser.add_argument("-o", "--output", help="指定输出文件名")
-    parser.add_argument("-c", "--clean", action="store_true", help="清理临时文件")
     parser.add_argument("-d", "--open-dir", action="store_true", help="打开输出目录")
     parser.add_argument("--no-fix-eol", action="store_true", help="跳过换行符修复")
     
@@ -219,9 +181,6 @@ def main():
     print("=" * 50)
     print("天玑GPU调速器模块打包工具")
     print("=" * 50)
-    
-    if args.clean:
-        FileManager.clean_temp_files()
     
     if not args.no_fix_eol:
         FileManager.fix_line_endings()
