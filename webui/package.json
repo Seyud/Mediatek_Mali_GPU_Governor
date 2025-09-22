@@ -14,5 +14,8 @@
 		"html-minifier-terser": "^7.2.0",
 		"typescript": "^5.9.2",
 		"vite": "^7.1.6"
+	},
+	"dependencies": {
+		"kernelsu": "^1.0.6"
 	}
 }

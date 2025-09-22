@@ -16,13 +16,19 @@ declare global {
 		stderr: string;
 	}
 }
+
+// KernelSU 原生API
 interface KsuAPI {
 	exec(command: string, optionsJson: string, callbackName: string): void;
 	toast(message: string): void;
+	spawn(command: string, argsJson: string, optionsJson: string, childCallbackName: string): void;
+	fullScreen(isFullScreen: boolean): void;
 }
+
 declare global {
 	interface Window {
 		ksu: KsuAPI;
 	}
 }
+
 export {};

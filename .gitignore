@@ -3,7 +3,6 @@
 
 # 忽略参考
 /miuix-main/
-/KernelSU_API/
 
 # 忽略IDE和编辑器相关文件
 .vscode/
