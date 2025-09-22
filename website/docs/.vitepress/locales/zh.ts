@@ -14,7 +14,7 @@ export default defineConfig({
     lastUpdatedText: '最后更新',
 
     sidebar: {
-      '/zh/guide/': sidebarGuide()
+      '/guide/': sidebarGuide()
     },
 
     socialLinks: [
@@ -35,7 +35,7 @@ export default defineConfig({
 
 function nav() {
   return [
-    { text: '指南', link: '/zh/guide/introduction' },
+    { text: '指南', link: '/guide/introduction' },
   ]
 }
 
@@ -44,12 +44,12 @@ function sidebarGuide() {
     {
         text: '指南',
         items: [
-          { text: '简介', link: '/zh/guide/introduction' },
-          { text: '安装指南', link: '/zh/guide/installation' },
-          { text: '配置指南', link: '/zh/guide/configuration' },
-          { text: '使用指南', link: '/zh/guide/usage' },
-          { text: '设备兼容性', link: '/zh/guide/compatibility' },
-          { text: '常见问题', link: '/zh/guide/faq' },
+          { text: '简介', link: '/guide/introduction' },
+          { text: '安装指南', link: '/guide/installation' },
+          { text: '配置指南', link: '/guide/configuration' },
+          { text: '使用指南', link: '/guide/usage' },
+          { text: '设备兼容性', link: '/guide/compatibility' },
+          { text: '常见问题', link: '/guide/faq' },
         ]
     }
   ]

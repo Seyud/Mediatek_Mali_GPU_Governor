@@ -12,10 +12,10 @@ hero:
   actions:
     - theme: brand
       text: 开始了解
-      link: /zh/guide/introduction
+      link: /guide/introduction
     - theme: alt
       text: 安装指南
-      link: /zh/guide/installation
+      link: /guide/installation
     - theme: brand
       text: 查看源码
       link: https://github.com/Seyud/Mediatek_Mali_GPU_Governor

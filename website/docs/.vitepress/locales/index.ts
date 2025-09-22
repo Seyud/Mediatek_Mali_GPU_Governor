@@ -6,19 +6,13 @@ export default defineConfig({
   locales: {
     root: {
       label: '中文',
-      lang: zh.lang,
-      themeConfig: zh.themeConfig,
-      description: zh.description
-    },
-    zh: {
-      label: '中文',
-      lang: zh.lang,
+      lang: 'zh',
       themeConfig: zh.themeConfig,
       description: zh.description
     },
     en: {
       label: 'English',
-      lang: en.lang,
+      lang: 'en',
       themeConfig: en.themeConfig,
       description: en.description
     }
