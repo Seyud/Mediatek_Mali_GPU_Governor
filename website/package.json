@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/Seyud/Mediatek_Mali_GPU_Governor",
   "author": "Seyud",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@types/node": "^24.5.2",
     "markdown-it-include": "^2.0.0",
