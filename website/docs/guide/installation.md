@@ -4,7 +4,7 @@
 
 ## 安装步骤
 
-1. 下载最新版本的模块文件
+1. 下载[最新版本的模块](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases/latest)
 2. 在 Root 管理器中安装模块
 3. 重启设备
 4. 模块会自动检测设备型号并应用适配配置
