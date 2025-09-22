@@ -8,6 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig( {
     title: 'Mediatek Mali GPU Governor',
+    base: '/Mediatek_Mali_GPU_Governor/',
     locales: locales.locales,
     head: [
         ['link', { rel: 'icon', href: '/logo.png' }],

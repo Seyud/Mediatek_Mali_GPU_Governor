@@ -4,7 +4,7 @@ import zh_CN from './zh'
 
 export default defineConfig({
   locales: {
-    'zh': {
+    zh: {
       label: '简体中文',
       lang: zh_CN.lang,
       themeConfig: zh_CN.themeConfig,
