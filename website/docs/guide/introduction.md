@@ -36,7 +36,7 @@
 
 ## 致谢
 
-- **作者**: 瓦力喀 @CoolApk, rtools @CoolApk
+- **开发者**: 瓦力喀 @CoolApk, rtools @CoolApk
 - **特别感谢**: HamJin @CoolApk, asto18089 @CoolApk, helloklf @Github
 - **测试反馈**: 内测群组全体群友
 - **配置协助**: Fiagelia @CoolApk, 忘渐 @CoolApk

@@ -301,7 +301,7 @@ If your device is not in the adaptation list, the module will use the default co
 
 ## Acknowledgements 🙏
 
-- **Authors**: WaliKa @CoolApk, rtools @CoolApk
+- **Developers**: WaliKa @CoolApk, rtools @CoolApk
 
 - **Special Thanks**: HamJin @CoolApk, asto18089 @CoolApk, helloklf @Github
 
