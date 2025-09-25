@@ -36,6 +36,7 @@ export default defineConfig({
 function nav() {
   return [
     { text: '指南', link: '/guide/introduction' },
+    { text: '更新日志', link: '/guide/changelog' },
   ]
 }
 
@@ -50,6 +51,7 @@ function sidebarGuide() {
           { text: '使用指南', link: '/guide/usage' },
           { text: '设备兼容性', link: '/guide/compatibility' },
           { text: '常见问题', link: '/guide/faq' },
+          { text: '更新日志', link: '/guide/changelog' },
         ]
     }
   ]

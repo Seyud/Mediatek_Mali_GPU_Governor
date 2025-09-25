@@ -36,6 +36,7 @@ export default defineConfig({
 function nav() {
   return [
     { text: 'Guide', link: '/en/guide/introduction' },
+    { text: 'Changelog', link: '/en/guide/changelog' },
   ]
 }
 
@@ -50,6 +51,7 @@ function sidebarGuide() {
           { text: 'User Guide', link: '/en/guide/usage' },
           { text: 'Compatibility', link: '/en/guide/compatibility' },
           { text: 'FAQ', link: '/en/guide/faq' },
+          { text: 'Changelog', link: '/en/guide/changelog' },
         ]
     }
   ]
