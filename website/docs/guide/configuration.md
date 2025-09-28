@@ -9,7 +9,7 @@
 - `/data/adb/gpu_governor/game/games.toml` - 游戏列表配置
 - `/data/adb/gpu_governor/log/log_level` - 日志等级设置
 
-## 主配置文件
+## 自定义配置
 
 用户可以通过修改 `/data/adb/gpu_governor/config/config.toml` 文件来自定义 GPU 调速器的行为。配置文件包含全局设置和四种模式（省电、平衡、性能、极速）的详细参数。
 

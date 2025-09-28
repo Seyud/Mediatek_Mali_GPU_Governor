@@ -58,8 +58,9 @@
 
 安装模块后可通过以下方式验证兼容性：
 
-**Q: 如何确认模块正常工作？**
+**Q: 如何确认模块正常工作？**  
 A: @@include(../_includes/log-check-zh.md)
 
-**Q: 如何使用 WebUI？**
-A: KernelSU/APatch 用户可在root管理器中点击本模块，选择"打开 WebUI"。Magisk 用户可安装 [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) 或 [SSU](https://ssu.oom-wg.dev/base/install) 应用来访问模块的 WebUI。
+**Q: 如何使用 WebUI？**  
+A: KernelSU/APatch 用户可在root管理器中点击本模块，选择"打开 WebUI"。  
+Magisk 用户可安装 [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) 或 [SSU](https://ssu.oom-wg.dev/base/install) 应用来访问模块的 WebUI。

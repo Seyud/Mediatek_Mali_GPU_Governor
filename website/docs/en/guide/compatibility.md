@@ -58,8 +58,9 @@ The game list configuration file is located at `/data/adb/gpu_governor/game/game
 
 After installing the module, you can verify compatibility through:
 
-**Q: How to confirm the module is working properly?**
+**Q: How to confirm the module is working properly?**  
 A: @@include(../_includes/log-check-en.md)
 
-**Q: How to use WebUI?**
-A: KernelSU/APatch users can click this module in the root manager and select "Open WebUI". Magisk users can install [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) or [SSU](https://ssu.oom-wg.dev/base/install) apps to access the module's WebUI.
+**Q: How to use WebUI?**  
+A: KernelSU/APatch users can click this module in the root manager and select "Open WebUI".   
+Magisk users can install [KsuWebUI](https://github.com/5ec1cff/KsuWebUIStandalone) or [SSU](https://ssu.oom-wg.dev/base/install) apps to access the module's WebUI.

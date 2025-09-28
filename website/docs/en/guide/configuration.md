@@ -9,7 +9,7 @@ Dimensity GPU Governor uses multiple configuration files to control its behavior
 - `/data/adb/gpu_governor/game/games.toml` - Games list configuration
 - `/data/adb/gpu_governor/log/log_level` - Log level setting
 
-## Main Configuration File
+## Custom Configuration
 
 Users can customize GPU governor behavior by modifying `/data/adb/gpu_governor/config/config.toml`. The configuration file contains global settings and detailed parameters for four modes (powersave, balance, performance, fast).
 
