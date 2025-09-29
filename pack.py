@@ -129,6 +129,7 @@ class FileManager:
         converted = 0
         meta_dir = WORK_DIR / "META-INF"
         webui_dir = WORK_DIR / "webui"
+        website_dir = WORK_DIR / "website"
         
         # 处理META-INF目录
         if meta_dir.exists():
@@ -141,6 +142,7 @@ class FileManager:
             for file_path in WORK_DIR.rglob(f"*{ext}"):
                 if (meta_dir not in file_path.parents and 
                     webui_dir not in file_path.parents and 
+                    website_dir not in file_path.parents and 
                     FileManager._convert_line_endings(file_path)):
                     converted += 1
         
