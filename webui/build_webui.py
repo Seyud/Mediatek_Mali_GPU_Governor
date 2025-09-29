@@ -154,16 +154,25 @@ def biome_check(pm: str, fix: bool=False, verbose: bool=False) -> None:
         # 使用本地安装的 biome
         cmd = [biome_exe, 'check', '.']
     
-    if fix:
-        cmd.append('--write')
-    
+    base_cmd = cmd[:]
+    check_cmd = base_cmd + (['--write'] if fix else [])
+
     try:
-        run(cmd, ROOT, verbose=verbose)
+        run(check_cmd, ROOT, verbose=verbose)
         print(c('✓ Biome 检查通过', 'green'))
-    except subprocess.CalledProcessError as e:
-        print(c('✗ Biome 检查发现问题', 'red'))
+        return
+    except subprocess.CalledProcessError:
         if not fix:
-            print(c('提示: 使用 --biome-fix 参数可自动修复部分问题', 'yellow'))
+            print(c('✗ Biome 检查发现问题，尝试自动执行 --write 修复', 'yellow'))
+            try:
+                run(base_cmd + ['--write'], ROOT, verbose=verbose)
+                print(c('已完成自动修复，重新运行 Biome 检查', 'yellow'))
+                run(base_cmd, ROOT, verbose=verbose)
+                print(c('✓ Biome 检查通过（自动修复后）', 'green'))
+                return
+            except subprocess.CalledProcessError:
+                print(c('自动修复失败', 'red'))
+        print(c('✗ Biome 检查仍存在问题，请手动处理', 'red'))
         raise
 
 
