@@ -16,7 +16,6 @@ WebUI 构建辅助脚本
   python build_webui.py                 # Biome 检查 + 构建 (若 node_modules 存在则跳过安装)
   python build_webui.py --install       # 先安装依赖，再 Biome 检查 + 构建
   python build_webui.py --skip-biome    # 跳过 Biome 检查，直接构建
-  python build_webui.py --biome-fix     # Biome 检查时自动修复问题
   python build_webui.py --biome-only    # 仅运行 Biome 检查
   python build_webui.py --clean --install
   python build_webui.py --pm pnpm --install
@@ -115,7 +114,7 @@ def install_dependencies(pm: str, verbose: bool=False) -> None:
         run([exe, 'install', '--no-audit', '--no-fund'], ROOT, verbose=verbose)
 
 
-def biome_check(pm: str, fix: bool=False, verbose: bool=False) -> None:
+def biome_check(pm: str, verbose: bool=False) -> None:
     """运行 Biome 代码检查"""
     print(c('==> 运行 Biome 代码检查', 'green'))
     exe = resolve_pm_cmd(pm)
@@ -155,25 +154,23 @@ def biome_check(pm: str, fix: bool=False, verbose: bool=False) -> None:
         cmd = [biome_exe, 'check', '.']
     
     base_cmd = cmd[:]
-    check_cmd = base_cmd + (['--write'] if fix else [])
 
     try:
-        run(check_cmd, ROOT, verbose=verbose)
+        run(base_cmd, ROOT, verbose=verbose)
         print(c('✓ Biome 检查通过', 'green'))
         return
     except subprocess.CalledProcessError:
-        if not fix:
-            print(c('✗ Biome 检查发现问题，尝试自动执行 --write 修复', 'yellow'))
-            try:
-                run(base_cmd + ['--write'], ROOT, verbose=verbose)
-                print(c('已完成自动修复，重新运行 Biome 检查', 'yellow'))
-                run(base_cmd, ROOT, verbose=verbose)
-                print(c('✓ Biome 检查通过（自动修复后）', 'green'))
-                return
-            except subprocess.CalledProcessError:
-                print(c('自动修复失败', 'red'))
-        print(c('✗ Biome 检查仍存在问题，请手动处理', 'red'))
-        raise
+        print(c('✗ Biome 检查发现问题，尝试自动执行 --write 修复', 'yellow'))
+        try:
+            run(base_cmd + ['--write'], ROOT, verbose=verbose)
+            print(c('已完成自动修复，重新运行 Biome 检查', 'yellow'))
+            run(base_cmd, ROOT, verbose=verbose)
+            print(c('✓ Biome 检查通过（自动修复后）', 'green'))
+            return
+        except subprocess.CalledProcessError:
+            print(c('自动修复失败', 'red'))
+            print(c('✗ Biome 检查仍存在问题，请手动处理', 'red'))
+            raise
 
 
 def build(pm: str, verbose: bool=False) -> None:
@@ -203,7 +200,6 @@ def parse_args():
     p.add_argument('--deep-clean', action='store_true', help='删除 dist/ 和 node_modules/')
     p.add_argument('--skip-build', action='store_true', help='仅执行依赖安装或清理，不构建')
     p.add_argument('--skip-biome', action='store_true', help='跳过 Biome 代码检查')
-    p.add_argument('--biome-fix', action='store_true', help='运行 Biome 检查时自动修复问题')
     p.add_argument('--biome-only', action='store_true', help='仅运行 Biome 检查，不构建')
     p.add_argument('--no-color', action='store_true', help='关闭彩色输出')
     p.add_argument('--verbose', action='store_true', help='输出调试信息 (显示 PATH 等)')
@@ -242,7 +238,7 @@ def main():
         # Biome 代码检查
         should_run_biome = not args.skip_biome and (not args.skip_build or args.biome_only)
         if should_run_biome:
-            biome_check(pm, fix=args.biome_fix, verbose=args.verbose)
+            biome_check(pm, verbose=args.verbose)
         elif args.skip_biome:
             print(c('已跳过 Biome 检查 (--skip-biome)', 'yellow'))
 
