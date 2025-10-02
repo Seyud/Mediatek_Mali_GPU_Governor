@@ -301,9 +301,9 @@ If your device is not in the adaptation list, the module will use the default co
 
 ## Acknowledgements 🙏
 
-- **Developers**: WaliKa @CoolApk, rtools @CoolApk
+- **Developers**: WaliKa @CoolApk = Seyud @GitHub, Tools-cx-app @GitHub
 
-- **Special Thanks**: HamJin @CoolApk, asto18089 @CoolApk, helloklf @Github
+- **Special Thanks**: HamJin @CoolApk, asto18089 @CoolApk, helloklf @GitHub
 
 - **Testing Feedback**: All members of the internal testing group
 

@@ -1,13 +1,2 @@
 #!/system/bin/sh
-# 定义基础路径
-GPU_GOVERNOR_BASE_DIR="/data/adb/gpu_governor"
-GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_BASE_DIR/log"
-GPU_GOVERNOR_GAME_DIR="$GPU_GOVERNOR_BASE_DIR/game"
-GPU_GOVERNOR_CONFIG_DIR="$GPU_GOVERNOR_BASE_DIR/config"
-
-# 删除日志目录
-rm -rf "$GPU_GOVERNOR_LOG_DIR"
-# 删除游戏目录
-rm -rf "$GPU_GOVERNOR_GAME_DIR"
-# 删除配置目录
-rm -rf "$GPU_GOVERNOR_CONFIG_DIR"
+rm -rf "/data/adb/gpu_governor"
