@@ -1,5 +1,4 @@
 #!/system/bin/sh
-
 on_install() {
     sh "$MODPATH"/script/setup.sh 2>&1
     [ "$?" != "0" ] && abort "调速器安装失败！"
