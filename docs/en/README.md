@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/github/v/release/Seyud/Mediatek_Mali_GPU_Governor?logo=github)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases/latest)
 [![GitHub Downloads](https://img.shields.io/github/downloads/Seyud/Mediatek_Mali_GPU_Governor/total?logo=github&logoColor=green)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases)
 [![Language](https://img.shields.io/badge/language-Rust-orange?logo=rust&logoColor=orange)](https://www.rust-lang.org/)
-[![Telegram](https://img.shields.io/badge/chat-Telegram-2CA5E0?logo=telegram&logoColor=87CEEB)](https://t.me/Mediatek_Mali_GPU_Governor)
+[![Telegram](https://img.shields.io/badge/channel-Telegram-2CA5E0?logo=telegram&logoColor=87CEEB)](https://t.me/Mediatek_Mali_GPU_Governor)
 
 ## Introduction 📝
 
@@ -294,7 +294,7 @@ The module's main log has been fully implemented by the Rust core, including:
 
 Supports most MediaTek processors with Mali GPU:
 
-- Dimensity series (e.g. D700/D800/D900/D1x00/D8x00/D9000, etc.) 0 ≤ x ≤ 2
+- Dimensity series (e.g. D1x00/D8x00/D9000, etc.) 0 ≤ x ≤ 2
 
 The module will automatically detect the device model and apply the appropriate configuration.
 If your device is not in the adaptation list, the module will use the default configuration.
