@@ -1,5 +1,4 @@
 #!/system/bin/sh
-
 MODDIR=${0%/*}
 SCRIPT_DIR=$MODDIR
 
@@ -205,6 +204,25 @@ locale=$(getprop persist.sys.locale || getprop ro.product.locale || getprop pers
 if echo "$locale" | grep -qi "en"; then
     language="en"
 fi
+
+# 根据语言设置不同的updateJson地址
+update_updatejson() {
+    local prop_file="${MODULE_PATH:-$(dirname "$MODDIR")}/module.prop"
+    [ -f "$prop_file" ] || return
+    
+    if [ "$language" = "en" ]; then
+        # 英文版本使用GitHub地址
+        sed -i '/^updateJson=/c\updateJson=https://raw.githubusercontent.com/Seyud/Mediatek_Mali_GPU_Governor/main/Update.json' "$prop_file"
+        echo "$(date) - Updated updateJson to GitHub URL " >> "$INIT_LOG"
+    else
+        # 中文版本使用Gitee地址（默认）
+        sed -i '/^updateJson=/c\updateJson=https://gitee.com/Seyud/MMGG_deploy/raw/master/Update.json' "$prop_file"
+        echo "$(date) - 已将 updateJson 更新为 Gitee 地址" >> "$INIT_LOG"
+    fi
+}
+
+# 执行updateJson更新
+update_updatejson
 
 # 增强的日志函数，支持双语
 enhanced_log() {
