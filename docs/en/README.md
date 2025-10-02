@@ -1,9 +1,9 @@
 # Dimensity GPU Governor 🚀
 
-[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/Mediatek_Mali_GPU_Governor)
-[![Version](https://img.shields.io/badge/Version-v2.9.0-brightgreen)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor)
-[![Language](https://img.shields.io/badge/Language-Rust-orange)](https://www.rust-lang.org/)
-[![GitHub Downloads](https://img.shields.io/github/downloads/Seyud/Mediatek_Mali_GPU_Governor/total)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases)
+[![Version](https://img.shields.io/github/v/release/Seyud/Mediatek_Mali_GPU_Governor?logo=github)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases/latest)
+[![GitHub Downloads](https://img.shields.io/github/downloads/Seyud/Mediatek_Mali_GPU_Governor/total?logo=github&logoColor=green)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases)
+[![Language](https://img.shields.io/badge/language-Rust-orange?logo=rust&logoColor=orange)](https://www.rust-lang.org/)
+[![Telegram](https://img.shields.io/badge/chat-Telegram-2CA5E0?logo=telegram&logoColor=87CEEB)](https://t.me/Mediatek_Mali_GPU_Governor)
 
 ## Introduction 📝
 
