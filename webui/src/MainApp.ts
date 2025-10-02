@@ -5,7 +5,7 @@ import { getTranslation, type Language, translations } from "./i18n";
 import { LogManager } from "./logManager";
 import { SettingsManager } from "./settingsManager";
 import { ThemeManager } from "./themeManager";
-import { exec, logError, toast, withResult } from "./utils";
+import { exec, toast } from "./utils";
 
 interface LanguageChangeEvent extends CustomEvent {
 	detail: {
@@ -58,32 +58,26 @@ export class MainApp {
 	}
 
 	async init() {
-		try {
-			if (this.loading) this.loading.style.display = "none";
-			if (this.app) this.app.style.display = "block";
+		if (this.loading) this.loading.style.display = "none";
+		if (this.app) this.app.style.display = "block";
 
-			this.themeManager.init();
-			this.configManager.init();
-			this.gamesManager.init();
-			this.logManager.init();
-			this.settingsManager.init();
+		this.themeManager.init();
+		this.configManager.init();
+		this.gamesManager.init();
+		this.logManager.init();
+		this.settingsManager.init();
 
-			await this.initLanguage();
-			this.setupLanguageEvents();
-			this.setupNavigationEvents();
-			await this.loadData();
+		await this.initLanguage();
+		this.setupLanguageEvents();
+		this.setupNavigationEvents();
+		await this.loadData();
 
-			setInterval(() => {
-				this.loadCurrentMode();
-				this.checkModuleStatus();
-			}, 2000);
+		setInterval(() => {
+			this.loadCurrentMode();
+			this.checkModuleStatus();
+		}, 2000);
 
-			toast(getTranslation("toast_webui_loaded", {}, this.currentLanguage));
-		} catch (error) {
-			console.error("初始化失败:", error);
-			if (this.loading) this.loading.style.display = "none";
-			if (this.app) this.app.style.display = "block";
-		}
+		toast(getTranslation("toast_webui_loaded", {}, this.currentLanguage));
 	}
 
 	setupNavigationEvents() {
@@ -136,150 +130,94 @@ export class MainApp {
 	}
 
 	async detectSystemLanguage(): Promise<Language> {
-		try {
-			const navigatorWithLegacy = navigator as Navigator & { userLanguage?: string };
-			const browserLanguage = navigator.language || navigatorWithLegacy.userLanguage || "zh-CN";
-			try {
-				const { errno, stdout } = await exec(
-					'getprop persist.sys.locale || getprop ro.product.locale || echo "zh-CN"'
-				);
-				if (errno === 0 && stdout.trim()) {
-					const locale = stdout.trim().toLowerCase();
-					if (locale.startsWith("en")) return "en";
-					return "zh";
-				}
-			} catch {
-				console.log("无法通过系统属性检测语言，将使用浏览器语言");
-			}
-			if (browserLanguage.startsWith("en")) return "en";
-			return "zh";
-		} catch (error) {
-			console.error("检测系统语言失败:", error);
+		const navigatorWithLegacy = navigator as Navigator & { userLanguage?: string };
+		const browserLanguage = navigator.language || navigatorWithLegacy.userLanguage || "zh-CN";
+		const { errno, stdout } = await exec(
+			'getprop persist.sys.locale || getprop ro.product.locale || echo "zh-CN"'
+		);
+		if (errno === 0 && stdout.trim()) {
+			const locale = stdout.trim().toLowerCase();
+			if (locale.startsWith("en")) return "en";
 			return "zh";
 		}
+		if (browserLanguage.startsWith("en")) return "en";
+		return "zh";
 	}
 
 	applyTranslations() {
-		try {
-			document.title = getTranslation("title", {}, this.currentLanguage);
-			if (this.htmlRoot)
-				this.htmlRoot.setAttribute("lang", this.currentLanguage === "en" ? "en" : "zh-CN");
-			if (this.loading)
-				this.loading.textContent = getTranslation("loading", {}, this.currentLanguage);
-			const headerTitle = document.querySelector(".header-content h1");
-			if (headerTitle)
-				headerTitle.textContent = getTranslation("header_title", {}, this.currentLanguage);
-			document.querySelectorAll(".nav-item").forEach((item) => {
-				const pageId = item.getAttribute("data-page");
-				const navText = item.querySelector(".nav-text");
-				if (!navText) return;
-				if (pageId === "page-status")
-					navText.textContent = getTranslation("nav_status", {}, this.currentLanguage);
-				else if (pageId === "page-config")
-					navText.textContent = getTranslation("nav_config", {}, this.currentLanguage);
-				else if (pageId === "page-log")
-					navText.textContent = getTranslation("nav_log", {}, this.currentLanguage);
-				else if (pageId === "page-settings")
-					navText.textContent = getTranslation("nav_settings", {}, this.currentLanguage);
-			});
-		} catch (e) {
-			console.error("应用基本翻译失败:", e);
-		}
-		// 复用原批量 data-i18n
-		try {
-			document.querySelectorAll("[data-i18n]").forEach((el) => {
-				const key = el.getAttribute("data-i18n");
-				if (
-					key &&
-					(translations as TranslationsType)[this.currentLanguage] &&
-					(translations as TranslationsType)[this.currentLanguage][key]
-				) {
-					el.textContent = getTranslation(key, {}, this.currentLanguage);
-				}
-			});
-		} catch {
-			console.error("批量应用 data-i18n 国际化失败");
-		}
-
-		// 处理 data-i18n-placeholder 属性
-		try {
-			document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-				const key = el.getAttribute("data-i18n-placeholder");
-				if (
-					key &&
-					(translations as TranslationsType)[this.currentLanguage] &&
-					(translations as TranslationsType)[this.currentLanguage][key]
-				) {
-					(el as HTMLInputElement).placeholder = getTranslation(key, {}, this.currentLanguage);
-				}
-			});
-		} catch {
-			console.error("批量应用 data-i18n-placeholder 国际化失败");
-		}
+		document.title = getTranslation("title", {}, this.currentLanguage);
+		if (this.htmlRoot)
+			this.htmlRoot.setAttribute("lang", this.currentLanguage === "en" ? "en" : "zh-CN");
+		if (this.loading)
+			this.loading.textContent = getTranslation("loading", {}, this.currentLanguage);
+		const headerTitle = document.querySelector(".header-content h1");
+		if (headerTitle)
+			headerTitle.textContent = getTranslation("header_title", {}, this.currentLanguage);
+		document.querySelectorAll(".nav-item").forEach((item) => {
+			const pageId = item.getAttribute("data-page");
+			const navText = item.querySelector(".nav-text");
+			if (!navText) return;
+			if (pageId === "page-status")
+				navText.textContent = getTranslation("nav_status", {}, this.currentLanguage);
+			else if (pageId === "page-config")
+				navText.textContent = getTranslation("nav_config", {}, this.currentLanguage);
+			else if (pageId === "page-log")
+				navText.textContent = getTranslation("nav_log", {}, this.currentLanguage);
+			else if (pageId === "page-settings")
+				navText.textContent = getTranslation("nav_settings", {}, this.currentLanguage);
+		});
+		document.querySelectorAll("[data-i18n]").forEach((el) => {
+			const key = el.getAttribute("data-i18n");
+			if (
+				key &&
+				(translations as TranslationsType)[this.currentLanguage] &&
+				(translations as TranslationsType)[this.currentLanguage][key]
+			) {
+				el.textContent = getTranslation(key, {}, this.currentLanguage);
+			}
+		});
+		document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+			const key = el.getAttribute("data-i18n-placeholder");
+			if (
+				key &&
+				(translations as TranslationsType)[this.currentLanguage] &&
+				(translations as TranslationsType)[this.currentLanguage][key]
+			) {
+				(el as HTMLInputElement).placeholder = getTranslation(key, {}, this.currentLanguage);
+			}
+		});
 	}
 
 	updateSelectedLanguageText(languageSetting: string) {
-		try {
-			if (!this.languageContainer) return;
-			const languageButtons = this.languageContainer.querySelectorAll(".settings-tab-btn");
-			languageButtons.forEach((btn) => {
-				btn.classList.remove("active");
-			});
-			const selectedButton = this.languageContainer.querySelector(
-				`.settings-tab-btn[data-value="${languageSetting}"]`
+		if (!this.languageContainer) return;
+		const languageButtons = this.languageContainer.querySelectorAll(".settings-tab-btn");
+		languageButtons.forEach((btn) => {
+			btn.classList.remove("active");
+		});
+		const selectedButton = this.languageContainer.querySelector(
+			`.settings-tab-btn[data-value="${languageSetting}"]`
+		);
+		if (selectedButton) selectedButton.classList.add("active");
+		else {
+			const systemButton = this.languageContainer.querySelector(
+				'.settings-tab-btn[data-value="system"]'
 			);
-			if (selectedButton) selectedButton.classList.add("active");
-			else {
-				const systemButton = this.languageContainer.querySelector(
-					'.settings-tab-btn[data-value="system"]'
-				);
-				if (systemButton) systemButton.classList.add("active");
-			}
-		} catch (e) {
-			console.error("更新语言按钮状态失败:", e);
+			if (systemButton) systemButton.classList.add("active");
 		}
 	}
 
 	async loadData() {
-		const tasks: Array<{ fn: () => Promise<unknown>; context: string; failMsg: string }> = [
-			{
-				fn: () => this.checkModuleStatus(),
-				context: "check-module-status",
-				failMsg: "检查模块状态失败",
-			},
-			{
-				fn: () => this.loadModuleVersion(),
-				context: "load-module-version",
-				failMsg: "加载模块版本失败",
-			},
-			{
-				fn: () => this.loadCurrentMode(),
-				context: "load-current-mode",
-				failMsg: "加载当前模式失败",
-			},
-			{
-				fn: () => this.configManager.loadGpuConfig(),
-				context: "load-gpu-config",
-				failMsg: "加载GPU配置失败",
-			},
-			{
-				fn: () => this.gamesManager.loadGamesList(),
-				context: "load-games-list",
-				failMsg: "加载游戏列表失败",
-			},
-			{ fn: () => this.logManager.loadLog(), context: "load-log", failMsg: "加载日志失败" },
-			{
-				fn: () => this.settingsManager.loadLogLevel(),
-				context: "load-log-level",
-				failMsg: "加载日志等级设置失败",
-			},
+		const tasks: Array<() => Promise<unknown>> = [
+			() => this.checkModuleStatus(),
+			() => this.loadModuleVersion(),
+			() => this.loadCurrentMode(),
+			() => this.configManager.loadGpuConfig(),
+			() => this.gamesManager.loadGamesList(),
+			() => this.logManager.loadLog(),
+			() => this.settingsManager.loadLogLevel(),
 		];
 		for (const task of tasks) {
-			const r = await withResult(task.fn, task.context);
-			if (!r.ok) {
-				logError(task.context, r.error);
-				console.error(task.failMsg, r.error);
-			}
+			await task();
 		}
 		this.switchPage("page-status");
 	}
@@ -298,121 +236,81 @@ export class MainApp {
 	}
 
 	async checkModuleStatus() {
-		try {
-			const { errno, stdout } = await exec('pgrep -f gpugovernor || echo ""');
-			const newStatus = errno === 0 && stdout.trim();
-			const currentStatus = this.runningStatus?.classList.contains("status-running");
-			if (newStatus !== currentStatus && this.runningStatus) {
-				this.runningStatus.classList.add("status-changing");
-				// 移除 data-i18n 属性，避免语言切换时被覆盖
-				this.runningStatus.removeAttribute("data-i18n");
+		const { errno, stdout } = await exec('pgrep -f gpugovernor || echo ""');
+		const newStatus = errno === 0 && stdout.trim();
+		const currentStatus = this.runningStatus?.classList.contains("status-running");
+		if (newStatus !== currentStatus && this.runningStatus) {
+			this.runningStatus.classList.add("status-changing");
+			this.runningStatus.removeAttribute("data-i18n");
+			setTimeout(() => {
+				if (newStatus && this.runningStatus) {
+					this.runningStatus.textContent = getTranslation(
+						"status_running_active",
+						{},
+						this.currentLanguage
+					);
+					this.runningStatus.className = "status-badge status-running";
+				} else if (this.runningStatus) {
+					this.runningStatus.textContent = getTranslation(
+						"status_running_inactive",
+						{},
+						this.currentLanguage
+					);
+					this.runningStatus.className = "status-badge status-stopped";
+				}
 				setTimeout(() => {
-					if (newStatus && this.runningStatus) {
-						this.runningStatus.textContent = getTranslation(
-							"status_running_active",
-							{},
-							this.currentLanguage
-						);
-						this.runningStatus.className = "status-badge status-running";
-					} else if (this.runningStatus) {
-						this.runningStatus.textContent = getTranslation(
-							"status_running_inactive",
-							{},
-							this.currentLanguage
-						);
-						this.runningStatus.className = "status-badge status-stopped";
-					}
-					setTimeout(() => {
-						this.runningStatus?.classList.remove("status-changing");
-					}, 600);
-				}, 100);
-			}
-		} catch (error) {
-			console.error("检查模块状态失败:", error);
-			if (this.runningStatus) {
-				this.runningStatus.textContent = getTranslation(
-					"status_checking",
-					{},
-					this.currentLanguage
-				);
-				this.runningStatus.className = "status-badge status-stopped";
-				// 移除 data-i18n 属性，避免语言切换时被覆盖
-				this.runningStatus.removeAttribute("data-i18n");
-			}
+					this.runningStatus?.classList.remove("status-changing");
+				}, 600);
+			}, 100);
 		}
 	}
 
 	async loadModuleVersion() {
-		try {
-			const { errno, stdout } = await exec(
-				'grep -i "^version=" /data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
-			);
-			if (errno === 0 && stdout.trim()) {
-				if (this.moduleVersion) {
-					this.moduleVersion.textContent = stdout.trim();
-					// 移除 data-i18n 属性，避免语言切换时被覆盖
-					this.moduleVersion.removeAttribute("data-i18n");
-				}
-			} else {
-				const { errno: errno2, stdout: stdout2 } = await exec(
-					'grep -i "^version=" /data/adb/ksu/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
-				);
-				if (errno2 === 0 && stdout2.trim()) {
-					if (this.moduleVersion) {
-						this.moduleVersion.textContent = stdout2.trim();
-						// 移除 data-i18n 属性，避免语言切换时被覆盖
-						this.moduleVersion.removeAttribute("data-i18n");
-					}
-				} else if (this.moduleVersion) {
-					this.moduleVersion.textContent = this.currentLanguage === "en" ? "Unknown" : "未知";
-					// 移除 data-i18n 属性，避免语言切换时被覆盖
-					this.moduleVersion.removeAttribute("data-i18n");
-				}
-			}
-		} catch (error) {
-			console.error("加载模块版本失败:", error);
+		const { errno, stdout } = await exec(
+			'grep -i "^version=" /data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
+		);
+		if (errno === 0 && stdout.trim()) {
 			if (this.moduleVersion) {
-				this.moduleVersion.textContent = this.currentLanguage === "en" ? "Unknown" : "未知";
-				// 移除 data-i18n 属性，避免语言切换时被覆盖
+				this.moduleVersion.textContent = stdout.trim();
 				this.moduleVersion.removeAttribute("data-i18n");
 			}
+			return;
+		}
+		const { errno: errno2, stdout: stdout2 } = await exec(
+			'grep -i "^version=" /data/adb/ksu/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
+		);
+		if (errno2 === 0 && stdout2.trim()) {
+			if (this.moduleVersion) {
+				this.moduleVersion.textContent = stdout2.trim();
+				this.moduleVersion.removeAttribute("data-i18n");
+			}
+			return;
+		}
+		if (this.moduleVersion) {
+			this.moduleVersion.textContent = this.currentLanguage === "en" ? "Unknown" : "未知";
+			this.moduleVersion.removeAttribute("data-i18n");
 		}
 	}
 
 	async loadCurrentMode() {
-		try {
-			const { errno, stdout } = await exec(
-				`cat ${PATHS.CURRENT_MODE_PATH} 2>/dev/null || echo "unknown"`
-			);
-			let mode = "unknown";
-			if (errno === 0) mode = stdout.trim().toLowerCase();
-			const validModes = ["powersave", "balance", "performance", "fast"];
-			if (!validModes.includes(mode)) mode = "unknown";
-			if (this.currentMode) {
-				const modeText: Record<string, string> = {
-					powersave: getTranslation("status_mode_powersave", {}, this.currentLanguage),
-					balance: getTranslation("status_mode_balance", {}, this.currentLanguage),
-					performance: getTranslation("status_mode_performance", {}, this.currentLanguage),
-					fast: getTranslation("status_mode_fast", {}, this.currentLanguage),
-					unknown: getTranslation("status_mode_unknown", {}, this.currentLanguage),
-				};
-				this.currentMode.textContent = modeText[mode] || modeText.unknown;
-				this.currentMode.className = `mode-badge ${mode}`;
-				// 移除 data-i18n 属性，避免语言切换时被覆盖
-				this.currentMode.removeAttribute("data-i18n");
-			}
-		} catch (error) {
-			console.error("加载当前模式失败:", error);
-			if (this.currentMode) {
-				this.currentMode.textContent = getTranslation(
-					"status_mode_unknown",
-					{},
-					this.currentLanguage
-				);
-				this.currentMode.className = "mode-badge default";
-				// 移除 data-i18n 属性，避免语言切换时被覆盖
-				this.currentMode.removeAttribute("data-i18n");
-			}
+		const { errno, stdout } = await exec(
+			`cat ${PATHS.CURRENT_MODE_PATH} 2>/dev/null || echo "unknown"`
+		);
+		let mode = "unknown";
+		if (errno === 0) mode = stdout.trim().toLowerCase();
+		const validModes = ["powersave", "balance", "performance", "fast"];
+		if (!validModes.includes(mode)) mode = "unknown";
+		if (this.currentMode) {
+			const modeText: Record<string, string> = {
+				powersave: getTranslation("status_mode_powersave", {}, this.currentLanguage),
+				balance: getTranslation("status_mode_balance", {}, this.currentLanguage),
+				performance: getTranslation("status_mode_performance", {}, this.currentLanguage),
+				fast: getTranslation("status_mode_fast", {}, this.currentLanguage),
+				unknown: getTranslation("status_mode_unknown", {}, this.currentLanguage),
+			};
+			this.currentMode.textContent = modeText[mode] || modeText.unknown;
+			this.currentMode.className = `mode-badge ${mode}`;
+			this.currentMode.removeAttribute("data-i18n");
 		}
 	}
 }

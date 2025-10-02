@@ -1,6 +1,6 @@
 import { PATHS } from "./constants";
 import { getTranslation, translations } from "./i18n";
-import { exec, logError, toast, withResult } from "./utils";
+import { exec, toast } from "./utils";
 
 interface TranslationsType {
 	[language: string]: {
@@ -81,16 +81,7 @@ export class GamesManager {
 	}
 
 	async loadGamesList() {
-		const result = await withResult(async () => {
-			const { errno, stdout } = await exec(`cat ${PATHS.GAMES_FILE}`);
-			return { errno, stdout };
-		}, "games-load");
-		if (!result.ok) {
-			logError("games-load", result.error);
-			if (this.gamesList) this.gamesList.innerHTML = '<li class="loading-text">加载失败</li>';
-			return;
-		}
-		const { errno, stdout } = result.data;
+		const { errno, stdout } = await exec(`cat ${PATHS.GAMES_FILE}`);
 		if (errno === 0 && stdout.trim()) {
 			const games = this.parseTomlGames(stdout.trim());
 			this.gamesListData = games as GameItem[];
@@ -274,23 +265,15 @@ export class GamesManager {
 			toast(getTranslation("toast_games_empty", {}, this.currentLanguage));
 			return;
 		}
-		// 生成 TOML 内容
 		let gamesContent = "# GPU调速器游戏列表配置文件\n\n";
 		this.gamesListData.forEach((game) => {
 			gamesContent += "[[games]]\n";
 			gamesContent += `package = "${game.package}"\n`;
 			gamesContent += `mode = "${game.mode || "balance"}"\n\n`;
 		});
-		// 使用 base64 写入以避免引号转义问题
 		const b64 = btoa(unescape(encodeURIComponent(gamesContent)));
-		const writeResult = await withResult(async () => {
-			return await exec(`echo '${b64}' | base64 -d > ${PATHS.GAMES_FILE}`);
-		}, "games-save");
-		if (!writeResult.ok) {
-			toast(getTranslation("toast_games_save_fail", {}, this.currentLanguage));
-			return;
-		}
-		if (writeResult.data.errno === 0)
+		const writeResult = await exec(`echo '${b64}' | base64 -d > ${PATHS.GAMES_FILE}`);
+		if (writeResult.errno === 0)
 			toast(getTranslation("toast_games_saved", {}, this.currentLanguage));
 		else toast(getTranslation("toast_games_save_fail", {}, this.currentLanguage));
 	}

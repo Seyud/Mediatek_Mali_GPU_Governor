@@ -2,17 +2,13 @@
 import { MainApp } from "./MainApp";
 
 async function loadComponent(url: string, containerId: string) {
-	try {
-		const response = await fetch(url);
-		if (response.ok) {
-			const html = await response.text();
-			const el = document.getElementById(containerId);
-			if (el) el.innerHTML = html;
-		} else {
-			console.error(`加载组件失败 ${url}: ${response.status}`);
-		}
-	} catch (error) {
-		console.error(`加载组件异常 ${url}:`, error);
+	const response = await fetch(url);
+	if (response.ok) {
+		const html = await response.text();
+		const el = document.getElementById(containerId);
+		if (el) el.innerHTML = html;
+	} else {
+		console.error(`加载组件失败 ${url}: ${response.status}`);
 	}
 }
 

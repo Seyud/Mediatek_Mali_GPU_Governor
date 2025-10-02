@@ -1,6 +1,6 @@
 import { PATHS } from "./constants";
 import { getTranslation } from "./i18n";
-import { exec, toast, withResult } from "./utils";
+import { exec, toast } from "./utils";
 
 type Lang = "zh" | "en";
 
@@ -26,59 +26,51 @@ export interface CustomConfig {
 export class ConfigFileManager {
 	currentLanguage: Lang = "zh";
 	async loadGpuConfig() {
-		try {
-			const { errno, stdout } = await exec(`cat ${PATHS.CONFIG_PATH}`);
-			if (errno === 0 && stdout.trim()) {
-				const content = stdout.trim();
-				const gpuConfigs: GpuConfig[] = [];
-				let hasConfig = false;
-				const arrayRegex = /freq_table\s*=\s*\[([\s\S]*?)\]/;
-				const arrayMatch = arrayRegex.exec(content);
-				if (arrayMatch) {
-					const arrayContent = arrayMatch[1];
-					const itemRegex =
-						/\{\s*freq\s*=\s*(\d+),\s*volt\s*=\s*(\d+),\s*ddr_opp\s*=\s*(\d+)\s*\}/g;
-					let itemMatch: RegExpExecArray | null;
+		const { errno, stdout } = await exec(`cat ${PATHS.CONFIG_PATH}`);
+		if (errno === 0 && stdout.trim()) {
+			const content = stdout.trim();
+			const gpuConfigs: GpuConfig[] = [];
+			let hasConfig = false;
+			const arrayRegex = /freq_table\s*=\s*\[([\s\S]*?)\]/;
+			const arrayMatch = arrayRegex.exec(content);
+			if (arrayMatch) {
+				const arrayContent = arrayMatch[1];
+				const itemRegex = /\{\s*freq\s*=\s*(\d+),\s*volt\s*=\s*(\d+),\s*ddr_opp\s*=\s*(\d+)\s*\}/g;
+				let itemMatch: RegExpExecArray | null;
+				itemMatch = itemRegex.exec(arrayContent);
+				while (itemMatch !== null) {
+					const freq = parseInt(itemMatch[1], 10);
+					const volt = parseInt(itemMatch[2], 10);
+					const ddr = parseInt(itemMatch[3], 10);
+					if (!Number.isNaN(freq) && !Number.isNaN(volt) && !Number.isNaN(ddr)) {
+						gpuConfigs.push({ freq, volt, ddr });
+						hasConfig = true;
+					}
 					itemMatch = itemRegex.exec(arrayContent);
-					while (itemMatch !== null) {
-						const freq = parseInt(itemMatch[1], 10);
-						const volt = parseInt(itemMatch[2], 10);
-						const ddr = parseInt(itemMatch[3], 10);
-						if (!Number.isNaN(freq) && !Number.isNaN(volt) && !Number.isNaN(ddr)) {
-							gpuConfigs.push({ freq, volt, ddr });
-							hasConfig = true;
-						}
-						itemMatch = itemRegex.exec(arrayContent);
-					}
 				}
-				if (!hasConfig) {
-					const freqTableRegex =
-						/\[\[freq_table\]\][\s\S]*?freq\s*=\s*(\d+)[\s\S]*?volt\s*=\s*(\d+)[\s\S]*?ddr_opp\s*=\s*(\d+)/g;
-					let match: RegExpExecArray | null;
-					match = freqTableRegex.exec(content);
-					while (match !== null) {
-						const freq = parseInt(match[1], 10);
-						const volt = parseInt(match[2], 10);
-						const ddr = parseInt(match[3], 10);
-						if (!Number.isNaN(freq) && !Number.isNaN(volt) && !Number.isNaN(ddr)) {
-							gpuConfigs.push({ freq, volt, ddr });
-							hasConfig = true;
-						}
-						match = freqTableRegex.exec(content);
-					}
-				}
-				if (hasConfig) {
-					gpuConfigs.sort((a, b) => a.freq - b.freq);
-					return { success: true, data: gpuConfigs };
-				}
-				return { success: false, error: "config_not_found" };
 			}
-			return { success: false, error: "config_not_found" };
-		} catch (error: unknown) {
-			console.error("加载GPU配置失败:", error);
-			const errorMessage = error instanceof Error ? error.message : String(error);
-			return { success: false, error: errorMessage };
+			if (!hasConfig) {
+				const freqTableRegex =
+					/\[\[freq_table\]\][\s\S]*?freq\s*=\s*(\d+)[\s\S]*?volt\s*=\s*(\d+)[\s\S]*?ddr_opp\s*=\s*(\d+)/g;
+				let match: RegExpExecArray | null;
+				match = freqTableRegex.exec(content);
+				while (match !== null) {
+					const freq = parseInt(match[1], 10);
+					const volt = parseInt(match[2], 10);
+					const ddr = parseInt(match[3], 10);
+					if (!Number.isNaN(freq) && !Number.isNaN(volt) && !Number.isNaN(ddr)) {
+						gpuConfigs.push({ freq, volt, ddr });
+						hasConfig = true;
+					}
+					match = freqTableRegex.exec(content);
+				}
+			}
+			if (hasConfig) {
+				gpuConfigs.sort((a, b) => a.freq - b.freq);
+				return { success: true, data: gpuConfigs };
+			}
 		}
+		return { success: false, error: "config_not_found" };
 	}
 	async saveGpuConfig(gpuConfigs: GpuConfig[]) {
 		if (!gpuConfigs || gpuConfigs.length === 0) {
@@ -93,15 +85,8 @@ export class ConfigFileManager {
 		});
 		content += "]\n";
 		const b64 = btoa(unescape(encodeURIComponent(content)));
-		const result = await withResult(
-			async () => await exec(`echo '${b64}' | base64 -d > ${PATHS.CONFIG_PATH}`),
-			"gpu-config-save"
-		);
-		if (!result.ok) {
-			toast(getTranslation("toast_config_save_fail", {}, this.currentLanguage));
-			return { success: false, error: "exec_failed" };
-		}
-		if (result.data.errno === 0) {
+		const result = await exec(`echo '${b64}' | base64 -d > ${PATHS.CONFIG_PATH}`);
+		if (result.errno === 0) {
 			toast(getTranslation("toast_config_saved", {}, this.currentLanguage));
 			return { success: true };
 		}
@@ -110,32 +95,19 @@ export class ConfigFileManager {
 	}
 
 	async loadCustomConfig() {
-		try {
-			const { errno, stdout } = await exec(`cat ${PATHS.CUSTOM_CONFIG_PATH}`);
-			if (errno === 0 && stdout.trim()) {
-				const content = stdout.trim();
-				const customConfig = this.parseCustomConfig(content);
-				return { success: true, data: customConfig };
-			}
-			return { success: false, error: "config_not_found" };
-		} catch (error: unknown) {
-			console.error("加载自定义配置失败:", error);
-			const errorMessage = error instanceof Error ? error.message : String(error);
-			return { success: false, error: errorMessage };
+		const { errno, stdout } = await exec(`cat ${PATHS.CUSTOM_CONFIG_PATH}`);
+		if (errno === 0 && stdout.trim()) {
+			const content = stdout.trim();
+			const customConfig = this.parseCustomConfig(content);
+			return { success: true, data: customConfig };
 		}
+		return { success: false, error: "config_not_found" };
 	}
 	async saveCustomConfig(customConfig: CustomConfig) {
 		const configContent = this.generateCustomConfigContent(customConfig);
 		const b64 = btoa(unescape(encodeURIComponent(configContent)));
-		const result = await withResult(
-			async () => await exec(`echo '${b64}' | base64 -d > ${PATHS.CUSTOM_CONFIG_PATH}`),
-			"custom-config-save"
-		);
-		if (!result.ok) {
-			toast(getTranslation("toast_config_save_fail", {}, this.currentLanguage));
-			return { success: false, error: "exec_failed" };
-		}
-		if (result.data.errno === 0) {
+		const result = await exec(`echo '${b64}' | base64 -d > ${PATHS.CUSTOM_CONFIG_PATH}`);
+		if (result.errno === 0) {
 			toast(getTranslation("toast_config_saved", {}, this.currentLanguage));
 			return { success: true };
 		}
