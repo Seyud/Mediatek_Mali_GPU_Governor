@@ -81,6 +81,14 @@ class Packager:
         """执行7-Zip压缩"""
         output_file = OUTPUT_DIR / output_filename
         
+        # 如果输出文件已存在，先删除它，避免添加模式导致旧文件残留
+        if output_file.exists():
+            try:
+                output_file.unlink()
+                print(f"删除已存在的压缩包: {output_filename}")
+            except OSError as e:
+                print(f"警告: 无法删除已存在的压缩包: {e}")
+        
         cmd = [
             str(SEVEN_ZIP_PATH), "a", "-tzip", str(output_file),
             *[item.name for item in items]
