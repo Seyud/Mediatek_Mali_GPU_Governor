@@ -7,10 +7,7 @@ MODDIR=${0%/*}
 . $MODDIR/libcommon.sh
 MODULE_PATH="${MODDIR%/*}"
 
-# 定义DATA_PATH变量
-DATA_PATH="/data/adb"
-
-# 初始化语言设置（使用libcommon.sh中的函数）
+# 初始化语言设置
 init_language
 
 # $1:error_message_zh $2:error_message_en
@@ -30,21 +27,6 @@ set_perm() {
     chcon $con $1
 }
 
-# 复制GPU频率表文件的函数
-copy_gpu_freq_table() {
-    if [ "$cfgname" != "default" ] && [ -f "$MODULE_PATH/config/$cfgname.toml" ]; then
-        cp -f "$MODULE_PATH/config/$cfgname.toml" "$CONFIG_PATH/gpu_freq_table.toml"
-        chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
-        echo "$(translate "📊 GPU频率表已创建于" "📊 GPU frequency table created at") $CONFIG_PATH/gpu_freq_table.toml"
-    elif [ -f "$MODULE_PATH/config/gpu_freq_table.toml" ]; then
-        cp -f "$MODULE_PATH/config/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml"
-        chmod 0666 "$CONFIG_PATH/gpu_freq_table.toml"
-        echo "$(translate "📊 默认GPU频率表已创建于" "📊 Default GPU frequency table created at") $CONFIG_PATH/gpu_freq_table.toml"
-    else
-        echo "$(translate "⚠️ GPU频率表文件，跳过创建" "⚠️ GPU frequency table file not found, skipping creation")"
-    fi
-}
-
 # $1:directory $2:owner $3:group $4:dir_permission $5:file_permission $6:secontext
 set_perm_recursive() {
     find $1 -type d 2> /dev/null | while read dir; do
@@ -57,6 +39,21 @@ set_perm_recursive() {
 
 set_permissions() {
     set_perm_recursive $BIN_PATH 0 0 0755 0755 u:object_r:system_file:s0
+}
+
+# 复制GPU频率表文件的函数
+copy_gpu_freq_table() {
+    if [ "$cfgname" != "default" ] && [ -f "$GPU_FREQ_TABLE_TEMPLATE_FILE" ]; then
+        cp -f "$GPU_FREQ_TABLE_TEMPLATE_FILE" "$GPU_FREQ_TABLE_TOML_FILE"
+        chmod 0666 "$GPU_FREQ_TABLE_TOML_FILE"
+        echo "$(translate "📈 GPU频率表已创建于" "📈 GPU frequency table created at") $GPU_FREQ_TABLE_TOML_FILE"
+    elif [ -f "$MODULE_PATH/config/gpu_freq_table.toml" ]; then
+        cp -f "$MODULE_PATH/config/gpu_freq_table.toml" "$GPU_FREQ_TABLE_TOML_FILE"
+        chmod 0666 "$GPU_FREQ_TABLE_TOML_FILE"
+        echo "$(translate "📈 默认GPU频率表已创建于" "📈 Default GPU frequency table created at") $GPU_FREQ_TABLE_TOML_FILE"
+    else
+        echo "$(translate "⚠️ GPU频率表文件，跳过创建" "⚠️ GPU frequency table file not found, skipping creation")"
+    fi
 }
 
 # 生成游戏列表配置文件
@@ -161,12 +158,19 @@ com.MadOut.BIG'
 
     echo "$(translate "📝 游戏列表配置文件已生成：" "📝 Game list configuration file generated:") $GAMES_FILE"
 }
+
 install_gov() {
     echo "$(translate "📱 设备平台：" "📱 Device platform:") $(getprop ro.board.platform)"
     echo "$(translate "📱 产品主板：" "📱 Product board:") $(getprop ro.product.board)"
 
     target="$(getprop ro.board.platform)"
     cfgname="$(get_config_name $target)"
+    
+    # 默认配置文件路径
+    DEFAULT_CONFIG_FILE="$MODULE_PATH/config/config.toml"
+    
+    # 定义GPU频率表模板文件路径变量
+    GPU_FREQ_TABLE_TEMPLATE_FILE="$MODULE_PATH/config/$cfgname.toml"
 
     # 特殊处理mt6893，可能是mt6891或mt6893
     if [ "$target" = "mt6893" ]; then
@@ -187,35 +191,35 @@ install_gov() {
             cfgname="mtd8200"
         fi
     fi
+    
+    # 更新GPU频率表模板文件路径变量（可能在特殊处理中被修改）
+    GPU_FREQ_TABLE_TEMPLATE_FILE="$MODULE_PATH/config/$cfgname.toml"
 
     if [ "$cfgname" = "unsupported" ]; then
         target="$(getprop ro.product.board)"
         cfgname="$(get_config_name "$target")"
     fi
-    if [ "$cfgname" = "unsupported" ] || [ ! -f "$MODULE_PATH/config/$cfgname.toml" ]; then
+    if [ "$cfgname" = "unsupported" ] || [ ! -f "$GPU_FREQ_TABLE_TEMPLATE_FILE" ]; then
         # 检查是否为MTK设备
         if [ "$(is_mtk)" = "true" ]; then
             echo "$(translate "⚠️ 目标设备 [$target] 是MTK设备但没有专用配置，使用默认配置。" "⚠️ Target [$target] is MTK device but no specific config found, using default configuration.")"
             cfgname="default"
+            # 更新GPU频率表模板文件路径变量
+            GPU_FREQ_TABLE_TEMPLATE_FILE="$MODULE_PATH/config/$cfgname.toml"
         else
             abort "目标设备 [$target] 不受支持，仅支持联发科(MTK)芯片。" "Target [$target] not supported. Only supports MediaTek(MTK) chips."
         fi
     fi
 
-    # 创建config目录
-    CONFIG_PATH="$DATA_PATH/gpu_governor/config"
-    mkdir -p "$CONFIG_PATH"
-    chmod 0755 "$CONFIG_PATH"
-
+    mkdir -p "$GPU_CONFIG"
     mkdir -p "$LOG_PATH"
     mkdir -p "$GAMES_PATH"
-
-    # 设置日志目录和游戏目录权限为755
+    chmod 0755 "$GPU_CONFIG"
     chmod 0755 "$LOG_PATH"
     chmod 0755 "$GAMES_PATH"
 
     # 处理TOML格式的GPU频率表文件，支持按键选择是否保留旧文件
-    if [ -f "$CONFIG_PATH/gpu_freq_table.toml" ]; then
+    if [ -f "$GPU_FREQ_TABLE_TOML_FILE" ]; then
         echo "$(translate "⚠️ 发现已存在的GPU频率表文件" "⚠️ Found existing GPU frequency table file")"
         echo "$(translate "🔄 是否保留旧的频率表文件？（若不保留则自动备份）" "🔄 Do you want to keep the old frequency table? (If not, it will be automatically backed up)")"
         echo "$(translate "🔊 （音量上键 = 是, 音量下键 = 否，10秒无操作 = 是）" "🔊 (Volume Up = Yes, Volume Down = No, 10s no input = Yes)")"
@@ -237,8 +241,8 @@ install_gov() {
             elif $(cat $TMPDIR/events 2> /dev/null | grep -q KEY_VOLUMEDOWN); then
                 echo "$(translate "🔽 检测到音量下键，替换旧频率表。" "🔽 Volume Down detected, replacing old frequency table.")"
                 # 备份旧频率表
-                cp -f "$CONFIG_PATH/gpu_freq_table.toml" "$CONFIG_PATH/gpu_freq_table.toml.bak"
-                echo "$(translate "💾 旧频率表已备份至" "💾 Old frequency table backed up to") $CONFIG_PATH/gpu_freq_table.toml.bak"
+                cp -f "$GPU_FREQ_TABLE_TOML_FILE" "$GPU_FREQ_TABLE_TOML_FILE.bak"
+                echo "$(translate "💾 旧频率表已备份至" "💾 Old frequency table backed up to") $GPU_FREQ_TABLE_TOML_FILE.bak"
                 # 复制新的频率表
                 copy_gpu_freq_table
                 break
@@ -261,16 +265,14 @@ install_gov() {
     fi
 
     # 复制config.toml配置文件
-    if [ ! -f "$CONFIG_PATH/config.toml" ]; then
-        if [ -f "$MODULE_PATH/config/config.toml" ]; then
-            cp -f "$MODULE_PATH/config/config.toml" "$CONFIG_PATH/config.toml"
-            chmod 0666 "$CONFIG_PATH/config.toml"
-            echo "$(translate "⚙️ 自定义配置已创建于" "⚙️ Custom config file created at") $CONFIG_PATH/config.toml"
-        else
-            echo "$(translate "⚠️ 自定义配置不存在，跳过创建" "⚠️ Custom config file does not exist, skipping creation")"
-        fi
+    if [ -f "$CONFIG_TOML_FILE" ]; then
+        echo "$(translate "⚙️ 自定义配置已存在于" "⚙️ Custom config file already exists at") $CONFIG_TOML_FILE"
+    elif [ -f "$DEFAULT_CONFIG_FILE" ]; then
+        cp -f "$DEFAULT_CONFIG_FILE" "$CONFIG_TOML_FILE"
+        chmod 0666 "$CONFIG_TOML_FILE"
+        echo "$(translate "⚙️ 自定义配置已创建于" "⚙️ Custom config file created at") $CONFIG_TOML_FILE"
     else
-        echo "$(translate "⚙️ 自定义配置已存在于" "⚙️ Custom config file already exists at") $CONFIG_PATH/config.toml"
+        echo "$(translate "⚠️ 默认自定义配置不存在，跳过创建" "⚠️ Default custom config does not exist, skipping creation")"
     fi
 
     # 检查游戏列表文件是否已存在
