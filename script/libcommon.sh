@@ -1,11 +1,35 @@
 #!/system/bin/sh
+# 检测系统语言
+# 返回: "zh" 或 "en"
+detect_language() {
+    # 默认设置为中文
+    local language="zh"
+    
+    # 尝试获取系统语言
+    local locale=$(getprop persist.sys.locale || getprop ro.product.locale || getprop persist.sys.language)
+    
+    # 如果系统语言是英文，设置语言为英文
+    if echo "$locale" | grep -qi "en"; then
+        language="en"
+    fi
+    
+    echo "$language"
+}
 
-###############################
-# Basic tool functions
-###############################
+# 翻译函数 - 根据当前语言显示对应文本
+# $1:中文文本 $2:英文文本
+# 使用方式: translate "中文" "English"
+translate() {
+    [ "$language" = "en" ] && echo "$2" || echo "$1"
+}
+
+# 初始化语言设置
+init_language() {
+    language=$(detect_language)
+    export language
+}
 
 # $1:value $2:filepaths
-
 lock_val() {
     for p in $2; do
         if [ -f "$p" ]; then

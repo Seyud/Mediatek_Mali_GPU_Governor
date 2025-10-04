@@ -6,7 +6,8 @@
 # 3. 使用音量键进行选择
 MODDIR=${0%/*}
 
-# 定义常量
+. $MODDIR/script/libcommon.sh
+
 GPU_GOVERNOR_DIR="/data/adb/gpu_governor"
 GPU_GOVERNOR_LOG_DIR="$GPU_GOVERNOR_DIR/log"
 LOG_LEVEL_FILE="$GPU_GOVERNOR_LOG_DIR/log_level"
@@ -14,48 +15,14 @@ GPU_GOV_LOG_FILE="$GPU_GOVERNOR_LOG_DIR/gpu_gov.log"
 BIN_PATH="$MODDIR/bin"
 GPUGOVERNOR_BIN="$BIN_PATH/gpugovernor"
 
-# 语言检测函数
-detect_language() {
-    # 尝试获取系统语言设置
-    local system_locale=$(getprop persist.sys.locale 2> /dev/null || getprop ro.product.locale 2> /dev/null)
+init_language
 
-    # 如果无法获取或为空，尝试其他方法
-    if [ -z "$system_locale" ]; then
-        system_locale=$(settings get system system_locales 2> /dev/null || echo "zh-CN")
-    fi
-
-    # 检查是否包含中文标识
-    if echo "$system_locale" | grep -q -i "zh"; then
-        echo "zh"
-    else
-        echo "en"
-    fi
-}
-
-# 设置当前语言
-CURRENT_LANGUAGE=$(detect_language)
-
-# 翻译函数
-translate() {
-    local zh_text="$1"
-    local en_text="$2"
-
-    if [ "$CURRENT_LANGUAGE" = "zh" ]; then
-        echo "$zh_text"
-    else
-        echo "$en_text"
-    fi
-}
-
-# 日志前缀函数
 log_prefix() {
     echo "[$(date "+%Y-%m-%d %H:%M:%S")]"
 }
 
-# 确保目录存在并设置适当权限
 mkdir -p "$GPU_GOVERNOR_DIR"
 mkdir -p "$GPU_GOVERNOR_LOG_DIR"
-# 设置目录权限为777，确保任何进程都可以写入
 chmod 0777 "$GPU_GOVERNOR_DIR"
 chmod 0777 "$GPU_GOVERNOR_LOG_DIR"
 

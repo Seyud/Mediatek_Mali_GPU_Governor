@@ -10,22 +10,8 @@ MODULE_PATH="${MODDIR%/*}"
 # 定义DATA_PATH变量
 DATA_PATH="/data/adb"
 
-# 大多数用户是中文用户，默认设置为中文
-language="zh"
-
-# 尝试获取系统语言
-locale=$(getprop persist.sys.locale || getprop ro.product.locale || getprop persist.sys.language)
-
-# 如果系统语言是英文，设置语言为英文
-if echo "$locale" | grep -qi "en"; then
-    language="en"
-fi
-
-# 翻译函数 - 根据当前语言显示对应文本
-# $1:中文文本 $2:英文文本
-translate() {
-    [ "$language" = "en" ] && echo "$2" || echo "$1"
-}
+# 初始化语言设置（使用libcommon.sh中的函数）
+init_language
 
 # $1:error_message_zh $2:error_message_en
 abort() {
@@ -307,7 +293,7 @@ module_author="$(grep_prop author "$MODULE_PATH/module.prop")"
 
 echo ""
 echo "🚀 $(translate "$module_name" "$module_id")"
-echo "$(translate "👨‍💻 作者：" "👨‍💻 Author:") $module_author"
+echo "$(translate "👨‍💻 作者：$module_author" "👨‍💻 Author: Seyud @GitHub")"
 echo "$(translate "📌 版本：" "📌 Version:") $module_version"
 echo ""
 

@@ -194,16 +194,8 @@ sync
 [ -d "/data/adb/ksu/bin" ] && export PATH="/data/adb/ksu/bin:$PATH"
 [ -d "/data/adb/ap/bin" ] && export PATH="/data/adb/ap/bin:$PATH"
 
-# 大部分用户是中文用户，默认设置为中文
-language="zh"
-
-# 尝试获取系统语言
-locale=$(getprop persist.sys.locale || getprop ro.product.locale || getprop persist.sys.language)
-
-# 如果系统语言是英文，设置语言为英文
-if echo "$locale" | grep -qi "en"; then
-    language="en"
-fi
+# 初始化语言设置（使用libcommon.sh中的函数）
+init_language
 
 # 根据语言设置不同的updateJson地址
 update_updatejson() {
