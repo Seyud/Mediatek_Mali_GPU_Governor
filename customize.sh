@@ -12,7 +12,7 @@ on_install() {
     [ "$?" != "0" ] && abort "调速器安装失败！"
 
     rm "$MODPATH"/script/setup.sh
-    rm "$MODPATH"/config/
+    rm -r "$MODPATH"/config/
 }
 
 set_permissions

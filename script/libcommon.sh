@@ -142,7 +142,7 @@ log_localized() {
         message="$zh_text"
     fi
 
-    printf '%s [%s] %s\n' "$timestamp" "$_level" "$message" >> "$INIT_LOG"
+    printf '[%s] [%s] %s\n' "$timestamp" "$_level" "$message" >> "$INIT_LOG"
     sync
 }
 
@@ -187,11 +187,19 @@ wait_until_login() {
 #Prop File Reader
 #grep_prop comes from https://github.com/topjohnwu/Magisk/blob/master/scripts/util_functions.sh#L43
 grep_prop() {
-    REGEX="s/^$1=//p"
-    shift
-    FILES="$@"
-    [ -z "$FILES" ] && FILES='/system/build.prop'
-    cat $FILES 2> /dev/null | dos2unix | sed -n "$REGEX" | head -n 1
+  local REGEX="s/^$1=//p"
+  shift
+  local FILES=$@
+  [ -z "$FILES" ] && FILES='/system/build.prop'
+  cat $FILES 2>/dev/null | dos2unix | sed -n "$REGEX" | head -n 1
 }
 
 target="$(getprop ro.board.platform)"
+# get module version
+module_version="$(grep_prop version "$MODULE_PROP")"
+# get module name
+module_name="$(grep_prop name "$MODULE_PROP")"
+# get module id
+module_id="$(grep_prop id "$MODULE_PROP")"
+# get module author
+module_author="$(grep_prop author "$MODULE_PROP")"
