@@ -15,10 +15,6 @@ fi
 
 # 记录目录信息到初始化日志（首次写入，覆盖旧内容）
 echo "$(date) - 🚀 Initialization started" > "$INIT_LOG"
-echo "📁 SCRIPT_DIR=$SCRIPT_DIR" >> "$INIT_LOG"
-
-log "Initialization service started running"
-log "SCRIPT_DIR=$SCRIPT_DIR"
 
 # 等待系统解锁
 wait_until_login
@@ -187,25 +183,46 @@ append_description() {
 }
 
 # 获取状态描述
-get_status_descriptions() {
+get_status_description() {
     local status="$1"
+    local english chinese
+
     case "$status" in
         "running")
-            echo "🚀 Running" "🚀 运行中"
+            english="🚀 Running"
+            chinese="🚀 运行中"
             ;;
         "stopped")
-            echo "❌ Stopped" "❌ 已停止"
+            english="❌ Stopped"
+            chinese="❌ 已停止"
             ;;
         "error")
-            echo "😭 Error occurred, check logs for details" "😭 出现错误，请检查日志以获取详细信息"
+            english="😭 Error occurred, check logs for details"
+            chinese="😭 出现错误，请检查日志以获取详细信息"
             ;;
         "starting")
-            echo "⚡ Starting" "⚡ 启动中"
+            english="⚡ Starting"
+            chinese="⚡ 启动中"
             ;;
         *)
-            echo "❓ Unknown status" "❓ 未知状态"
+            english="❓ Unknown status"
+            chinese="❓ 未知状态"
             ;;
     esac
+
+    printf '%s|%s' "$english" "$chinese"
+}
+
+apply_status_description() {
+    local status="$1"
+    local callback="$2"
+    local english chinese
+    IFS='|' read -r english chinese <<EOF
+$(get_status_description "$status")
+EOF
+    [ -z "$english" ] && english="❓ Unknown status"
+    [ -z "$chinese" ] && chinese="❓ 未知状态"
+    "$callback" "$english" "$chinese"
 }
 
 # 检查GPU调速器是否已经在运行
@@ -215,7 +232,7 @@ if [ -f "$PID_FILE" ] && ps | grep -w "$(cat "$PID_FILE")" | grep -q "gpugoverno
 fi
 
 # 更新状态为启动中
-update_description $(get_status_descriptions "starting")
+apply_status_description "starting" update_description
 
 {
     enhanced_log "🚀 Starting gpu governor" "🚀 启动GPU调速器"
@@ -233,7 +250,7 @@ update_description $(get_status_descriptions "starting")
         chmod 0755 "$GPU_GOVERNOR_BIN"
         if [ ! -x "$GPU_GOVERNOR_BIN" ]; then
             enhanced_log "Error: Failed to set executable permission" "错误：设置可执行权限失败"
-            update_description $(get_status_descriptions "error")
+            apply_status_description "error" update_description
             exit 1
         fi
     fi
@@ -244,22 +261,18 @@ update_description $(get_status_descriptions "starting")
 
     if [ "$current_log_level" = "debug" ]; then
         enhanced_log "Debug level enabled, will print all behavior logs" "调试等级启用，调速器核心将打印所有行为日志"
-        # 启动进程，确保日志记录正常工作
         echo "Starting gpugovernor with debug level"
 
-        # 启动进程
         killall gpugovernor 2> /dev/null
-        RUST_BACKTRACE=1 nohup "$GPU_GOVERNOR_BIN" > &>/dev/null &
+        RUST_BACKTRACE=1 nohup "$GPU_GOVERNOR_BIN" >/dev/null 2>&1 &
 
         enhanced_log "Starting GPU Governor with debug level" "GPU调速器以调试等级启动"
     else
         enhanced_log "Using log level: $current_log_level" "使用日志等级: $current_log_level"
-
         enhanced_log "Starting GPU Governor with $current_log_level level" "以 $current_log_level 等级启动GPU调速器"
 
-        # 启动进程
         killall gpugovernor 2> /dev/null
-        nohup "$GPU_GOVERNOR_BIN" &>/dev/null &
+        nohup "$GPU_GOVERNOR_BIN" >/dev/null 2>&1 &
     fi
 
     gov_pid=$!
@@ -270,17 +283,17 @@ update_description $(get_status_descriptions "starting")
     # 检查GPU调速器是否成功启动
     if pgrep -f "gpugovernor" > /dev/null; then
         enhanced_log "🚀 GPU Governor started successfully" "🚀 GPU调速器启动成功"
-        update_description $(get_status_descriptions "running")
+        apply_status_description "running" update_description
         echo "$gov_pid" > "$PID_FILE"
         enhanced_log "GPU Governor PID: $gov_pid" "GPU调速器 PID: $gov_pid"
-        append_description " PID: $gov_pid"
+        append_description " PID: $gov_pid" " PID: $gov_pid"
 
         rebuild_process_scan_cache
         change_task_cgroup "gpugovernor" "background" "cpuset"
         enhanced_log "✅ GPU Governor started successfully" "✅ GPU调速器启动成功"
     else
         enhanced_log "😭 Error occurred while starting GPU Governor, check logs for details" "😭 启动GPU调速器时出现错误，请检查日志以获取详细信息"
-        update_description $(get_status_descriptions "error")
+        apply_status_description "error" update_description
         exit 1
     fi
 
