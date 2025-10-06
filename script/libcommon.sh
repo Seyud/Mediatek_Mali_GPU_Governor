@@ -123,11 +123,43 @@ log_command() {
     eval "$command" >> "$log_file" 2>&1
 }
 
-# $1:content
-log() {
-    # 写入日志文件
-    echo "$1" >> "$INIT_LOG"
+# 本地化日志输出
+# $1:level
+# $2:英文内容
+# $3:中文内容（可选，缺失时使用英文内容）
+log_localized() {
+    local _level="$1"
+    local en_text="$2"
+    local zh_text="${3:-$2}"
+    local timestamp
+    local message
+
+    timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+
+    if [ "$language" = "en" ]; then
+        message="$en_text"
+    else
+        message="$zh_text"
+    fi
+
+    printf '%s [%s] %s\n' "$timestamp" "$_level" "$message" >> "$INIT_LOG"
     sync
+}
+
+log_info() {
+    log_localized "INFO" "$1" "$2"
+}
+
+log_warn() {
+    log_localized "WARN" "$1" "$2"
+}
+
+log_error() {
+    log_localized "ERROR" "$1" "$2"
+}
+
+log_debug() {
+    log_localized "DEBUG" "$1" "$2"
 }
 
 clear_log() {
