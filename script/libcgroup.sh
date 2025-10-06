@@ -61,7 +61,7 @@ change_task_affinity() {
     for temp_pid in $(echo "$ps_ret" | grep -i -E "$1" | awk '{print $1}'); do
         for temp_tid in $(ls "/proc/$temp_pid/task/"); do
             comm="$(cat /proc/$temp_pid/task/$temp_tid/comm)"
-            taskset -p "$2" "$temp_tid" >> $LOG_FILE
+            taskset -p "$2" "$temp_tid" >> $INIT_LOG
         done
     done
 }
@@ -73,7 +73,7 @@ change_thread_affinity() {
         for temp_tid in $(ls "/proc/$temp_pid/task/"); do
             comm="$(cat /proc/$temp_pid/task/$temp_tid/comm)"
             if [ "$(echo $comm | grep -i -E "$2")" != "" ]; then
-                taskset -p "$3" "$temp_tid" >> $LOG_FILE
+                taskset -p "$3" "$temp_tid" >> $INIT_LOG
             fi
         done
     done
@@ -110,7 +110,7 @@ change_task_rt() {
     for temp_pid in $(echo "$ps_ret" | grep -i -E "$1" | awk '{print $1}'); do
         for temp_tid in $(ls "/proc/$temp_pid/task/"); do
             comm="$(cat /proc/$temp_pid/task/$temp_tid/comm)"
-            chrt -f -p "$2" "$temp_tid" >> $LOG_FILE
+            chrt -f -p "$2" "$temp_tid" >> $INIT_LOG
         done
     done
 }
@@ -122,7 +122,7 @@ change_thread_rt() {
         for temp_tid in $(ls "/proc/$temp_pid/task/"); do
             comm="$(cat /proc/$temp_pid/task/$temp_tid/comm)"
             if [ "$(echo $comm | grep -i -E "$2")" != "" ]; then
-                chrt -f -p "$3" "$temp_tid" >> $LOG_FILE
+                chrt -f -p "$3" "$temp_tid" >> $INIT_LOG
             fi
         done
     done

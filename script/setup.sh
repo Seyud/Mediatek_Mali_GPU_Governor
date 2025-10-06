@@ -66,10 +66,10 @@ generate_gamelist() {
             if [[ "$game_libs" != '' ]]; then
                 if ! printf '%s\n' "$preset_games_list" | grep -Fxq "$package"; then
                     echo " + $package"
-                    echo "" >> "$GAMES_FILE"
-                    echo "[[games]]" >> "$GAMES_FILE"
-                    echo "package = \"$package\"" >> "$GAMES_FILE"
-                    echo "mode = \"balance\"" >> "$GAMES_FILE"
+                    echo "" >> "$GAME_LIST"
+                    echo "[[games]]" >> "$GAME_LIST"
+                    echo "package = \"$package\"" >> "$GAME_LIST"
+                    echo "mode = \"balance\"" >> "$GAME_LIST"
                 fi
             fi
         fi
@@ -170,7 +170,6 @@ install_gov() {
     echo "$(translate "📱 设备平台：" "📱 Device platform:") $(getprop ro.board.platform)"
     echo "$(translate "📱 产品主板：" "📱 Product board:") $(getprop ro.product.board)"
 
-    target="$(getprop ro.board.platform)"
     cfgname="$(get_config_name $target)"
 
     # 特殊处理mt6893，可能是mt6891或mt6893

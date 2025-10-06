@@ -126,12 +126,12 @@ log_command() {
 # $1:content
 log() {
     # 写入日志文件
-    echo "$1" >> "$LOG_FILE"
+    echo "$1" >> "$INIT_LOG"
     sync
 }
 
 clear_log() {
-    true > "$LOG_FILE"
+    true > "$INIT_LOG"
     sync
 }
 
@@ -153,7 +153,7 @@ wait_until_login() {
 }
 
 #Prop File Reader
-#grep_prop comes from https://github.com/topjohnwu/Magisk/blob/master/scripts/util_functions.sh#L30
+#grep_prop comes from https://github.com/topjohnwu/Magisk/blob/master/scripts/util_functions.sh#L43
 grep_prop() {
     REGEX="s/^$1=//p"
     shift
@@ -161,3 +161,5 @@ grep_prop() {
     [ -z "$FILES" ] && FILES='/system/build.prop'
     cat $FILES 2> /dev/null | dos2unix | sed -n "$REGEX" | head -n 1
 }
+
+target="$(getprop ro.board.platform)"
