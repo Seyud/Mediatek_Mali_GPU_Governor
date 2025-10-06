@@ -1,35 +1,41 @@
 #!/system/bin/sh
-# 基础路径
-MODDIR="${0%/*}"
-SCRIPT_PATH="$MODDIR"
-MODULE_PATH="${MODDIR%/*}"
 
-# 数据目录
-GPU_BASE="/data/adb/gpu_governor"
-GPU_LOG="$GPU_BASE/log"
-GPU_GAME="$GPU_BASE/game"
-GPU_CONFIG="$GPU_BASE/config"
+MODULE_PATH="$(dirname $(readlink -f "$0"))"
+MODULE_PATH="${MODULE_PATH%\/script}"
+SCRIPT_PATH="$MODULE_PATH/script"
 
-# 路径变量
-USER_PATH="/data"
-BIN_PATH="$MODULE_PATH/bin"
-FLAG_PATH="$MODULE_PATH/flag"
-LOG_PATH="$GPU_LOG"
+# GPU调速器目录
+GPU_GOV="/data/adb/gpu_governor"
+GPU_CONFIG="$GPU_GOV/config"      # 配置文件目录
+GPU_GAME="$GPU_GOV/game"          # 游戏列表目录
+GPU_LOG="$GPU_GOV/log"            # 日志文件目录
 
-# 文件路径
-LOG_FILE="$GPU_LOG/initsvc.log"
-GPUGOV_LOGPATH="$GPU_LOG/gpu_gov.log"
-LOG_LEVEL_FILE="$GPU_LOG/log_level"
-CONFIG_TOML_FILE="$GPU_CONFIG/config.toml"
+# 配置文件
 GPU_FREQ_TABLE_TOML_FILE="$GPU_CONFIG/gpu_freq_table.toml"
-GAMES_PATH="$GPU_GAME"
-GAMES_FILE="$GPU_GAME/games.toml"
+CONFIG_TOML_FILE="$GPU_CONFIG/config.toml"
+GAME_LIST="$GPU_GAME/games.toml"
+
+# 日志文件
+INIT_LOG="$GPU_LOG/initsvc.log"
+GPUGOV_LOG="$GPU_LOG/gpu_gov.log"
+LOG_LEVEL_FILE="$GPU_LOG/log_level"
+
+# 模块目录
+BIN_PATH="$MODULE_PATH/bin"
+MODULE_CONFIG_PATH="$MODULE_PATH/config"
+
+MODULE_GPU_FREQ_TABLE_FILE="$MODULE_CONFIG_PATH/gpu_freq_table.toml"
+DEFAULT_CONFIG_FILE="$MODULE_CONFIG_PATH/config.toml"
+MODULE_PROP="$MODULE_PATH/module.prop"
+
 DVFS="/proc/mali/dvfs_enable"
 
-# 记录路径
-if [ -n "$LOG_FILE" ] && [ -d "$(dirname "$LOG_FILE")" ]; then
-    echo "MODULE_PATH=$MODULE_PATH" >> "$LOG_FILE"
-    echo "SCRIPT_PATH=$SCRIPT_PATH" >> "$LOG_FILE"
-    echo "BIN_PATH=$BIN_PATH" >> "$LOG_FILE"
+# 打印路径信息日志
+if [ -n "$INIT_LOG" ] && [ -d "$(dirname "$INIT_LOG")" ]; then
+    {
+        echo "MODULE_PATH=$MODULE_PATH"
+        echo "SCRIPT_PATH=$SCRIPT_PATH"
+        echo "BIN_PATH=$BIN_PATH"
+    } >> "$INIT_LOG"
     sync
 fi
