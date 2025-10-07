@@ -23,10 +23,63 @@ translate() {
     [ "$language" = "en" ] && echo "$2" || echo "$1"
 }
 
+# 转义供 sed 使用的值
+_escape_sed_replacement() {
+    printf '%s' "$1" | sed 's/[\/&]/\\&/g'
+}
+
+# 更新 module.prop 中的键值对
+_update_module_prop_entry() {
+    local key="$1"
+    local value="$2"
+    local file="${3:-$MODULE_PROP}"
+
+    [ -n "$key" ] || return
+    [ -n "$file" ] || return
+    [ -f "$file" ] || return
+
+    local escaped_value
+    escaped_value=$(_escape_sed_replacement "$value")
+
+    if grep -q "^$key=" "$file" 2> /dev/null; then
+        sed -i "s/^$key=.*/$key=$escaped_value/" "$file"
+    else
+        printf '%s=%s\n' "$key" "$value" >> "$file"
+    fi
+}
+
+# 根据语言本地化 module.prop
+localize_module_prop() {
+    [ -n "$MODULE_PROP" ] || return
+    [ -f "$MODULE_PROP" ] || return
+
+    local name_zh="天玑GPU调速器"
+    local name_en="Mediatek_Mali_GPU_Governor"
+    local desc_zh="适用于Mediatek_Mali_GPU的GPU动态调速器，优化高负载场景下的功耗与性能平衡"
+    local desc_en="GPU dynamic governor for Mediatek_Mali_GPU to balance performance and power under heavy load"
+    local author_zh="酷安@瓦力喀"
+    local author_en="Seyud @GitHub"
+
+    if [ "$language" = "en" ]; then
+        _update_module_prop_entry "name" "$name_en"
+        _update_module_prop_entry "description" "$desc_en"
+        _update_module_prop_entry "author" "$author_en"
+        module_author="$author_en"
+    else
+        _update_module_prop_entry "name" "$name_zh"
+        _update_module_prop_entry "description" "$desc_zh"
+        _update_module_prop_entry "author" "$author_zh"
+        module_author="$author_zh"
+    fi
+
+    export module_author
+}
+
 # 初始化语言设置
 init_language() {
     language=$(detect_language)
     export language
+    localize_module_prop
 }
 
 # $1:value $2:filepaths

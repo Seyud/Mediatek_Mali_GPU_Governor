@@ -339,7 +339,7 @@ install_gov() {
 init_language
 echo ""
 echo "🚀 $(translate "$module_name" "$module_id")"
-echo "$(translate "👨‍💻 作者：$module_author" "👨‍💻 Author: Seyud @GitHub")"
+echo "$(translate "👨‍💻 作者：$module_author" "👨‍💻 Author: $module_author")"
 echo "$(translate "📌 版本：" "📌 Version:") $module_version"
 check_conflicting_processes
 echo ""
