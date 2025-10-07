@@ -144,19 +144,19 @@ update_updatejson() {
 }
 
 update_description() {
-    local description safe_description
-    [ "$language" = "en" ] && description="$1" || description="$2"
+    local status_text base_description combined safe_combined
+    [ "$language" = "en" ] && status_text="$1" || status_text="$2"
     [ -f "$MODULE_PROP" ] || return
-    safe_description=$(printf '%s' "$description" | sed 's/[&/]/\\&/g')
-    sed -i "/^description=/c\\description=$safe_description" "$MODULE_PROP"
-}
 
-append_description() {
-    local description safe_append
-    [ "$language" = "en" ] && description="$1" || description="$2"
-    [ -f "$MODULE_PROP" ] || return
-    safe_append=$(printf '%s' "$description" | sed 's/[&/]/\\&/g')
-    sed -i "/^description=/ s|$|$safe_append|" "$MODULE_PROP"
+    base_description="$module_base_description"
+
+    if [ -n "$base_description" ]; then
+        combined="$status_text $base_description"
+    else
+        combined="$status_text"
+    fi
+    safe_combined=$(printf '%s' "$combined" | sed 's/[&/]/\\&/g')
+    sed -i "/^description=/c\\description=$safe_combined" "$MODULE_PROP"
 }
 
 get_status_description() {
@@ -165,24 +165,24 @@ get_status_description() {
 
     case "$status" in
         "running")
-            english="🚀 Running"
-            chinese="🚀 运行中"
+            english="[🚀 Running]"
+            chinese="[🚀运行中]"
             ;;
         "stopped")
-            english="❌ Stopped"
-            chinese="❌ 已停止"
+            english="[❌ Stopped]"
+            chinese="[❌已停止]"
             ;;
         "error")
-            english="😭 Error occurred, check logs for details"
-            chinese="😭 出现错误，请检查日志以获取详细信息"
+            english="[😭 Initialization failed]"
+            chinese="[😭初始化失败]"
             ;;
         "starting")
-            english="⚡ Starting"
-            chinese="⚡ 启动中"
+            english="[⚡ Starting]"
+            chinese="[⚡启动中]"
             ;;
         *)
-            english="❓ Unknown status"
-            chinese="❓ 未知状态"
+            english="[❓ Unknown status]"
+            chinese="[❓未知状态]"
             ;;
     esac
 
@@ -256,8 +256,6 @@ finalize_startup() {
         apply_status_description "running" update_description
         echo "$gov_pid" > "$PID_FILE"
         log_info "🆔 GPU Governor PID: $gov_pid" "🆔 GPU调速器 PID：$gov_pid"
-        append_description " PID: $gov_pid" " PID: $gov_pid"
-
         rebuild_process_scan_cache
         change_task_cgroup "gpugovernor" "background" "cpuset"
         log_info "📦 Process cgroup adjusted" "📦 已调整进程 cgroup 配置"

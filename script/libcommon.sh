@@ -65,14 +65,16 @@ localize_module_prop() {
         _update_module_prop_entry "description" "$desc_en"
         _update_module_prop_entry "author" "$author_en"
         module_author="$author_en"
+        module_base_description="$desc_en"
     else
         _update_module_prop_entry "name" "$name_zh"
         _update_module_prop_entry "description" "$desc_zh"
         _update_module_prop_entry "author" "$author_zh"
         module_author="$author_zh"
+        module_base_description="$desc_zh"
     fi
 
-    export module_author
+    export module_author module_base_description
 }
 
 # 初始化语言设置
