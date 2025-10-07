@@ -167,6 +167,37 @@ clear_log() {
     sync
 }
 
+_process_exists() {
+    local _name="$1"
+
+    if command -v pidof >/dev/null 2>&1; then
+        pidof "$_name" >/dev/null 2>&1 && return 0
+    fi
+
+    if command -v pgrep >/dev/null 2>&1; then
+        pgrep -f "$_name" >/dev/null 2>&1 && return 0
+    fi
+
+    ps 2>/dev/null | grep -w "$_name" | grep -v grep >/dev/null 2>&1 && return 0
+
+    return 1
+}
+
+check_conflicting_processes() {
+    local _process
+
+    for _process in gpu-scheduler loadmonitor_gpuv2; do
+        if _process_exists "$_process"; then
+            if [ -f "$INIT_LOG" ]; then
+                log_error "⛔ Detected conflicting process: $_process. Aborting." "⛔ 检测到冲突进程：$_process，本模块终止。"
+            else
+                echo "$(translate "⛔ 检测到冲突进程：$_process，本模块终止。" "⛔ Detected conflicting process: $_process. Aborting.")"
+            fi
+            exit 1
+        fi
+    done
+}
+
 # $1:content
 wait_until_login() {
     # in case of /data encryption is disabled

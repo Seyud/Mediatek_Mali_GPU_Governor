@@ -35,6 +35,39 @@ set_permissions() {
     set_perm_recursive $BIN_PATH 0 0 0755 0755 u:object_r:system_file:s0
 }
 
+cleanup_docs_by_language() {
+    local lang="$language"
+    local targets=""
+
+    case "$lang" in
+        zh)
+            targets="$(cat <<EOF
+$MODULE_PATH/docs/en
+EOF
+)"
+            ;;
+        en)
+            targets="$(cat <<EOF
+$MODULE_PATH/docs/README.md
+$MODULE_PATH/docs/CHANGELOG.md
+EOF
+)"
+            ;;
+        *)
+            return
+            ;;
+    esac
+
+    printf '%s\n' "$targets" | while IFS= read -r entry; do
+        [ -z "$entry" ] && continue
+        for path in $entry; do
+            if [ -e "$path" ] || [ -L "$path" ]; then
+                rm -rf "$path" 2> /dev/null
+            fi
+        done
+    done
+}
+
 # 复制GPU频率表文件的函数
 copy_gpu_freq_table() {
     if [ "$cfgname" != "default" ] && [ -f "$GPU_FREQ_TABLE_TEMPLATE_FILE" ]; then
@@ -308,10 +341,12 @@ echo ""
 echo "🚀 $(translate "$module_name" "$module_id")"
 echo "$(translate "👨‍💻 作者：$module_author" "👨‍💻 Author: Seyud @GitHub")"
 echo "$(translate "📌 版本：" "📌 Version:") $module_version"
+check_conflicting_processes
 echo ""
 echo "⚠️ $(translate "如果在使用过程中出现死机，异常卡顿，可能是电压过低导致，请自行修改电压至适合档位" "If you experience crashes or abnormal lag during usage, it may be caused by voltage being too low. Please adjust the voltage to appropriate levels yourself") ⚠️"
 echo ""
 echo "$(translate "🔄 正在安装..." "🔄 Installing...")"
+cleanup_docs_by_language
 install_gov
 set_permissions
 echo ""

@@ -208,16 +208,6 @@ guard_running_instance() {
     fi
 }
 
-validate_gpu_freq_table() {
-    if [ -f "$GPU_FREQ_TABLE_TOML_FILE" ]; then
-        log_info "📄 gpu_freq_table.toml available at $GPU_FREQ_TABLE_TOML_FILE" "📄 已准备使用的频率表：$GPU_FREQ_TABLE_TOML_FILE"
-        return 0
-    fi
-
-    log_error "⛔ gpu_freq_table.toml not found at $GPU_FREQ_TABLE_TOML_FILE, please reinstall the module." "⛔ 在 $GPU_FREQ_TABLE_TOML_FILE 未找到 gpu_freq_table.toml，请重新安装模块。"
-    return 1
-}
-
 ensure_governor_executable() {
     if [ -x "$GPU_GOVERNOR_BIN" ]; then
         return
@@ -233,6 +223,12 @@ ensure_governor_executable() {
 }
 
 launch_governor() {
+    apply_status_description "starting" update_description
+    if [ ! -f "$GPU_FREQ_TABLE_TOML_FILE" ]; then
+        log_error "⛔ gpu_freq_table.toml not found at $GPU_FREQ_TABLE_TOML_FILE, please reinstall the module." "⛔ 在 $GPU_FREQ_TABLE_TOML_FILE 未找到GPU频率表，请重新安装模块。"
+        return
+    fi
+
     log_info "🗂️ GPU Governor will manage its own log file" "🗂️ 调速器核心将自行管理主日志文件"
     sync
 
@@ -250,14 +246,12 @@ launch_governor() {
 
     gov_pid=$!
     sync
-}
-
-wait_for_governor() {
-    sleep 2.7
+    return 0
 }
 
 finalize_startup() {
-    if pgrep -f "gpugovernor" > /dev/null; then
+    sleep 2.7
+    if _process_exists "gpugovernor"; then
         log_info "✅ GPU Governor started successfully" "✅ GPU调速器启动成功"
         apply_status_description "running" update_description
         echo "$gov_pid" > "$PID_FILE"
@@ -285,14 +279,8 @@ main() {
     init_language
     update_updatejson
     guard_running_instance
-    apply_status_description "starting" update_description
-    if ! validate_gpu_freq_table; then
-        apply_status_description "error" update_description
-        exit 1
-    fi
     ensure_governor_executable
     launch_governor
-    wait_for_governor
     finalize_startup
 }
 
