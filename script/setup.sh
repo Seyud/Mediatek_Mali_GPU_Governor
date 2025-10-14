@@ -48,8 +48,7 @@ EOF
             ;;
         en)
             targets="$(cat <<EOF
-$MODULE_PATH/docs/README.md
-$MODULE_PATH/docs/CHANGELOG.md
+$MODULE_PATH/docs/*.md
 EOF
 )"
             ;;
