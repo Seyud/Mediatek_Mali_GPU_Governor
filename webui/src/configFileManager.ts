@@ -84,8 +84,7 @@ export class ConfigFileManager {
 			content += `    { freq = ${c.freq}, volt = ${c.volt}, ddr_opp = ${c.ddr} }${i < sortedConfigs.length - 1 ? "," : ""}\n`;
 		});
 		content += "]\n";
-		const b64 = btoa(unescape(encodeURIComponent(content)));
-		const result = await exec(`echo '${b64}' | base64 -d > ${PATHS.CONFIG_PATH}`);
+		const result = await this.writeFileAtomically(PATHS.CONFIG_PATH, content);
 		if (result.errno === 0) {
 			toast(getTranslation("toast_config_saved", {}, this.currentLanguage));
 			return { success: true };
@@ -105,8 +104,7 @@ export class ConfigFileManager {
 	}
 	async saveCustomConfig(customConfig: CustomConfig) {
 		const configContent = this.generateCustomConfigContent(customConfig);
-		const b64 = btoa(unescape(encodeURIComponent(configContent)));
-		const result = await exec(`echo '${b64}' | base64 -d > ${PATHS.CUSTOM_CONFIG_PATH}`);
+		const result = await this.writeFileAtomically(PATHS.CUSTOM_CONFIG_PATH, configContent);
 		if (result.errno === 0) {
 			toast(getTranslation("toast_config_saved", {}, this.currentLanguage));
 			return { success: true };
@@ -186,6 +184,14 @@ export class ConfigFileManager {
 		c += "# 降频延迟（毫秒）\n";
 		c += `down_rate_delay = ${config.down_rate_delay ?? 5000}\n\n`;
 		return c;
+	}
+	private async writeFileAtomically(path: string, content: string) {
+		const tempPath = `${path}.tmp`;
+		const encoded = btoa(unescape(encodeURIComponent(content)));
+		const command = `echo '${encoded}' | base64 -d > '${tempPath}' && mv '${tempPath}' '${path}'`;
+		const result = await exec(command);
+		if (result.errno !== 0) await exec(`rm -f '${tempPath}'`);
+		return result;
 	}
 	setLanguage(language: Lang) {
 		this.currentLanguage = language;
