@@ -86,6 +86,7 @@ get_config_name() {
         "mt6893") echo "$(_get_mt689x_type)" ;; # 使用CPU7频率区分mt6891和mt6893
         "mt6895") echo "mtd8100" ;;
         "mt6896") echo "mtd8200" ;;
+        "mt6897") echo "mtd8300" ;;
         "mt6983") echo "mtd9000" ;;
         "mt6985") echo "mtd9200" ;;
         "mt6989") echo "mtd9300" ;; # Dimensity 9300
