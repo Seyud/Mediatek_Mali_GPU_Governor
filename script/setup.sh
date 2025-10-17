@@ -265,7 +265,7 @@ handle_existing_gpu_freq_table() {
     fi
 
     echo "$(translate "⚠️ 发现已存在的GPU频率表" "⚠️ Found existing GPU frequency table")"
-    echo "$(translate "🔄 是否保留旧的频率表？（若不保留则自动备份）" "🔄 Do you want to keep the old frequency table? (If not, it will be automatically backed up)")"
+    echo "$(translate "🔄 是否使用旧的频率表？（若不使用则自动备份）" "🔄 Do you want to use the old frequency table? (If not, it will be automatically backed up)")"
     echo "$(translate "🔊 （音量上键 = 是, 音量下键 = 否，10秒无操作 = 是）" "🔊 (Volume Up = Yes, Volume Down = No, 10s no input = Yes)")"
 
     TMPDIR="/data/local/tmp"
@@ -275,13 +275,13 @@ handle_existing_gpu_freq_table() {
         NOW_TIME=$(date +%s)
         timeout 1 getevent -lc 1 2>&1 | grep KEY_VOLUME > "$TMPDIR/events"
         if [ $((NOW_TIME - START_TIME)) -gt 9 ]; then
-            echo "$(translate "⏰ 10秒无输入，默认保留旧频率表。" "⏰ No input detected after 10 seconds, defaulting to keep old frequency table.")"
+            echo "$(translate "⏰ 10秒无输入，默认使用旧频率表。" "⏰ No input detected after 10 seconds, defaulting to use old frequency table.")"
             break
         elif $(cat $TMPDIR/events 2> /dev/null | grep -q KEY_VOLUMEUP); then
-            echo "$(translate "🔼 检测到音量上键，保留旧频率表。" "🔼 Volume Up detected, keeping old frequency table.")"
+            echo "$(translate "🔼 检测到音量上键，使用旧频率表。" "🔼 Volume Up detected, using old frequency table.")"
             break
         elif $(cat $TMPDIR/events 2> /dev/null | grep -q KEY_VOLUMEDOWN); then
-            echo "$(translate "🔽 检测到音量下键，替换旧频率表。" "🔽 Volume Down detected, replacing old frequency table.")"
+            echo "$(translate "🔽 检测到音量下键，使用新频率表。" "🔽 Volume Down detected, using new frequency table.")"
             cp -f "$GPU_FREQ_TABLE_TOML_FILE" "$GPU_FREQ_TABLE_TOML_FILE.bak"
             echo "$(translate "💾 旧频率表已备份至" "💾 Old frequency table backed up to") $GPU_FREQ_TABLE_TOML_FILE.bak"
             copy_gpu_freq_table

@@ -260,7 +260,7 @@ finalize_startup() {
         change_task_cgroup "gpugovernor" "background" "cpuset"
         log_info "📦 Process cgroup adjusted" "📦 已调整进程 cgroup 配置"
     else
-        log_error "😭 Error occurred while starting GPU Governor, check logs for details" "😭 启动GPU调速器时出现错误，请查看日志"
+        log_error "😭 Abnormal startup of the GPU governor. Please check the main log " "😭 启动GPU调速器异常，请查看主日志"
         apply_status_description "error" update_description
         exit 1
     fi
