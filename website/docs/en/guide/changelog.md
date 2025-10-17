@@ -4,6 +4,54 @@ layout: doc
 
 # 📝 CHANGELOG
 
+## ⬆️ v2.10.0 → v2.10.3 (October 17, 2025)
+
+### ⚠️ Experimental Adaptation Notice
+
+- **Dimensity 8300/9200/9300/9400 Frequency Tables** 📱
+  - Experimental chips do not have undervoltage nodes, so the undervoltage feature is not effective. The voltage values in their frequency tables are only for alignment with other frequency tables.
+
+### ✨ New Features
+
+- **Add Process Conflict Detection** 🔍
+  - Added process conflict detection mechanism to improve system stability.
+- **Add Documentation Cleanup Function** 🧹
+  - Provide documentation cleanup to automatically select required language documentation.
+- **Add Multi-language Support for Module Information** 🌍
+  - Module information now supports multi-language display, enhancing internationalization experience.
+- **(Experimental addition of Dimensity 8300 frequency table)** 📱
+  - Added experimental support for Dimensity 8300 chip, expanding device compatibility.
+- **(Experimental addition of Dimensity 9200/9300/9400 frequency tables)** 📱
+  - Added experimental support for Dimensity 9200/9300/9400 chips, further expanding device compatibility.
+
+### 🔧 Improvements
+
+- **Optimize Mode Switching Loading** ⚡
+  - Improve loading speed and smoothness during mode switching.
+- **Optimize DDR Level Write Cache** 💾
+  - Improved cache write mechanism for DDR frequency levels, increasing response speed.
+- **Optimize V1 Driver Frequency Writing** 🔧
+  - Optimized frequency writing method for V1 driver, improving compatibility.
+- **Complete Refactor of Module Scripts** 🔄
+  - Comprehensive refactor of module scripts, improving code quality and execution efficiency.
+- **Functional Programming Refactor of Module Scripts** 💻
+  - Adopted functional programming concepts to refactor module scripts, improving code maintainability.
+- **Optimize Module Status Display** 📊
+  - Improved display method of module status information, providing clearer status feedback.
+- **Refactor Documentation into Multiple Files** 📚
+  - Split documentation into multiple files, improving documentation management and reading experience.
+- **Optimize WebUI Configuration Writing Method** 🌐
+  - Improved WebUI's configuration writing mechanism, enhancing user experience and data consistency.
+
+### 🐛 Bug Fixes
+
+- **Fix Log Rotation** 📝
+  - Resolved issues in the log rotation mechanism to ensure normal operation of the log system.
+- **Fix Game List Mode Switching Configuration Hot Reload** 🎮
+  - Fixed the issue where configuration could not be hot reloaded when switching modes in the game list.
+- **Fix Issue with Frequency Not Decreasing in Idle State** 😴
+  - Resolved the issue where frequency might not be correctly reduced when device is idle, optimizing power management.
+
 ## 🚀 v2.9.0 → v2.10.0 (October 3, 2025)
 
 > ⚠️ **Important Notice**

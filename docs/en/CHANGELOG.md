@@ -1,6 +1,6 @@
 # 📝 CHANGELOG
 
-## 🚀 v2.10.0 → v2.10.3 (October 17, 2025)
+## ⬆️ v2.10.0 → v2.10.3 (October 17, 2025)
 
 ### ⚠️ Experimental Adaptation Notice
 
