@@ -211,16 +211,16 @@ determine_cfgname_by_target() {
     case "$1" in
         mt6893)
             if [ "$(get_maxfreq 7)" -lt 2700000 ]; then
-                echo "$(translate "🔍 检测到mt6893但CPU7频率较低，判断为mt6891" "🔍 Detected mt6893 but CPU7 frequency is lower, identified as mt6891")"
+                echo "$(translate "🔍 检测到mt6893但CPU7频率较低，判断为mt6891" "🔍 Detected mt6893 but CPU7 frequency is lower, identified as mt6891")" >&2
                 detected_cfgname="mtd1100"
             else
-                echo "$(translate "🔍 检测到mt6893且CPU7频率正常，判断为mt6893" "🔍 Detected mt6893 with normal CPU7 frequency, identified as mt6893")"
+                echo "$(translate "🔍 检测到mt6893且CPU7频率正常，判断为mt6893" "🔍 Detected mt6893 with normal CPU7 frequency, identified as mt6893")" >&2
                 detected_cfgname="mtd1200"
             fi
             ;;
         mt6895)
             if [[ $(getprop ro.soc.model | grep 6896) != '' ]]; then
-                echo "$(translate "🔍 检测到mt6895但ro.soc.model包含6896，判断为mt6896" "🔍 Detected mt6895 but ro.soc.model contains 6896, identified as mt6896")"
+                echo "$(translate "🔍 检测到mt6895但ro.soc.model包含6896，判断为mt6896" "🔍 Detected mt6895 but ro.soc.model contains 6896, identified as mt6896")" >&2
                 detected_cfgname="mtd8200"
             fi
             ;;
@@ -242,7 +242,7 @@ resolve_cfgname() {
 
     if [ "$cfg" = "unsupported" ] || [ ! -f "$GPU_FREQ_TABLE_TEMPLATE_FILE" ]; then
         if [ "$(is_mtk)" = "true" ]; then
-            echo "$(translate "⚠️ 目标设备 [$target_platform] 是MTK设备但没有专用配置，使用默认配置。" "⚠️ Target [$target_platform] is MTK device but no specific config found, using default configuration.")"
+            echo "$(translate "⚠️ 目标设备 [$target_platform] 是MTK设备但没有专用频率表，使用默认频率表。" "⚠️ Target [$target_platform] is MTK device but no specific frequency table found, using default frequency table.")"
             cfg="default"
             GPU_FREQ_TABLE_TEMPLATE_FILE="$MODULE_PATH/config/$cfg.toml"
         else

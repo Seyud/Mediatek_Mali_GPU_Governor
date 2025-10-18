@@ -73,7 +73,7 @@ get_config_name() {
         "mt6765") echo "mtp35" ;; # Helio P35(mt6765)/G35(mt6765g)/G37(mt6765h)
         "mt6768") echo "mtg80" ;; # Helio P65(mt6768)/G70(mt6769v)/G80(mt6769t)/G85(mt6769z)
         "mt6785") echo "mtg90t" ;;
-        "mt6833") echo "mtd720" ;;
+        "mt6833") echo "mtd6080" ;;
         "mt6833p") echo "mtd720" ;; # Dimensity 810
         "mt6833v") echo "mtd720" ;; # Dimensity 810
         "mt6853") echo "mtd720" ;;
