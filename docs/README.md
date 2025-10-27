@@ -1,3 +1,5 @@
+**简体中文** | [English](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/en/README.md)
+
 # 天玑 GPU 调速器 🚀
 
 [![Version](https://img.shields.io/github/v/release/Seyud/Mediatek_Mali_GPU_Governor?logo=github)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases/latest)
@@ -8,7 +10,7 @@
 
 ## 简介 📝
 
-**简体中文** | [English](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/blob/main/docs/en/README.md)
+<img src="https://seyud.github.io/Mediatek_Mali_GPU_Governor/logo.png" style="width: 96px;" alt="logo">
 
 天玑 GPU 调速器（Mediatek Mali GPU Governor）是一个专为联发科处理器设计的先进 GPU 调速器。采用 **Rust 语言** 开发的高性能核心引擎，通过智能监控 GPU 负载并动态调整频率，在游戏体验和功耗平衡之间达到最佳平衡。模块集成了现代化的 **WebUI 管理界面** 和 **完整的游戏模式检测**，为用户提供优秀的 GPU 调速解决方案。
 
