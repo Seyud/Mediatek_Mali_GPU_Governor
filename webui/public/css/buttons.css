@@ -1,4 +1,4 @@
-/* Miuix风格按钮样式模块 */
+/* Miuix风格按钮样式模块 - 安卓触摸优化版 */
 
 /* 基础按钮样式 */
 .btn {
@@ -7,19 +7,27 @@
 	border: none;
 	border-radius: 12px;
 	padding: 12px 24px;
-	cursor: pointer;
 	font-size: 14px;
 	font-weight: 600;
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
 	box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	outline: none;
 	position: relative;
 	overflow: hidden;
+	min-height: 48px; /* 增大触摸区域 */
+	min-width: 48px;
+	/* GPU 加速优化 */
 	transform: translateZ(0);
-	min-height: 44px;
+	backface-visibility: hidden;
+	will-change: transform;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
 .btn::before {
@@ -32,28 +40,17 @@
 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
 	border-radius: 12px;
 	opacity: 0;
-	transition: opacity 0.3s ease;
+	transition: opacity 0.2s ease;
 }
 
-.btn:hover {
-	transform: translateY(-2px) scale(1.02);
-	box-shadow: 0 6px 20px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
-	background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
-}
-
-.btn:hover::before {
-	opacity: 1;
-}
-
+/* 触摸反馈 - 替代 hover */
 .btn:active {
-	transform: translateY(0) scale(0.98);
+	transform: scale(0.96);
 	box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
 }
 
-.btn:focus {
-	box-shadow:
-		0 0 0 3px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3),
-		0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
+.btn:active::before {
+	opacity: 1;
 }
 
 /* 按钮图标样式 */
@@ -75,9 +72,9 @@
 	box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
 }
 
-.btn-primary:hover {
+.btn-primary:active {
 	background: linear-gradient(135deg, #00e676 0%, #66bb6a 100%);
-	box-shadow: 0 6px 20px rgba(0, 200, 83, 0.4);
+	box-shadow: 0 2px 8px rgba(0, 200, 83, 0.4);
 }
 
 /* 次要按钮样式 */
@@ -87,10 +84,9 @@
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.btn-secondary:hover {
+.btn-secondary:active {
 	background: linear-gradient(135deg, var(--secondary-text-color) 0%, var(--border-color) 100%);
-	color: var(--card-background);
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* 危险按钮样式 */

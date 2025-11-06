@@ -1,4 +1,4 @@
-/* 表单控件样式模块 */
+/* 表单控件样式模块 - 安卓触摸优化版 */
 
 /* 基础选择器样式 */
 .select {
@@ -6,17 +6,23 @@
 	color: var(--text-color);
 	border: 1px solid var(--border-color);
 	border-radius: 4px;
-	padding: 8px;
+	padding: 12px; /* 增大触摸区域 */
+	min-height: 48px;
 	font-size: 14px;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 }
 
 /* 自定义下拉菜单样式 */
 .custom-select {
 	position: relative;
 	width: 100%;
-	cursor: pointer;
 	z-index: 10;
-	/* 默认z-index */
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	user-select: none;
 }
 
 /* 为语言选择器设置更高的z-index */
@@ -54,17 +60,22 @@
 	color: var(--text-color);
 	border: 1px solid var(--border-color);
 	border-radius: 4px;
-	padding: 8px 12px;
+	padding: 12px 16px; /* 增大触摸区域 */
+	min-height: 48px;
 	font-size: 14px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	transition: all 0.3s;
+	transition: all 0.2s;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 }
 
-/* 鼠标悬停时的样式 */
-.selected-option:hover {
+/* 触摸反馈 - 替代 hover */
+.selected-option:active {
 	border-color: var(--accent-color);
+	background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
 }
 
 /* 打开状态时的样式 */
@@ -96,12 +107,11 @@
 	border: 1px solid var(--border-color);
 	border-radius: 4px;
 	margin-top: 4px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	z-index: 11;
-	/* 默认比选择器高1 */
 	max-height: 0;
 	overflow: hidden;
-	transition: max-height 0.3s ease;
+	transition: max-height 0.25s ease;
 	opacity: 0;
 }
 
@@ -116,20 +126,26 @@
 }
 
 .custom-select.open .options-container {
-	max-height: 200px;
-	overflow: visible;
-	/* 确保内容不会被截断 */
+	max-height: 250px; /* 增大高度适应更大的选项 */
+	overflow-y: auto;
+	overflow-x: hidden;
 	opacity: 1;
 }
 
 .option {
-	padding: 8px 12px;
+	padding: 14px 16px; /* 增大触摸区域 */
+	min-height: 48px;
 	font-size: 14px;
 	color: var(--text-color);
 	border-bottom: 1px solid var(--border-color);
 	opacity: 0;
 	transform: translateY(-10px);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	display: flex;
+	align-items: center;
 }
 
 .custom-select.open .option {
@@ -141,7 +157,8 @@
 	border-bottom: none;
 }
 
-.option:hover {
+/* 触摸反馈 - 替代 hover */
+.option:active {
 	background-color: var(--border-color);
 }
 

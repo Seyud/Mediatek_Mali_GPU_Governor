@@ -410,12 +410,31 @@
             <span data-i18n="config_games_title">游戏列表</span>
         </h2>
         <div class="card-content">
-            <ul id="gamesList" class="games-list">
-                <li class="loading-text" data-i18n="status_loading">加载中...</li>
-            </ul>
+            <div class="games-search-container">
+                <input type="text" id="gamesSearchInput" class="search-input" placeholder="">
+            </div>
+            <div class="games-grid-container">
+                <div id="gamesList" class="games-grid">
+                    <div class="loading-text" data-i18n="status_loading">加载中...</div>
+                </div>
+            </div>
             <div class="games-actions">
-                <button id="addGameBtn" class="btn btn-miuix" data-i18n="config_games_add">添加游戏</button>
-                <button id="saveGamesBtn" class="btn btn-miuix btn-primary" data-i18n="config_games_save">保存列表</button>
+                <button id="addGameBtn" class="btn btn-miuix">
+                    <span class="btn-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                        </svg>
+                    </span>
+                    <span class="btn-text" data-i18n="config_games_add">添加游戏</span>
+                </button>
+                <button id="saveGamesBtn" class="btn btn-miuix btn-primary">
+                    <span class="btn-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
+                        </svg>
+                    </span>
+                    <span class="btn-text" data-i18n="config_games_save">保存列表</span>
+                </button>
             </div>
         </div>
     </section>

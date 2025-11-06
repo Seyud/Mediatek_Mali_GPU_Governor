@@ -1,6 +1,6 @@
 @import url("./variables.css");
 
-/* Miuix风格模态对话框 */
+/* Miuix风格模态对话框 - 安卓触摸优化版 */
 .modal {
 	display: none;
 	position: fixed;
@@ -13,7 +13,9 @@
 	background: rgba(0, 0, 0, 0.6);
 	backdrop-filter: blur(8px);
 	-webkit-backdrop-filter: blur(8px);
-	animation: modalFadeIn 0.3s ease-out;
+	animation: modalFadeIn 0.25s ease-out;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
 }
 
 .modal-content {
@@ -31,8 +33,10 @@
 	max-width: 500px;
 	position: relative;
 	z-index: 2001;
-	animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	animation: modalSlideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 	transform-origin: center top;
+	/* 安卓触摸优化 */
+	touch-action: pan-y;
 }
 
 .modal-content::before {
@@ -58,21 +62,25 @@
 	right: 20px;
 	font-size: 28px;
 	font-weight: bold;
-	cursor: pointer;
-	width: 32px;
-	height: 32px;
+	width: 44px; /* 增大触摸区域 */
+	height: 44px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	border-radius: 50%;
-	transition: all 0.3s ease;
+	transition: all 0.2s ease;
 	background: transparent;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	user-select: none;
 }
 
-.close-modal:hover {
+/* 触摸反馈 - 替代 hover */
+.close-modal:active {
 	color: var(--text-color);
-	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
-	transform: scale(1.1);
+	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
+	transform: scale(0.95);
 }
 
 .modal h3 {

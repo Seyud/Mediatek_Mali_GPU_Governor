@@ -4,34 +4,46 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
 }
 
-/* 移除默认的焦点轮廓，为自定义样式让路 */
+/* 为所有交互元素启用 GPU 加速 */
+button,
+.btn,
+.card,
+.nav-item,
+.tab-btn,
+input,
+select {
+	transform: translateZ(0);
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+
+/* 移除焦点轮廓（安卓设备主要使用触摸交互）*/
 *:focus {
 	outline: none;
 }
 
-/* 为可点击元素添加统一的焦点样式 */
-button:focus,
-.card:focus {
-	box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.3);
+/* 安卓触摸反馈 - 使用 :active 替代 :focus */
+button:active,
+.card:active {
+	opacity: 0.8;
+	transform: scale(0.98);
 }
 
-/* 主题切换按钮的特殊圆形焦点样式 */
-.theme-toggle:focus {
-	box-shadow: 0 0 0 2px rgba(13, 132, 255, 0.4);
+/* 主题切换按钮的触摸反馈 */
+.theme-toggle:active {
 	background-color: var(--accent-bg);
-}
-
-/* 移除底部导航栏按钮的焦点样式 */
-.nav-item:focus {
-	box-shadow: none;
+	transform: scale(0.95);
 }
 
 body {
 	font-family:
-		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-		"Helvetica Neue", sans-serif;
+		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans CJK SC",
+		"Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
 	background-color: var(--background-color);
 	color: var(--text-color);
 	line-height: 1.6;
@@ -39,7 +51,11 @@ body {
 		background-color 0.3s,
 		color 0.3s;
 	padding-bottom: 90px;
-	/* 增加底部空间，适应更高的导航栏 */
+	/* 移动端优化 */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	touch-action: pan-y pinch-zoom;
+	overscroll-behavior: contain;
 }
 
 #loading {

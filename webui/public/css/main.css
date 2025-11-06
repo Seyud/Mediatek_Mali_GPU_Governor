@@ -7,12 +7,14 @@
 @import url("./navigation.css");
 @import url("./logs.css");
 @import url("./modals.css");
+@import url("./game-cards.css");
 
 /* SVG图标通用样式 */
 svg {
 	vertical-align: middle;
 	color: inherit;
 	fill: currentColor;
+	pointer-events: none; /* 防止触摸事件干扰 */
 }
 
 /* 确保SVG图标在不同主题下都能正确显示 */
@@ -26,9 +28,10 @@ svg {
 	fill: currentColor;
 }
 
-/* 提升SVG图标的交互体验 */
-button:hover svg {
+/* 提升SVG图标的交互体验 - 使用 active 替代 hover */
+button:active svg {
 	transition: transform 0.2s ease;
+	transform: scale(1.1);
 }
 
 /* 响应式设计 */

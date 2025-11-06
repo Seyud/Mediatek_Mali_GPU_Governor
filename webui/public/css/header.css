@@ -39,42 +39,44 @@
 }
 
 .theme-toggle {
-	cursor: pointer;
-	padding: 10px;
+	padding: 12px; /* 增大触摸区域 */
+	min-width: 48px;
+	min-height: 48px;
 	border-radius: 50%;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	position: relative;
 	overflow: hidden;
 	outline: none;
+	/* 安卓触摸优化 */
 	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 	user-select: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.theme-toggle:hover {
-	background-color: var(--accent-bg);
-	transform: scale(1.05);
-}
-
+/* 触摸反馈 - 替代 hover */
 .theme-toggle:active {
 	transform: scale(0.95);
 	background-color: var(--accent-bg);
 	outline: none;
-	-webkit-tap-highlight-color: transparent;
 }
 
 .theme-toggle svg {
-	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
-.theme-toggle:hover svg {
+.theme-toggle:active svg {
 	filter: drop-shadow(0 2px 4px rgba(13, 132, 255, 0.3));
+	transform: scale(1.05);
 }
 
-/* 太阳图标动画效果 */
+/* 太阳图标动画效果 - 简化以提高性能 */
 .light-icon svg circle {
 	animation: sunPulse 3s ease-in-out infinite;
 	transform-origin: center;
@@ -85,11 +87,12 @@
 	transform-origin: center;
 }
 
-.theme-toggle:hover .light-icon svg circle {
+/* 触摸时加快动画 */
+.theme-toggle:active .light-icon svg circle {
 	animation-duration: 1.5s;
 }
 
-.theme-toggle:hover .light-icon svg path {
+.theme-toggle:active .light-icon svg path {
 	animation-duration: 2s;
 }
 

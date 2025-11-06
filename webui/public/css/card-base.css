@@ -1,5 +1,5 @@
 /* ==========================================
-   基础卡片样式模块 (card-base.css)
+   基础卡片样式模块 (card-base.css) - 安卓触摸优化版
    包含容器、卡片、标题、内容等基础样式
    ========================================== */
 
@@ -15,16 +15,19 @@
 	box-shadow: var(--card-shadow);
 	margin-bottom: 24px;
 	overflow: visible;
-	/* 修改为visible，确保弹出内容不会被截断 */
 	outline: none;
-	/* 移除默认焦点轮廓 */
+	/* GPU 加速优化 */
+	transform: translateZ(0);
+	backface-visibility: hidden;
+	will-change: transform;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
 }
 
-/* 为一般卡片添加焦点样式 */
-.card:focus {
-	box-shadow:
-		0 0 0 2px rgba(13, 132, 255, 0.3),
-		var(--card-shadow);
+/* 触摸反馈 - 替代 focus */
+.card:active {
+	opacity: 0.95;
+	transform: scale(0.99);
 }
 
 .card-title {
@@ -49,20 +52,24 @@
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 16px;
-	padding: 12px 16px;
+	padding: 16px; /* 增大触摸区域 */
+	min-height: 56px;
 	background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.02);
 	border-radius: 12px;
 	border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
 	position: relative;
 	overflow: visible;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
 }
 
-.status-item:hover {
-	background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+/* 触摸反馈 - 替代 hover */
+.status-item:active {
+	background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
 	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	transform: scale(0.99);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .status-item:last-child {
@@ -77,7 +84,7 @@
 	gap: 8px;
 }
 
-/* Miuix风格卡片特殊样式 - 应用到所有主要卡片 */
+/* Miuix风格卡片特殊样式 - 应用到所有主要卡片 - 安卓触摸优化 */
 .card-universal {
 	background: linear-gradient(
 		135deg,
@@ -87,7 +94,11 @@
 	border: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
 	position: relative;
 	overflow: hidden;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	/* GPU 加速优化 */
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	will-change: transform;
 }
 
 .card-universal::before {
@@ -105,9 +116,10 @@
 	pointer-events: none;
 }
 
-.card-universal:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+/* 触摸反馈 - 替代 hover */
+.card-universal:active {
+	transform: scale(0.99);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
 }
 
@@ -159,17 +171,17 @@
 /* 设置页面中的选项间距更大 */
 #settingsCard .status-item {
 	margin-bottom: 24px;
-	/* 增加间距 */
-	padding: 16px 20px;
-	/* 增加内边距 */
+	padding: 18px 20px; /* 增大触摸区域 */
+	min-height: 64px;
 	background-color: transparent;
 	border: none;
 	border-radius: 8px;
 }
 
-#settingsCard .status-item:hover {
-	background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.03);
-	transform: none;
+/* 触摸反馈 - 替代 hover */
+#settingsCard .status-item:active {
+	background-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
+	transform: scale(0.99);
 	box-shadow: none;
 }
 

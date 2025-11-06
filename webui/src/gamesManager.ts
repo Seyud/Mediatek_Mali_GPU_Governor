@@ -13,13 +13,32 @@ type Lang = "zh" | "en";
 interface GameItem {
 	package: string;
 	mode: string;
+	name?: string; // 应用名称
 }
 
 interface GameConfig {
 	package?: string;
 	mode?: string;
+	name?: string;
 	trim?: () => string;
 }
+
+// WebUI-X 类型定义
+interface WindowWithWebUIX extends Window {
+	$packageManager?: {
+		getApplicationInfo(
+			packageName: string,
+			flags: number,
+			userId: number
+		): {
+			getLabel(): string;
+		} | null;
+		getApplicationIcon(packageName: string, flags: number, userId: number): unknown;
+	};
+	wrapInputStream?: (stream: unknown) => Promise<Response>;
+}
+
+declare const window: WindowWithWebUIX;
 
 export class GamesManager {
 	gamesListData: (GameItem | GameConfig)[] = [];
@@ -36,6 +55,7 @@ export class GamesManager {
 	gameModeContainer: HTMLElement | null;
 	selectedGameMode: HTMLElement | null;
 	gameModeOptions: HTMLElement | null;
+	gamesSearchInput: HTMLInputElement | null;
 	editingIndex = -1;
 
 	constructor() {
@@ -51,10 +71,19 @@ export class GamesManager {
 		this.gameModeContainer = document.getElementById("gameModeContainer");
 		this.selectedGameMode = document.getElementById("selectedGameMode");
 		this.gameModeOptions = document.getElementById("gameModeOptions");
+		this.gamesSearchInput = document.getElementById("gamesSearchInput") as HTMLInputElement | null;
 	}
 
 	init() {
 		this.setupEventListeners();
+		// 设置搜索框占位符
+		if (this.gamesSearchInput) {
+			this.gamesSearchInput.placeholder = getTranslation(
+				"config_games_search_placeholder",
+				{},
+				this.currentLanguage
+			);
+		}
 	}
 
 	setupEventListeners() {
@@ -78,6 +107,27 @@ export class GamesManager {
 				this.closeGameModal();
 		});
 		this.initGameModeSelect();
+
+		// 搜索功能
+		if (this.gamesSearchInput) {
+			this.gamesSearchInput.addEventListener("input", (e) => {
+				const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+				this.filterGamesList(searchTerm);
+			});
+		}
+	}
+
+	filterGamesList(searchTerm: string) {
+		const gameCards = document.querySelectorAll(".game-card");
+		gameCards.forEach((card) => {
+			const gameName = card.querySelector(".game-name")?.textContent?.toLowerCase() || "";
+			const packageName = card.querySelector(".game-package")?.textContent?.toLowerCase() || "";
+			if (gameName.includes(searchTerm) || packageName.includes(searchTerm)) {
+				(card as HTMLElement).style.display = "flex";
+			} else {
+				(card as HTMLElement).style.display = "none";
+			}
+		});
 	}
 
 	async loadGamesList() {
@@ -85,11 +135,90 @@ export class GamesManager {
 		if (errno === 0 && stdout.trim()) {
 			const games = this.parseTomlGames(stdout.trim());
 			this.gamesListData = games as GameItem[];
-			if (games.length > 0) this.refreshGamesList();
-			else if (this.gamesList)
-				this.gamesList.innerHTML = `<li class="loading-text">${getTranslation("config_games_not_found", {}, this.currentLanguage)}</li>`;
+
+			if (games.length > 0) {
+				// 批量获取应用名称
+				await this.loadAppNames();
+				// 显示游戏列表
+				this.refreshGamesList();
+			} else if (this.gamesList) {
+				this.gamesList.innerHTML = `<div class="loading-text">${getTranslation("config_games_not_found", {}, this.currentLanguage)}</div>`;
+			}
 		} else if (this.gamesList)
-			this.gamesList.innerHTML = `<li class="loading-text">${getTranslation("config_games_list_not_found", {}, this.currentLanguage)}</li>`;
+			this.gamesList.innerHTML = `<div class="loading-text">${getTranslation("config_games_list_not_found", {}, this.currentLanguage)}</div>`;
+	}
+
+	async loadAppNames() {
+		// 使用 WebUI-X API 获取应用名称
+		for (const game of this.gamesListData) {
+			if (game.package && !game.name) {
+				const appName = await this.fetchAppName(game.package);
+				game.name = appName;
+			}
+		}
+	}
+
+	async fetchAppName(packageName: string): Promise<string> {
+		try {
+			// 优先使用 WebUI-X API
+			if (typeof window.$packageManager !== "undefined") {
+				const info = window.$packageManager.getApplicationInfo(packageName, 0, 0);
+				if (info?.getLabel?.()) {
+					return info.getLabel();
+				}
+			}
+
+			// 回退到 shell 命令方法
+			const { errno, stdout } = await exec(
+				`pm dump ${packageName} 2>/dev/null | grep "label=" | head -1 | sed 's/.*label=//' | cut -d' ' -f1`
+			);
+
+			if (errno === 0 && stdout.trim() && stdout.trim() !== "null") {
+				return stdout.trim();
+			}
+
+			// 再尝试从 APK 获取
+			const { errno: pathErrno, stdout: pathStdout } = await exec(
+				`pm path ${packageName} 2>/dev/null | head -1 | cut -d':' -f2`
+			);
+
+			if (pathErrno === 0 && pathStdout.trim()) {
+				const apkPath = pathStdout.trim();
+				const { errno: aaptErrno, stdout: aaptStdout } = await exec(
+					`aapt dump badging "${apkPath}" 2>/dev/null | grep "application-label:" | head -1 | sed "s/.*application-label:'\\([^']*\\)'.*/\\1/"`
+				);
+
+				if (aaptErrno === 0 && aaptStdout.trim()) {
+					return aaptStdout.trim();
+				}
+			}
+
+			// 最后回退到包名处理
+			return this.getAppNameFromPackage(packageName);
+		} catch (error) {
+			console.error(`Failed to fetch app name for ${packageName}:`, error);
+			return this.getAppNameFromPackage(packageName);
+		}
+	}
+
+	getAppNameFromPackage(packageName: string): string {
+		// 从包名提取友好名称
+		const parts = packageName.split(".");
+		const lastPart = parts[parts.length - 1];
+		// 移除常见的后缀
+		const cleanName = lastPart
+			.replace(/app$/i, "")
+			.replace(/client$/i, "")
+			.replace(/mobile$/i, "");
+		// 首字母大写，处理驼峰命名
+		return (
+			cleanName
+				.replace(/([A-Z])/g, " $1")
+				.trim()
+				.split(" ")
+				.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+				.join(" ") || lastPart.charAt(0).toUpperCase() + lastPart.slice(1)
+		);
 	}
 
 	parseTomlGames(tomlString: string) {
@@ -120,38 +249,258 @@ export class GamesManager {
 		if (!this.gamesList) return;
 		this.gamesList.innerHTML = "";
 		if (this.gamesListData.length === 0) {
-			this.gamesList.innerHTML = `<li class="loading-text">${getTranslation("config_games_not_found", {}, this.currentLanguage)}</li>`;
+			this.gamesList.innerHTML = `<div class="loading-text">${getTranslation("config_games_not_found", {}, this.currentLanguage)}</div>`;
 			return;
 		}
 		this.gamesListData.forEach((game, index) => {
-			const li = document.createElement("li");
-			const gameText = document.createElement("span");
-			const modeText = this.getModeText(game.mode || "balance");
-			gameText.textContent = game.package ? `${game.package} (${modeText})` : "";
-			li.appendChild(gameText);
+			// 创建游戏卡片
+			const gameCard = document.createElement("div");
+			gameCard.className = "game-card";
+			gameCard.style.animationDelay = `${Math.min(index * 0.05, 0.5)}s`;
+
+			// 创建游戏卡片头部
+			const gameHeader = document.createElement("div");
+			gameHeader.className = "game-header";
+
+			// 应用图标容器
+			const iconContainer = document.createElement("div");
+			iconContainer.className = "game-icon-container";
+
+			const appName = game.name || this.getAppNameFromPackage(game.package || "");
+			const firstLetter = appName.charAt(0).toUpperCase();
+
+			// 生成颜色（基于包名哈希）
+			const hash = (game.package || "").split("").reduce((acc, char) => {
+				return char.charCodeAt(0) + ((acc << 5) - acc);
+			}, 0);
+			const hue = Math.abs(hash) % 360;
+
+			const iconPlaceholder = document.createElement("div");
+			iconPlaceholder.className = "game-icon-placeholder";
+			iconPlaceholder.textContent = firstLetter;
+			iconPlaceholder.style.background = `linear-gradient(135deg, hsl(${hue}, 65%, 55%), hsl(${hue + 20}, 65%, 45%))`;
+
+			iconContainer.appendChild(iconPlaceholder);
+
+			// 异步加载真实图标（不阻塞渲染）
+			if (game.package) {
+				this.loadAppIconAsync(game.package, iconContainer, iconPlaceholder);
+			}
+
+			// 游戏名称容器
+			const gameNameContainer = document.createElement("div");
+			gameNameContainer.className = "game-name-container";
+
+			const gameName = document.createElement("h4");
+			gameName.className = "game-name";
+			gameName.textContent = appName;
+			gameName.title = appName;
+
+			const gamePackage = document.createElement("span");
+			gamePackage.className = "game-package";
+			gamePackage.textContent = game.package || "";
+			gamePackage.title = game.package || "";
+
+			gameNameContainer.appendChild(gameName);
+			gameNameContainer.appendChild(gamePackage);
+
+			// 操作按钮容器
 			const buttonContainer = document.createElement("div");
-			buttonContainer.className = "game-button-container";
+			buttonContainer.className = "game-actions";
+
 			const editBtn = document.createElement("button");
 			editBtn.className = "game-edit-btn";
-			editBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3,17.25V21h3.75L17.81,9.94L14.06,6.19L3,17.25M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04Z"/></svg>`;
+			editBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
 			editBtn.title = "编辑";
 			editBtn.onclick = (e) => {
 				e.stopPropagation();
 				this.editGameItem(index);
 			};
-			buttonContainer.appendChild(editBtn);
+
 			const deleteBtn = document.createElement("button");
 			deleteBtn.className = "game-delete-btn";
-			deleteBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
+			deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 			deleteBtn.title = "删除";
 			deleteBtn.onclick = (e) => {
 				e.stopPropagation();
 				this.deleteGameItem(index);
 			};
+
+			buttonContainer.appendChild(editBtn);
 			buttonContainer.appendChild(deleteBtn);
-			li.appendChild(buttonContainer);
-			this.gamesList?.appendChild(li);
+
+			gameHeader.appendChild(iconContainer);
+			gameHeader.appendChild(gameNameContainer);
+			gameHeader.appendChild(buttonContainer);
+
+			// 创建游戏详情
+			const gameDetails = document.createElement("div");
+			gameDetails.className = "game-details";
+
+			const modeText = this.getModeText(game.mode || "balance");
+			const modeBadge = document.createElement("span");
+			modeBadge.className = `game-mode-badge mode-${game.mode || "balance"}`;
+			modeBadge.textContent = modeText;
+
+			gameDetails.appendChild(modeBadge);
+
+			// 组装卡片
+			gameCard.appendChild(gameHeader);
+			gameCard.appendChild(gameDetails);
+
+			this.gamesList?.appendChild(gameCard);
 		});
+	}
+
+	async loadAppIconAsync(
+		packageName: string,
+		iconContainer: HTMLElement,
+		placeholder: HTMLElement
+	) {
+		try {
+			// 优先使用 WebUI-X API
+			if (typeof window.$packageManager !== "undefined") {
+				try {
+					const stream = window.$packageManager.getApplicationIcon(packageName, 0, 0);
+					if (stream) {
+						// 动态加载 wrapInputStream 工具
+						await this.loadWrapInputStream();
+						const wrapInputStream = window.wrapInputStream;
+
+						if (wrapInputStream) {
+							const response = await wrapInputStream(stream);
+							const buffer = await response.arrayBuffer();
+							const base64 = this.arrayBufferToBase64(buffer);
+
+							const img = document.createElement("img");
+							img.className = "game-icon-loaded";
+							img.src = `data:image/png;base64,${base64}`;
+							img.alt = packageName;
+
+							img.onload = () => {
+								placeholder.style.opacity = "0";
+								placeholder.style.transition = "opacity 0.3s ease";
+
+								setTimeout(() => {
+									iconContainer.innerHTML = "";
+									img.style.opacity = "0";
+									iconContainer.appendChild(img);
+
+									requestAnimationFrame(() => {
+										img.style.transition = "opacity 0.3s ease";
+										img.style.opacity = "1";
+									});
+								}, 300);
+							};
+
+							img.onerror = () => {
+								console.warn(`Failed to load icon image for ${packageName}`);
+							};
+
+							return; // 成功使用 API，直接返回
+						}
+					}
+				} catch (apiError) {
+					console.log(`WebUI-X API failed for ${packageName}:`, apiError);
+				}
+			}
+
+			// 回退到 shell 命令方法
+			const { errno: pathErrno, stdout: pathStdout } = await exec(
+				`pm path ${packageName} 2>/dev/null | head -1 | cut -d':' -f2`
+			);
+
+			if (pathErrno !== 0 || !pathStdout.trim()) {
+				console.log(`Failed to get APK path for ${packageName}`);
+				return;
+			}
+
+			const apkPath = pathStdout.trim();
+
+			const { errno: iconErrno, stdout: iconStdout } = await exec(
+				`aapt dump badging "${apkPath}" 2>/dev/null | grep "application-icon-" | tail -1 | sed "s/.*'\\([^']*\\)'.*/\\1/"`
+			);
+
+			if (iconErrno !== 0 || !iconStdout.trim()) {
+				console.log(`Failed to get icon path for ${packageName}`);
+				return;
+			}
+
+			const iconPath = iconStdout.trim();
+			const tempFile = `/data/local/tmp/icon_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+
+			const { errno: unzipErrno } = await exec(
+				`unzip -p "${apkPath}" "${iconPath}" > "${tempFile}" 2>/dev/null`
+			);
+
+			if (unzipErrno !== 0) {
+				console.log(`Failed to extract icon for ${packageName}`);
+				await exec(`rm -f "${tempFile}" 2>/dev/null`);
+				return;
+			}
+
+			const { errno: base64Errno, stdout: base64Data } = await exec(
+				`base64 "${tempFile}" 2>/dev/null`
+			);
+
+			await exec(`rm -f "${tempFile}" 2>/dev/null`);
+
+			if (base64Errno === 0 && base64Data.trim()) {
+				const img = document.createElement("img");
+				img.className = "game-icon-loaded";
+				img.src = `data:image/png;base64,${base64Data.trim()}`;
+				img.alt = packageName;
+
+				img.onload = () => {
+					placeholder.style.opacity = "0";
+					placeholder.style.transition = "opacity 0.3s ease";
+
+					setTimeout(() => {
+						iconContainer.innerHTML = "";
+						img.style.opacity = "0";
+						iconContainer.appendChild(img);
+
+						requestAnimationFrame(() => {
+							img.style.transition = "opacity 0.3s ease";
+							img.style.opacity = "1";
+						});
+					}, 300);
+				};
+
+				img.onerror = () => {
+					console.warn(`Failed to load icon image for ${packageName}`);
+				};
+			} else {
+				console.log(`Failed to convert icon to base64 for ${packageName}`);
+			}
+		} catch (error) {
+			console.error(`Error loading icon for ${packageName}:`, error);
+		}
+	}
+
+	// 动态加载 wrapInputStream 工具
+	async loadWrapInputStream() {
+		if (typeof window.wrapInputStream === "undefined") {
+			try {
+				// 使用 eval 避免编译时检查
+				const moduleUrl = "https://mui.kernelsu.org/internal/assets/ext/wrapInputStream.mjs";
+				const importFn = new Function("url", "return import(url)");
+				const module = await importFn(moduleUrl);
+				window.wrapInputStream = module.wrapInputStream;
+			} catch (error) {
+				console.error("Failed to load wrapInputStream:", error);
+			}
+		}
+	}
+
+	// ArrayBuffer 转 Base64（和 COPG 相同的实现）
+	arrayBufferToBase64(buffer: ArrayBuffer): string {
+		const uint8Array = new Uint8Array(buffer);
+		let binary = "";
+		for (const byte of uint8Array) {
+			binary += String.fromCharCode(byte);
+		}
+		return btoa(binary);
 	}
 
 	getModeText(mode: string) {
@@ -279,6 +628,16 @@ export class GamesManager {
 	}
 	setLanguage(language: Lang) {
 		this.currentLanguage = language;
+
+		// 更新搜索框占位符
+		if (this.gamesSearchInput) {
+			this.gamesSearchInput.placeholder = getTranslation(
+				"config_games_search_placeholder",
+				{},
+				this.currentLanguage
+			);
+		}
+
 		if (this.gameModeSelect) {
 			const options = this.gameModeSelect.options;
 			for (let i = 0; i < options.length; i++) {

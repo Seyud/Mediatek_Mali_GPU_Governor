@@ -17,13 +17,14 @@
 	max-width: 300px;
 }
 
-/* Miuix风格日志标签按钮 */
+/* Miuix风格日志标签按钮 - 安卓触摸优化 */
 .log-tab-btn {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	padding: 16px 12px;
+	padding: 18px 14px; /* 增大触摸区域 */
+	min-height: 84px;
 	background: linear-gradient(
 		135deg,
 		var(--card-background) 0%,
@@ -31,13 +32,19 @@
 	);
 	border: 2px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
 	border-radius: 16px;
-	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	color: var(--text-color);
-	min-height: 80px;
 	position: relative;
 	overflow: hidden;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	/* GPU 加速优化 */
+	transform: translateZ(0);
+	backface-visibility: hidden;
+	will-change: transform;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	user-select: none;
 }
 
 .log-tab-btn::before {
@@ -50,21 +57,22 @@
 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
 	border-radius: 16px;
 	opacity: 0;
-	transition: opacity 0.3s ease;
+	transition: opacity 0.2s ease;
 }
 
-.log-tab-btn:hover {
+/* 触摸反馈 - 替代 hover */
+.log-tab-btn:active {
 	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
 	background: linear-gradient(
 		135deg,
 		var(--card-background) 0%,
 		rgba(var(--accent-color-rgb, 13, 132, 255), 0.08) 100%
 	);
-	transform: translateY(-3px) scale(1.02);
-	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+	transform: scale(0.98);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
-.log-tab-btn:hover::before {
+.log-tab-btn:active::before {
 	opacity: 1;
 }
 
@@ -81,24 +89,24 @@
 }
 
 .log-tab-btn .tab-icon {
-	font-size: 20px;
-	margin-bottom: 4px;
-	transition: transform 0.3s ease;
+	font-size: 22px; /* 增大图标 */
+	margin-bottom: 6px;
+	transition: transform 0.2s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
 .refresh-icon svg {
-	width: 16px;
-	height: 16px;
+	width: 18px;
+	height: 18px;
 	transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .log-tab-btn .tab-icon svg {
-	width: 20px;
-	height: 20px;
-	transition: transform 0.3s ease;
+	width: 22px;
+	height: 22px;
+	transition: transform 0.2s ease;
 }
 
 .log-tab-btn .tab-text {
@@ -108,11 +116,12 @@
 	line-height: 1.2;
 }
 
-.log-tab-btn:hover .tab-icon {
+/* 触摸反馈 - 替代 hover */
+.log-tab-btn:active .tab-icon {
 	transform: scale(1.1);
 }
 
-.log-tab-btn:hover .tab-icon svg {
+.log-tab-btn:active .tab-icon svg {
 	transform: scale(1.1);
 }
 
@@ -147,12 +156,13 @@
 	}
 }
 
-/* Miuix风格刷新按钮 */
+/* Miuix风格刷新按钮 - 安卓触摸优化 */
 .refresh-btn {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	padding: 12px 20px;
+	padding: 14px 22px; /* 增大触摸区域 */
+	min-height: 48px;
 	white-space: nowrap;
 	flex-shrink: 0;
 	background: linear-gradient(
@@ -164,11 +174,14 @@
 	border-radius: 12px;
 	color: var(--accent-color);
 	font-weight: 600;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.1);
 	position: relative;
 	overflow: hidden;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	user-select: none;
 }
 
 .refresh-btn::before {
@@ -181,42 +194,39 @@
 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
 	border-radius: 12px;
 	opacity: 0;
-	transition: opacity 0.3s ease;
+	transition: opacity 0.2s ease;
 }
 
-.refresh-btn:hover {
+/* 触摸反馈 - 替代 hover */
+.refresh-btn:active {
 	background: linear-gradient(
 		135deg,
-		rgba(var(--accent-color-rgb, 13, 132, 255), 0.15) 0%,
-		rgba(var(--accent-color-rgb, 13, 132, 255), 0.08) 100%
+		rgba(var(--accent-color-rgb, 13, 132, 255), 0.2) 0%,
+		rgba(var(--accent-color-rgb, 13, 132, 255), 0.1) 100%
 	);
 	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.4);
-	transform: translateY(-2px) scale(1.02);
-	box-shadow: 0 6px 16px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
-}
-
-.refresh-btn:hover::before {
-	opacity: 1;
-}
-
-.refresh-btn:active {
-	transform: translateY(0) scale(0.98);
+	transform: scale(0.98);
 	box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
 }
 
+.refresh-btn:active::before {
+	opacity: 1;
+}
+
 .refresh-icon {
-	font-size: 16px;
+	font-size: 18px;
 	transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-.refresh-btn:hover .refresh-icon {
+/* 触摸时旋转动画 */
+.refresh-btn:active .refresh-icon {
 	transform: rotate(360deg) scale(1.1);
 }
 
-.refresh-btn:hover .refresh-icon svg {
+.refresh-btn:active .refresh-icon svg {
 	transform: rotate(360deg) scale(1.1);
 }
 
@@ -226,8 +236,8 @@
 	border-color: rgba(13, 132, 255, 0.3);
 }
 
-[data-theme="dark"] .refresh-btn:hover {
-	background: linear-gradient(135deg, rgba(13, 132, 255, 0.2) 0%, rgba(13, 132, 255, 0.12) 100%);
+[data-theme="dark"] .refresh-btn:active {
+	background: linear-gradient(135deg, rgba(13, 132, 255, 0.25) 0%, rgba(13, 132, 255, 0.15) 100%);
 	border-color: rgba(13, 132, 255, 0.5);
 }
 
@@ -242,7 +252,7 @@
 	min-width: 120px;
 }
 
-/* Miuix风格日志内容 */
+/* Miuix风格日志内容 - 安卓滚动优化 */
 .log-content {
 	background: linear-gradient(
 		135deg,
@@ -258,13 +268,16 @@
 	white-space: pre-wrap;
 	max-height: 500px;
 	overflow-y: auto;
-	transition: all 0.3s ease-in-out;
-	animation: slideIn 0.3s ease-out;
+	transition: all 0.2s ease-in-out;
+	animation: slideIn 0.25s ease-out;
 	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 	color: var(--text-color);
+	/* 安卓滚动优化 */
+	overscroll-behavior: contain;
 }
 
-.log-content:hover {
+/* 触摸反馈 - 替代 hover */
+.log-content:active {
 	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
 	box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -276,7 +289,7 @@
 	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-[data-theme="dark"] .log-content:hover {
+[data-theme="dark"] .log-content:active {
 	border-color: rgba(13, 132, 255, 0.25);
 	box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
 }

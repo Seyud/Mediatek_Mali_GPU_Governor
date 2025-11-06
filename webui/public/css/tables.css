@@ -1,6 +1,6 @@
 @import url("./variables.css");
 
-/* Miuix风格表格样式 */
+/* Miuix风格表格样式 - 安卓触摸优化版 */
 .table-container {
 	overflow-x: auto;
 	border-radius: 12px;
@@ -24,7 +24,7 @@ td {
 	padding: 16px;
 	text-align: left;
 	border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
-	transition: background-color 0.3s ease;
+	transition: background-color 0.2s ease;
 }
 
 th {
@@ -39,12 +39,13 @@ th {
 }
 
 tbody tr {
-	transition: all 0.3s ease;
+	transition: all 0.2s ease;
 }
 
-tbody tr:hover {
-	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
-	transform: translateY(-1px);
+/* 移除 hover，使用 active 触摸反馈 */
+tbody tr:active {
+	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+	transform: scale(0.99);
 }
 
 tbody tr:last-child td {
@@ -66,8 +67,8 @@ tbody tr:last-child td {
 	background: linear-gradient(135deg, transparent 0%, rgba(13, 132, 255, 0.08) 100%);
 }
 
-[data-theme="dark"] tbody tr:hover {
-	background: rgba(13, 132, 255, 0.08);
+[data-theme="dark"] tbody tr:active {
+	background: rgba(13, 132, 255, 0.12);
 }
 
 /* 配置编辑相关样式 */
@@ -78,20 +79,25 @@ tbody tr:last-child td {
 	margin-top: 16px;
 }
 
-/* Miuix风格编辑和删除按钮 */
+/* Miuix风格编辑和删除按钮 - 安卓触摸优化 */
 .edit-btn,
 .delete-btn {
 	background: transparent;
 	border: 2px solid transparent;
-	cursor: pointer;
-	padding: 8px;
+	padding: 10px; /* 增大触摸区域 */
+	min-width: 44px;
+	min-height: 44px;
 	border-radius: 10px;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	position: relative;
 	overflow: hidden;
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	user-select: none;
 }
 
 .edit-btn::before,
@@ -104,14 +110,14 @@ tbody tr:last-child td {
 	bottom: 0;
 	border-radius: 10px;
 	opacity: 0;
-	transition: opacity 0.3s ease;
+	transition: opacity 0.2s ease;
 }
 
 .edit-btn svg,
 .delete-btn svg {
-	width: 18px;
-	height: 18px;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	width: 20px; /* 增大图标尺寸 */
+	height: 20px;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	position: relative;
 	z-index: 1;
 }
@@ -128,13 +134,14 @@ tbody tr:last-child td {
 	);
 }
 
-.edit-btn:hover {
+/* 触摸反馈 - 替代 hover */
+.edit-btn:active {
 	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.3);
-	transform: translateY(-2px) scale(1.05);
-	box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
+	transform: scale(0.95);
+	box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 13, 132, 255), 0.2);
 }
 
-.edit-btn:hover::before {
+.edit-btn:active::before {
 	opacity: 1;
 }
 
@@ -146,25 +153,19 @@ tbody tr:last-child td {
 	background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%);
 }
 
-delete-btn:hover {
+.delete-btn:active {
 	border-color: rgba(231, 76, 60, 0.3);
-	transform: translateY(-2px) scale(1.05);
-	box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+	transform: scale(0.95);
+	box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
 }
 
-.delete-btn:hover::before {
+.delete-btn:active::before {
 	opacity: 1;
 }
 
-.edit-btn:hover svg,
-.delete-btn:hover svg {
-	transform: scale(1.15) rotate(5deg);
-}
-
-.edit-btn:active,
-.delete-btn:active {
-	transform: translateY(0) scale(0.95);
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.edit-btn:active svg,
+.delete-btn:active svg {
+	transform: scale(1.1);
 }
 
 /* 深色模式编辑删除按钮 */
@@ -176,7 +177,7 @@ delete-btn:hover {
 	background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(244, 67, 54, 0.08) 100%);
 }
 
-/* 游戏列表样式 */
+/* 游戏列表样式 - 安卓触摸优化 */
 .games-list {
 	list-style: none;
 	max-height: 300px;
@@ -193,15 +194,18 @@ delete-btn:hover {
 }
 
 .games-list li {
-	padding: 12px 16px;
+	padding: 16px; /* 增大触摸区域 */
+	min-height: 52px;
 	border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
 	border-radius: 8px;
 	margin-bottom: 4px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	transition: all 0.3s ease;
+	transition: all 0.2s ease;
 	background: transparent;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 }
 
 .game-button-container {
@@ -209,9 +213,10 @@ delete-btn:hover {
 	gap: 8px;
 }
 
-.games-list li:hover {
-	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.05);
-	transform: translateX(4px);
+/* 触摸反馈 - 替代 hover */
+.games-list li:active {
+	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
+	transform: scale(0.98);
 	border-color: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
 }
 
@@ -227,39 +232,45 @@ delete-btn:hover {
 	margin-top: 16px;
 }
 
-/* 游戏编辑和删除按钮 */
+/* 游戏编辑和删除按钮 - 安卓触摸优化 */
 .game-edit-btn,
 .game-delete-btn {
 	background: linear-gradient(135deg, rgba(13, 132, 255, 0.1) 0%, rgba(13, 132, 255, 0.1) 100%);
 	border: 1px solid rgba(13, 132, 255, 0.2);
 	border-radius: 8px;
-	cursor: pointer;
 	color: var(--primary-color);
-	padding: 8px;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	padding: 10px;
+	min-width: 44px;
+	min-height: 44px;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	box-shadow: 0 2px 4px rgba(13, 132, 255, 0.1);
+	/* 安卓触摸优化 */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	user-select: none;
 }
 
 .game-edit-btn svg,
 .game-delete-btn svg {
-	width: 16px;
-	height: 16px;
-	transition: transform 0.3s ease;
+	width: 18px;
+	height: 18px;
+	transition: transform 0.2s ease;
 }
 
-.game-edit-btn:hover,
-.game-delete-btn:hover {
-	background: linear-gradient(135deg, rgba(13, 132, 255, 0.15) 0%, rgba(13, 132, 255, 0.15) 100%);
+/* 触摸反馈 - 替代 hover */
+.game-edit-btn:active,
+.game-delete-btn:active {
+	background: linear-gradient(135deg, rgba(13, 132, 255, 0.2) 0%, rgba(13, 132, 255, 0.2) 100%);
 	border-color: rgba(13, 132, 255, 0.4);
-	transform: translateY(-1px) scale(1.05);
-	box-shadow: 0 4px 8px rgba(13, 132, 255, 0.2);
+	transform: scale(0.95);
+	box-shadow: 0 2px 6px rgba(13, 132, 255, 0.2);
 }
 
-game-edit-btn:hover svg,
-.game-delete-btn:hover svg {
+.game-edit-btn:active svg,
+.game-delete-btn:active svg {
 	transform: scale(1.1);
 }
 
@@ -269,10 +280,10 @@ game-edit-btn:hover svg,
 	color: var(--error-color);
 }
 
-.game-delete-btn:hover {
-	background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(244, 67, 54, 0.15) 100%);
+.game-delete-btn:active {
+	background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(244, 67, 54, 0.2) 100%);
 	border-color: rgba(231, 76, 60, 0.4);
-	box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+	box-shadow: 0 2px 6px rgba(231, 76, 60, 0.2);
 }
 
 /* 深色模式游戏列表样式 */
