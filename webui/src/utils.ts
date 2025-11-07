@@ -20,12 +20,10 @@ export { spawn };
 
 export function logError(context: string, error: unknown, extra: Record<string, unknown> = {}) {
 	const errorObj = error as Error;
-	const payload = {
-		level: "error",
+	const _payload = {
 		context,
 		message: errorObj?.message || String(error),
 		stack: errorObj?.stack,
 		...extra,
 	};
-	console.error(`[${context}]`, payload);
 }

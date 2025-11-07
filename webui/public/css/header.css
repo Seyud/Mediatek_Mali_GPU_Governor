@@ -205,6 +205,24 @@
 	display: inline-block;
 }
 
+/* 主题切换按钮的高级交互效果 */
+.theme-toggle {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.theme-toggle:hover {
+	transform: scale(1.05);
+}
+
+.theme-toggle:active {
+	transform: scale(0.95);
+}
+
 /* 深色模式下的主题切换按钮特殊效果 */
 [data-theme="dark"] .theme-toggle {
 	background: radial-gradient(circle at center, rgba(13, 132, 255, 0.1) 0%, transparent 70%);
@@ -213,6 +231,7 @@
 [data-theme="dark"] .theme-toggle:hover {
 	background: radial-gradient(circle at center, rgba(13, 132, 255, 0.2) 0%, transparent 70%);
 	box-shadow: 0 0 12px rgba(13, 132, 255, 0.3);
+	transform: scale(1.05);
 }
 
 [data-theme="dark"] .theme-toggle svg {
@@ -272,24 +291,6 @@
 .nav-icon svg,
 .tab-icon svg {
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 主题切换按钮的高级交互效果 */
-.theme-toggle {
-	position: relative;
-	width: 40px;
-	height: 40px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.theme-toggle:hover {
-	transform: scale(1.05);
-}
-
-.theme-toggle:active {
-	transform: scale(0.95);
 }
 
 /* 为主题切换添加视觉动画效果 */

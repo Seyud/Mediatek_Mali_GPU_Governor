@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="/css/main.css" />
   <script>
     // 初始主题设置（与生产一致）
-    (function() {
+    (() => {
       try {
         const savedTheme = localStorage.getItem('theme');
-        const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const prefersDarkMode = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
         const followSystemThemeSetting = localStorage.getItem('followSystemTheme');
         const followSystemTheme = followSystemThemeSetting === null ? true : followSystemThemeSetting === 'true';
         let theme;

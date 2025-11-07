@@ -18,7 +18,7 @@ export class AppInfoService {
 	static async fetchAppName(packageName: string): Promise<string> {
 		// 检查缓存
 		if (AppInfoService.appNameCache.has(packageName)) {
-			return AppInfoService.appNameCache.get(packageName)!;
+			return AppInfoService.appNameCache.get(packageName) ?? "";
 		}
 
 		try {
@@ -65,8 +65,7 @@ export class AppInfoService {
 			const fallbackName = AppInfoService.getAppNameFromPackage(packageName);
 			AppInfoService.appNameCache.set(packageName, fallbackName);
 			return fallbackName;
-		} catch (error) {
-			console.error(`Failed to fetch app name for ${packageName}:`, error);
+		} catch (_error) {
 			const fallbackName = AppInfoService.getAppNameFromPackage(packageName);
 			AppInfoService.appNameCache.set(packageName, fallbackName);
 			return fallbackName;
@@ -123,23 +122,19 @@ export class AppInfoService {
 							return; // 成功使用 API，直接返回
 						}
 					}
-				} catch (apiError) {
-					console.log(`WebUI-X API failed for ${packageName}:`, apiError);
+				} catch (_apiError) {
+					// API 失败，继续回退到 shell 命令方法
 				}
-			}
-
-			// 回退到 shell 命令方法
+			} // 回退到 shell 命令方法
 			const base64Data = await AppInfoService.extractIconFromApk(packageName);
 			if (base64Data) {
 				const img = AppInfoService.createIconImage(packageName, base64Data);
 				AppInfoService.applyIconTransition(img, iconContainer, placeholder);
 			}
-		} catch (error) {
-			console.error(`Error loading icon for ${packageName}:`, error);
+		} catch (_error) {
+			// 图标加载失败，使用默认占位符
 		}
-	}
-
-	/**
+	} /**
 	 * 从 APK 中提取图标并转换为 base64
 	 */
 	private static async extractIconFromApk(packageName: string): Promise<string | null> {
@@ -148,7 +143,6 @@ export class AppInfoService {
 		);
 
 		if (pathErrno !== 0 || !pathStdout.trim()) {
-			console.log(`Failed to get APK path for ${packageName}`);
 			return null;
 		}
 
@@ -159,7 +153,6 @@ export class AppInfoService {
 		);
 
 		if (iconErrno !== 0 || !iconStdout.trim()) {
-			console.log(`Failed to get icon path for ${packageName}`);
 			return null;
 		}
 
@@ -171,7 +164,6 @@ export class AppInfoService {
 		);
 
 		if (unzipErrno !== 0) {
-			console.log(`Failed to extract icon for ${packageName}`);
 			await exec(`rm -f "${tempFile}" 2>/dev/null`);
 			return null;
 		}
@@ -186,7 +178,6 @@ export class AppInfoService {
 			return base64Data.trim();
 		}
 
-		console.log(`Failed to convert icon to base64 for ${packageName}`);
 		return null;
 	}
 
@@ -226,7 +217,7 @@ export class AppInfoService {
 		};
 
 		img.onerror = () => {
-			console.warn(`Failed to load icon image for ${img.alt}`);
+			// 图标加载失败
 		};
 	}
 
@@ -241,8 +232,8 @@ export class AppInfoService {
 				const importFn = new Function("url", "return import(url)");
 				const module = await importFn(moduleUrl);
 				window.wrapInputStream = module.wrapInputStream;
-			} catch (error) {
-				console.error("Failed to load wrapInputStream:", error);
+			} catch (_error) {
+				// 加载失败
 			}
 		}
 	}

@@ -115,7 +115,6 @@ export class ModalManager {
 
 	openModal(config: GpuConfig | null = null, index = -1) {
 		if (!this.editConfigModal) {
-			console.error("模态框元素不存在");
 			return;
 		}
 		this.editingIndex = index;

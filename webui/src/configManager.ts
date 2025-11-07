@@ -1,9 +1,7 @@
 import { ConfigFileManager, type GpuConfig } from "./configFileManager";
 import { GpuConfigManager } from "./gpuConfigManager";
-import { getTranslation } from "./i18n";
 import { ModalManager } from "./modalManager";
 import { ModeConfigManager } from "./modeConfigManager";
-import { toast } from "./utils";
 import { VoltageController } from "./voltageController";
 
 type Lang = "zh" | "en";
@@ -83,7 +81,6 @@ export class ConfigManager {
 		const result = (await this.configFileManager.loadGpuConfig()) as LoadResult<GpuConfig[]>;
 		if (result.success && result.data) this.gpuConfigManager.loadConfigs(result.data);
 		else {
-			console.error("加载GPU配置失败:", result.error);
 			this.gpuConfigManager.loadConfigs([]);
 		}
 	}

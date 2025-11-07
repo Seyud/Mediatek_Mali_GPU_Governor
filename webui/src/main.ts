@@ -7,8 +7,6 @@ async function loadComponent(url: string, containerId: string) {
 		const html = await response.text();
 		const el = document.getElementById(containerId);
 		if (el) el.innerHTML = html;
-	} else {
-		console.error(`加载组件失败 ${url}: ${response.status}`);
 	}
 }
 
@@ -22,8 +20,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 		await loadComponent("components/settings-page.html", "settings-page-container");
 		await loadComponent("components/modals.html", "modals-container");
 		await loadComponent("components/navigation.html", "navigation-container");
-	} else {
-		console.debug("[main] 生产模式：跳过组件动态加载（已内联）");
 	}
 	const app = new MainApp();
 	await app.init();

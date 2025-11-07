@@ -55,7 +55,8 @@
 	pointer-events: none;
 }
 
-.close-modal {
+.close-modal,
+.close-game-modal {
 	color: var(--secondary-text-color);
 	position: absolute;
 	top: 16px;
@@ -74,10 +75,21 @@
 	-webkit-tap-highlight-color: transparent;
 	touch-action: manipulation;
 	user-select: none;
+	cursor: pointer;
+}
+
+/* 游戏编辑对话框的关闭按钮 - 更大更明显 */
+.close-game-modal {
+	font-size: 36px;
+	width: 50px;
+	height: 50px;
+	top: 12px;
+	right: 16px;
 }
 
 /* 触摸反馈 - 替代 hover */
-.close-modal:active {
+.close-modal:active,
+.close-game-modal:active {
 	color: var(--text-color);
 	background: rgba(var(--accent-color-rgb, 13, 132, 255), 0.15);
 	transform: scale(0.95);

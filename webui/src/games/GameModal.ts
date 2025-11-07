@@ -3,7 +3,7 @@
  * 负责游戏添加/编辑模态框的交互逻辑
  */
 
-import { getTranslation, translations } from "../i18n";
+import { translations } from "../i18n";
 import type { Lang, TranslationsType } from "../types/games";
 
 export class GameModal {

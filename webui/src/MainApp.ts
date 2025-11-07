@@ -91,9 +91,7 @@ export class MainApp {
 		this.setupNavigationEvents();
 
 		// 异步加载状态页数据（不阻塞界面显示）
-		this.loadData().catch((error) => {
-			console.error("Failed to load initial data:", error);
-		});
+		this.loadData().catch(() => {});
 
 		// 启动状态刷新循环（使用缓存过期机制）
 		this.startStatusRefreshLoop();
@@ -139,8 +137,6 @@ export class MainApp {
 				if (needRefresh.version) tasks.push(this.loadModuleVersion());
 
 				await Promise.allSettled(tasks); // 即使部分失败也继续
-			} catch (error) {
-				console.error("Failed to refresh status:", error);
 			} finally {
 				this.isRefreshing = false;
 			}
@@ -280,9 +276,7 @@ export class MainApp {
 			this.checkModuleStatus(),
 			this.loadModuleVersion(),
 			this.loadCurrentMode(),
-		]).catch((error) => {
-			console.error("Failed to load status page data:", error);
-		});
+		]).catch(() => {});
 
 		// 其他页面改为懒加载
 		this.switchPage("page-status");
@@ -317,9 +311,7 @@ export class MainApp {
 						this.checkModuleStatus(),
 						this.loadModuleVersion(),
 						this.loadCurrentMode(),
-					]).catch((error) => {
-						console.error("Failed to load status page data:", error);
-					});
+					]).catch(() => {});
 				}
 				break;
 
@@ -330,9 +322,7 @@ export class MainApp {
 					await Promise.all([
 						this.configManager.loadAllConfigData(),
 						this.gamesManager.loadGamesList(),
-					]).catch((error) => {
-						console.error("Failed to load config page data:", error);
-					});
+					]).catch(() => {});
 				}
 				break;
 
@@ -340,9 +330,7 @@ export class MainApp {
 				if (!this.logPageLoaded) {
 					this.logPageLoaded = true;
 					// 日志页数据加载
-					this.logManager.loadLog().catch((error) => {
-						console.error("Failed to load log page data:", error);
-					});
+					this.logManager.loadLog().catch(() => {});
 				}
 				break;
 
@@ -350,9 +338,7 @@ export class MainApp {
 				if (!this.settingsPageLoaded) {
 					this.settingsPageLoaded = true;
 					// 设置页数据加载
-					this.settingsManager.loadLogLevel().catch((error) => {
-						console.error("Failed to load settings page data:", error);
-					});
+					this.settingsManager.loadLogLevel().catch(() => {});
 				}
 				break;
 		}
@@ -392,12 +378,10 @@ export class MainApp {
 					}, 600);
 				}, 100);
 			}
-		} catch (error) {
-			console.error("Failed to check module status:", error);
+		} catch (_error) {
 			// 保留旧缓存值，不更新时间戳（下次会重试）
 		}
 	}
-
 	async loadModuleVersion() {
 		try {
 			const { errno, stdout } = await exec(
@@ -433,12 +417,10 @@ export class MainApp {
 				this.statusCache.version.value = "unknown";
 				this.statusCache.version.timestamp = Date.now();
 			}
-		} catch (error) {
-			console.error("Failed to load module version:", error);
+		} catch (_error) {
 			// 保留旧缓存值，不更新时间戳（下次会重试）
 		}
 	}
-
 	async loadCurrentMode() {
 		try {
 			const { errno, stdout } = await exec(
@@ -466,8 +448,7 @@ export class MainApp {
 				this.currentMode.className = `mode-badge ${mode}`;
 				this.currentMode.removeAttribute("data-i18n");
 			}
-		} catch (error) {
-			console.error("Failed to load current mode:", error);
+		} catch (_error) {
 			// 保留旧缓存值，不更新时间戳（下次会重试）
 			// 如果有缓存值，继续使用缓存显示
 			if (this.statusCache.mode.value !== "unknown" && this.currentMode) {
