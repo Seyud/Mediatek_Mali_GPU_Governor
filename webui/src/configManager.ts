@@ -38,7 +38,8 @@ export class ConfigManager {
 		this.setupEventListeners();
 		this.setupModuleCallbacks();
 		this.initializeModules();
-		this.loadInitialData();
+		// 移除自动加载，改为懒加载
+		// this.loadInitialData();
 	}
 	initializeModules() {
 		this.voltageController.init();
@@ -64,6 +65,14 @@ export class ConfigManager {
 		await this.loadGpuConfig();
 		await this.loadCustomConfigFromFile();
 	}
+
+	/**
+	 * 加载所有配置页数据（用于懒加载）
+	 */
+	async loadAllConfigData() {
+		await this.loadInitialData();
+	}
+
 	setupEventListeners() {
 		if (this.loadCustomConfigBtn)
 			this.loadCustomConfigBtn.addEventListener("click", () => this.loadCustomConfigFromFile());
@@ -88,9 +97,6 @@ export class ConfigManager {
 		const result = await this.configFileManager.loadCustomConfig();
 		if (result.success && result.data) {
 			this.modeConfigManager.populateCustomConfigForm(result.data);
-			toast(getTranslation("toast_custom_config_loaded", {}, this.currentLanguage));
-		} else {
-			toast(getTranslation("toast_config_load_fail", {}, this.currentLanguage));
 		}
 	}
 

@@ -24,6 +24,39 @@
       } catch (e) { console.warn('无法设置初始主题', e); }
     })();
   </script>
+  <style>
+    /* 内联关键 CSS - 加载动画 */
+    #loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-size: 1.2rem;
+      color: #666;
+      background: var(--background-color, #f5f5f5);
+    }
+    #loading::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      margin-left: 10px;
+      border: 3px solid #ddd;
+      border-top-color: #3498db;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    [data-theme="dark"] #loading {
+      color: #999;
+      background: #1a1a1a;
+    }
+    [data-theme="dark"] #loading::after {
+      border-color: #333;
+      border-top-color: #3498db;
+    }
+  </style>
 </head>
 <body>
   <div id="loading">加载中</div>

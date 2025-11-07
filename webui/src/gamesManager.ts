@@ -100,34 +100,83 @@ export class GamesManager {
 	 * 加载游戏列表
 	 */
 	async loadGamesList(): Promise<void> {
+		// 显示加载中状态
+		if (this.gamesList) {
+			this.gamesList.innerHTML = `<div class="loading-text">${getTranslation("status_loading", {}, this.currentLanguage)}</div>`;
+		}
+
 		const { errno, stdout } = await exec(`cat ${PATHS.GAMES_FILE}`);
 		if (errno === 0 && stdout.trim()) {
 			const games = GameParser.parseTomlGames(stdout.trim());
 			this.gamesListData = games as GameItem[];
 
 			if (games.length > 0) {
-				// 批量获取应用名称
-				await this.loadAppNames();
-				// 显示游戏列表
+				// 立即显示游戏列表（使用占位符名称）
 				this.refreshGamesList();
+
+				// 异步加载应用名称（不阻塞渲染）
+				this.loadAppNamesAsync();
 			} else if (this.gamesList) {
 				this.gamesList.innerHTML = `<div class="loading-text">${getTranslation("config_games_not_found", {}, this.currentLanguage)}</div>`;
 			}
 		} else if (this.gamesList) {
 			this.gamesList.innerHTML = `<div class="loading-text">${getTranslation("config_games_list_not_found", {}, this.currentLanguage)}</div>`;
 		}
+	} /**
+	 * 异步加载应用名称（不阻塞UI）
+	 */
+	private async loadAppNamesAsync(): Promise<void> {
+		// 并行加载所有应用名称
+		const promises = this.gamesListData
+			.filter((game) => game.package && !game.name)
+			.map(async (game) => {
+				if (game.package) {
+					const appName = await AppInfoService.fetchAppName(game.package);
+					game.name = appName;
+					// 加载完成后立即更新该游戏的显示
+					if ("package" in game && game.package) {
+						this.updateGameCardName(game as GameItem);
+					}
+				}
+			});
+
+		await Promise.all(promises);
 	}
 
 	/**
-	 * 批量加载应用名称
+	 * 更新单个游戏卡片的名称显示
+	 */
+	private updateGameCardName(game: GameItem): void {
+		if (!this.gamesList) return;
+
+		const gameCards = this.gamesList.querySelectorAll(".game-card");
+		gameCards.forEach((card) => {
+			const packageElement = card.querySelector(".game-package");
+			if (packageElement?.textContent === game.package) {
+				const nameElement = card.querySelector(".game-name");
+				if (nameElement && game.name) {
+					nameElement.textContent = game.name;
+					nameElement.setAttribute("title", game.name);
+				}
+			}
+		});
+	}
+
+	/**
+	 * 批量加载应用名称（并行加载以提升性能）
+	 * @deprecated 使用 loadAppNamesAsync 替代
 	 */
 	private async loadAppNames(): Promise<void> {
-		for (const game of this.gamesListData) {
-			if (game.package && !game.name) {
-				const appName = await AppInfoService.fetchAppName(game.package);
-				game.name = appName;
-			}
-		}
+		// 并行加载所有应用名称，而不是逐个串行加载
+		const promises = this.gamesListData
+			.filter((game) => game.package && !game.name)
+			.map(async (game) => {
+				if (game.package) {
+					game.name = await AppInfoService.fetchAppName(game.package);
+				}
+			});
+
+		await Promise.all(promises);
 	}
 
 	/**

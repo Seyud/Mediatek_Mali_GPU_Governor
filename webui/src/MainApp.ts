@@ -23,6 +23,20 @@ export class MainApp {
 	currentLanguage: Language = "zh";
 	currentPage = "page-status";
 
+	// 懒加载标记 - 记录每个页面是否已加载
+	private statusPageLoaded = false;
+	private configPageLoaded = false;
+	private logPageLoaded = false;
+	private settingsPageLoaded = false;
+
+	// 状态缓存和刷新控制
+	private statusCache = {
+		mode: { value: "unknown", timestamp: 0, ttl: 2000 }, // 模式缓存，2秒过期
+		running: { value: false, timestamp: 0, ttl: 2000 }, // 运行状态缓存，2秒过期
+		version: { value: "", timestamp: 0, ttl: 60000 }, // 版本缓存，60秒过期
+	};
+	private isRefreshing = false; // 防止并发刷新
+
 	app: HTMLElement | null;
 	loading: HTMLElement | null;
 	htmlRoot: HTMLElement | null;
@@ -58,26 +72,79 @@ export class MainApp {
 	}
 
 	async init() {
+		// 立即显示界面，避免白屏
 		if (this.loading) this.loading.style.display = "none";
 		if (this.app) this.app.style.display = "block";
 
+		// 先初始化各管理器（同步操作，很快）
 		this.themeManager.init();
 		this.configManager.init();
 		this.gamesManager.init();
 		this.logManager.init();
 		this.settingsManager.init();
 
+		// 初始化语言（可能需要检测系统语言）
 		await this.initLanguage();
+
+		// 设置事件监听（同步操作）
 		this.setupLanguageEvents();
 		this.setupNavigationEvents();
-		await this.loadData();
 
-		setInterval(() => {
-			this.loadCurrentMode();
-			this.checkModuleStatus();
-		}, 2000);
+		// 异步加载状态页数据（不阻塞界面显示）
+		this.loadData().catch((error) => {
+			console.error("Failed to load initial data:", error);
+		});
+
+		// 启动状态刷新循环（使用缓存过期机制）
+		this.startStatusRefreshLoop();
 
 		toast(getTranslation("toast_webui_loaded", {}, this.currentLanguage));
+	}
+
+	/**
+	 * 启动状态刷新循环（基于缓存过期）
+	 */
+	private async startStatusRefreshLoop() {
+		const refresh = async () => {
+			// 仅在状态页已加载且当前在状态页时刷新
+			if (this.statusPageLoaded && this.currentPage === "page-status") {
+				await this.refreshStatusIfNeeded();
+			}
+			// 递归调用，避免并发问题
+			setTimeout(refresh, 1000); // 每1000ms检查一次是否需要刷新
+		};
+		refresh();
+	}
+
+	/**
+	 * 根据缓存过期情况刷新状态
+	 */
+	private async refreshStatusIfNeeded() {
+		if (this.isRefreshing) return; // 防止并发刷新
+
+		const now = Date.now();
+		const needRefresh = {
+			mode: now - this.statusCache.mode.timestamp > this.statusCache.mode.ttl,
+			running: now - this.statusCache.running.timestamp > this.statusCache.running.ttl,
+			version: now - this.statusCache.version.timestamp > this.statusCache.version.ttl,
+		};
+
+		// 如果任何一项需要刷新，则执行刷新
+		if (needRefresh.mode || needRefresh.running || needRefresh.version) {
+			this.isRefreshing = true;
+			try {
+				const tasks = [];
+				if (needRefresh.mode) tasks.push(this.loadCurrentMode());
+				if (needRefresh.running) tasks.push(this.checkModuleStatus());
+				if (needRefresh.version) tasks.push(this.loadModuleVersion());
+
+				await Promise.allSettled(tasks); // 即使部分失败也继续
+			} catch (error) {
+				console.error("Failed to refresh status:", error);
+			} finally {
+				this.isRefreshing = false;
+			}
+		}
 	}
 
 	setupNavigationEvents() {
@@ -207,18 +274,17 @@ export class MainApp {
 	}
 
 	async loadData() {
-		const tasks: Array<() => Promise<unknown>> = [
-			() => this.checkModuleStatus(),
-			() => this.loadModuleVersion(),
-			() => this.loadCurrentMode(),
-			() => this.configManager.loadGpuConfig(),
-			() => this.gamesManager.loadGamesList(),
-			() => this.logManager.loadLog(),
-			() => this.settingsManager.loadLogLevel(),
-		];
-		for (const task of tasks) {
-			await task();
-		}
+		// 立即加载状态页数据（首页需要快速显示）
+		this.statusPageLoaded = true;
+		await Promise.all([
+			this.checkModuleStatus(),
+			this.loadModuleVersion(),
+			this.loadCurrentMode(),
+		]).catch((error) => {
+			console.error("Failed to load status page data:", error);
+		});
+
+		// 其他页面改为懒加载
 		this.switchPage("page-status");
 	}
 
@@ -233,84 +299,189 @@ export class MainApp {
 			else item.classList.remove("active");
 		});
 		this.currentPage = pageId;
+
+		// 懒加载各页面数据 - 只在首次切换到对应页面时加载
+		this.lazyLoadPageData(pageId);
+	}
+
+	/**
+	 * 懒加载页面数据
+	 */
+	private async lazyLoadPageData(pageId: string): Promise<void> {
+		switch (pageId) {
+			case "page-status":
+				if (!this.statusPageLoaded) {
+					this.statusPageLoaded = true;
+					// 状态页数据加载
+					await Promise.all([
+						this.checkModuleStatus(),
+						this.loadModuleVersion(),
+						this.loadCurrentMode(),
+					]).catch((error) => {
+						console.error("Failed to load status page data:", error);
+					});
+				}
+				break;
+
+			case "page-config":
+				if (!this.configPageLoaded) {
+					this.configPageLoaded = true;
+					// 配置页数据加载（GPU配置 + 自定义配置 + 游戏列表）
+					await Promise.all([
+						this.configManager.loadAllConfigData(),
+						this.gamesManager.loadGamesList(),
+					]).catch((error) => {
+						console.error("Failed to load config page data:", error);
+					});
+				}
+				break;
+
+			case "page-log":
+				if (!this.logPageLoaded) {
+					this.logPageLoaded = true;
+					// 日志页数据加载
+					this.logManager.loadLog().catch((error) => {
+						console.error("Failed to load log page data:", error);
+					});
+				}
+				break;
+
+			case "page-settings":
+				if (!this.settingsPageLoaded) {
+					this.settingsPageLoaded = true;
+					// 设置页数据加载
+					this.settingsManager.loadLogLevel().catch((error) => {
+						console.error("Failed to load settings page data:", error);
+					});
+				}
+				break;
+		}
 	}
 
 	async checkModuleStatus() {
-		const { errno, stdout } = await exec('pgrep -f gpugovernor || echo ""');
-		const newStatus = errno === 0 && stdout.trim();
-		const currentStatus = this.runningStatus?.classList.contains("status-running");
-		if (newStatus !== currentStatus && this.runningStatus) {
-			this.runningStatus.classList.add("status-changing");
-			this.runningStatus.removeAttribute("data-i18n");
-			setTimeout(() => {
-				if (newStatus && this.runningStatus) {
-					this.runningStatus.textContent = getTranslation(
-						"status_running_active",
-						{},
-						this.currentLanguage
-					);
-					this.runningStatus.className = "status-badge status-running";
-				} else if (this.runningStatus) {
-					this.runningStatus.textContent = getTranslation(
-						"status_running_inactive",
-						{},
-						this.currentLanguage
-					);
-					this.runningStatus.className = "status-badge status-stopped";
-				}
+		try {
+			const { errno, stdout } = await exec('pgrep -f gpugovernor || echo ""');
+			const newStatus = errno === 0 && stdout.trim();
+
+			// 更新缓存
+			this.statusCache.running.value = Boolean(newStatus);
+			this.statusCache.running.timestamp = Date.now();
+
+			const currentStatus = this.runningStatus?.classList.contains("status-running");
+			if (newStatus !== currentStatus && this.runningStatus) {
+				this.runningStatus.classList.add("status-changing");
+				this.runningStatus.removeAttribute("data-i18n");
 				setTimeout(() => {
-					this.runningStatus?.classList.remove("status-changing");
-				}, 600);
-			}, 100);
+					if (newStatus && this.runningStatus) {
+						this.runningStatus.textContent = getTranslation(
+							"status_running_active",
+							{},
+							this.currentLanguage
+						);
+						this.runningStatus.className = "status-badge status-running";
+					} else if (this.runningStatus) {
+						this.runningStatus.textContent = getTranslation(
+							"status_running_inactive",
+							{},
+							this.currentLanguage
+						);
+						this.runningStatus.className = "status-badge status-stopped";
+					}
+					setTimeout(() => {
+						this.runningStatus?.classList.remove("status-changing");
+					}, 600);
+				}, 100);
+			}
+		} catch (error) {
+			console.error("Failed to check module status:", error);
+			// 保留旧缓存值，不更新时间戳（下次会重试）
 		}
 	}
 
 	async loadModuleVersion() {
-		const { errno, stdout } = await exec(
-			'grep -i "^version=" /data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
-		);
-		if (errno === 0 && stdout.trim()) {
-			if (this.moduleVersion) {
-				this.moduleVersion.textContent = stdout.trim();
-				this.moduleVersion.removeAttribute("data-i18n");
+		try {
+			const { errno, stdout } = await exec(
+				'grep -i "^version=" /data/adb/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
+			);
+			if (errno === 0 && stdout.trim()) {
+				if (this.moduleVersion) {
+					this.moduleVersion.textContent = stdout.trim();
+					this.moduleVersion.removeAttribute("data-i18n");
+					// 更新缓存
+					this.statusCache.version.value = stdout.trim();
+					this.statusCache.version.timestamp = Date.now();
+				}
+				return;
 			}
-			return;
-		}
-		const { errno: errno2, stdout: stdout2 } = await exec(
-			'grep -i "^version=" /data/adb/ksu/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
-		);
-		if (errno2 === 0 && stdout2.trim()) {
-			if (this.moduleVersion) {
-				this.moduleVersion.textContent = stdout2.trim();
-				this.moduleVersion.removeAttribute("data-i18n");
+			const { errno: errno2, stdout: stdout2 } = await exec(
+				'grep -i "^version=" /data/adb/ksu/modules/Mediatek_Mali_GPU_Governor/module.prop | cut -d= -f2'
+			);
+			if (errno2 === 0 && stdout2.trim()) {
+				if (this.moduleVersion) {
+					this.moduleVersion.textContent = stdout2.trim();
+					this.moduleVersion.removeAttribute("data-i18n");
+					// 更新缓存
+					this.statusCache.version.value = stdout2.trim();
+					this.statusCache.version.timestamp = Date.now();
+				}
+				return;
 			}
-			return;
-		}
-		if (this.moduleVersion) {
-			this.moduleVersion.textContent = this.currentLanguage === "en" ? "Unknown" : "未知";
-			this.moduleVersion.removeAttribute("data-i18n");
+			if (this.moduleVersion) {
+				this.moduleVersion.textContent = this.currentLanguage === "en" ? "Unknown" : "未知";
+				this.moduleVersion.removeAttribute("data-i18n");
+				// 更新缓存
+				this.statusCache.version.value = "unknown";
+				this.statusCache.version.timestamp = Date.now();
+			}
+		} catch (error) {
+			console.error("Failed to load module version:", error);
+			// 保留旧缓存值，不更新时间戳（下次会重试）
 		}
 	}
 
 	async loadCurrentMode() {
-		const { errno, stdout } = await exec(
-			`cat ${PATHS.CURRENT_MODE_PATH} 2>/dev/null || echo "unknown"`
-		);
-		let mode = "unknown";
-		if (errno === 0) mode = stdout.trim().toLowerCase();
-		const validModes = ["powersave", "balance", "performance", "fast"];
-		if (!validModes.includes(mode)) mode = "unknown";
-		if (this.currentMode) {
-			const modeText: Record<string, string> = {
-				powersave: getTranslation("status_mode_powersave", {}, this.currentLanguage),
-				balance: getTranslation("status_mode_balance", {}, this.currentLanguage),
-				performance: getTranslation("status_mode_performance", {}, this.currentLanguage),
-				fast: getTranslation("status_mode_fast", {}, this.currentLanguage),
-				unknown: getTranslation("status_mode_unknown", {}, this.currentLanguage),
-			};
-			this.currentMode.textContent = modeText[mode] || modeText.unknown;
-			this.currentMode.className = `mode-badge ${mode}`;
-			this.currentMode.removeAttribute("data-i18n");
+		try {
+			const { errno, stdout } = await exec(
+				`cat ${PATHS.CURRENT_MODE_PATH} 2>/dev/null || echo "unknown"`
+			);
+			let mode = "unknown";
+			if (errno === 0) mode = stdout.trim().toLowerCase();
+
+			const validModes = ["powersave", "balance", "performance", "fast"];
+			if (!validModes.includes(mode)) mode = "unknown";
+
+			// 更新缓存
+			this.statusCache.mode.value = mode;
+			this.statusCache.mode.timestamp = Date.now();
+
+			if (this.currentMode) {
+				const modeText: Record<string, string> = {
+					powersave: getTranslation("status_mode_powersave", {}, this.currentLanguage),
+					balance: getTranslation("status_mode_balance", {}, this.currentLanguage),
+					performance: getTranslation("status_mode_performance", {}, this.currentLanguage),
+					fast: getTranslation("status_mode_fast", {}, this.currentLanguage),
+					unknown: getTranslation("status_mode_unknown", {}, this.currentLanguage),
+				};
+				this.currentMode.textContent = modeText[mode] || modeText.unknown;
+				this.currentMode.className = `mode-badge ${mode}`;
+				this.currentMode.removeAttribute("data-i18n");
+			}
+		} catch (error) {
+			console.error("Failed to load current mode:", error);
+			// 保留旧缓存值，不更新时间戳（下次会重试）
+			// 如果有缓存值，继续使用缓存显示
+			if (this.statusCache.mode.value !== "unknown" && this.currentMode) {
+				const mode = this.statusCache.mode.value;
+				const modeText: Record<string, string> = {
+					powersave: getTranslation("status_mode_powersave", {}, this.currentLanguage),
+					balance: getTranslation("status_mode_balance", {}, this.currentLanguage),
+					performance: getTranslation("status_mode_performance", {}, this.currentLanguage),
+					fast: getTranslation("status_mode_fast", {}, this.currentLanguage),
+					unknown: getTranslation("status_mode_unknown", {}, this.currentLanguage),
+				};
+				this.currentMode.textContent = modeText[mode] || modeText.unknown;
+				this.currentMode.className = `mode-badge ${mode}`;
+			}
 		}
 	}
 }

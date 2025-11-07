@@ -9,16 +9,26 @@ import { exec } from "../utils";
 declare const window: WindowWithWebUIX;
 
 export class AppInfoService {
+	// 缓存应用名称，避免重复获取
+	private static appNameCache: Map<string, string> = new Map();
+
 	/**
 	 * 获取应用名称
 	 */
 	static async fetchAppName(packageName: string): Promise<string> {
+		// 检查缓存
+		if (AppInfoService.appNameCache.has(packageName)) {
+			return AppInfoService.appNameCache.get(packageName)!;
+		}
+
 		try {
 			// 优先使用 WebUI-X API
 			if (typeof window.$packageManager !== "undefined") {
 				const info = window.$packageManager.getApplicationInfo(packageName, 0, 0);
 				if (info?.getLabel?.()) {
-					return info.getLabel();
+					const appName = info.getLabel();
+					AppInfoService.appNameCache.set(packageName, appName);
+					return appName;
 				}
 			}
 
@@ -28,7 +38,9 @@ export class AppInfoService {
 			);
 
 			if (errno === 0 && stdout.trim() && stdout.trim() !== "null") {
-				return stdout.trim();
+				const appName = stdout.trim();
+				AppInfoService.appNameCache.set(packageName, appName);
+				return appName;
 			}
 
 			// 再尝试从 APK 获取
@@ -43,15 +55,21 @@ export class AppInfoService {
 				);
 
 				if (aaptErrno === 0 && aaptStdout.trim()) {
-					return aaptStdout.trim();
+					const appName = aaptStdout.trim();
+					AppInfoService.appNameCache.set(packageName, appName);
+					return appName;
 				}
 			}
 
 			// 最后回退到包名处理
-			return AppInfoService.getAppNameFromPackage(packageName);
+			const fallbackName = AppInfoService.getAppNameFromPackage(packageName);
+			AppInfoService.appNameCache.set(packageName, fallbackName);
+			return fallbackName;
 		} catch (error) {
 			console.error(`Failed to fetch app name for ${packageName}:`, error);
-			return AppInfoService.getAppNameFromPackage(packageName);
+			const fallbackName = AppInfoService.getAppNameFromPackage(packageName);
+			AppInfoService.appNameCache.set(packageName, fallbackName);
+			return fallbackName;
 		}
 	}
 
