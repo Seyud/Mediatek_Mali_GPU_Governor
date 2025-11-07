@@ -19,6 +19,7 @@
 	--card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 	--switch-background: #e0e0e0;
 	--input-background: #ffffff;
+	--nav-background: rgba(255, 255, 255, 0.8);
 }
 
 [data-theme="dark"] {
@@ -42,4 +43,5 @@
 	--card-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	--switch-background: #333333;
 	--input-background: #1f2937;
+	--nav-background: rgba(30, 30, 30, 0.8);
 }

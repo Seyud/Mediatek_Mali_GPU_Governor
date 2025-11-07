@@ -5,8 +5,6 @@
 	box-shadow: var(--header-shadow);
 	padding: 16px 20px;
 	border-bottom: 1px solid var(--border-color);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
 }
 
 .header-content {
