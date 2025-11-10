@@ -2,16 +2,14 @@
 
 # Dimensity GPU Governor 🚀
 
+<img src="https://seyud.github.io/Mediatek_Mali_GPU_Governor/logo.png" style="width: 96px;" alt="logo">
+
+Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor designed specifically for MediaTek processors. Developed in **Rust**, the high-performance core engine intelligently monitors GPU load and dynamically adjusts frequency, achieving the best balance between gaming experience and power consumption. The module integrates a modern **WebUI management interface** and **complete game mode detection**, providing users with an excellent GPU tuning solution.
+
 [![Version](https://img.shields.io/github/v/release/Seyud/Mediatek_Mali_GPU_Governor?logo=github)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases/latest)
 [![GitHub Downloads](https://img.shields.io/github/downloads/Seyud/Mediatek_Mali_GPU_Governor/total?logo=github&logoColor=green)](https://github.com/Seyud/Mediatek_Mali_GPU_Governor/releases)
 [![Language](https://img.shields.io/badge/language-Rust-orange?logo=rust&logoColor=orange)](https://www.rust-lang.org/)
 [![Telegram](https://img.shields.io/badge/channel-Telegram-2CA5E0?logo=telegram&logoColor=87CEEB)](https://t.me/Mediatek_Mali_GPU_Governor)
-
-## Introduction 📝
-
-<img src="https://seyud.github.io/Mediatek_Mali_GPU_Governor/logo.png" style="width: 96px;" alt="logo">
-
-Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor designed specifically for MediaTek processors. Developed in **Rust**, the high-performance core engine intelligently monitors GPU load and dynamically adjusts frequency, achieving the best balance between gaming experience and power consumption. The module integrates a modern **WebUI management interface** and **complete game mode detection**, providing users with an excellent GPU tuning solution.
 
 ## Related Open Source Projects 📦
 
