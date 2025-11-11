@@ -41,7 +41,7 @@ down_rate_delay = 0
 
 # 性能模式 - 更低的升频阈值，更保守的降频
 [performance]
-margin = 35
+margin = 20
 aggressive_down = false
 sampling_interval = 8
 gaming_mode = true
@@ -53,7 +53,7 @@ down_rate_delay = 50
 
 # 极速模式 - 最低的升频阈值，最保守的降频
 [fast]
-margin = 45
+margin = 35
 aggressive_down = false
 sampling_interval = 8
 gaming_mode = true

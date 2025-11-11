@@ -267,6 +267,7 @@ finalize_startup() {
 }
 
 main() {
+    init_language
     initialize_logging
     wait_until_login
     ensure_log_level
@@ -274,7 +275,6 @@ main() {
     disable_dvfs_if_needed
     disable_dcs_policy_if_needed
     extend_path_with_tools
-    init_language
     update_updatejson
     guard_running_instance
     ensure_governor_executable
