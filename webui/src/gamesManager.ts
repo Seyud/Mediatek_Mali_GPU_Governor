@@ -108,6 +108,12 @@ export class GamesManager {
 		const { errno, stdout } = await exec(`cat ${PATHS.GAMES_FILE}`);
 		if (errno === 0 && stdout.trim()) {
 			const games = GameParser.parseTomlGames(stdout.trim());
+
+			if (games.length === 0 && stdout.trim().length > 0) {
+				// 解析失败
+				toast(getTranslation("toast_games_parse_error", {}, this.currentLanguage));
+			}
+
 			this.gamesListData = games as GameItem[];
 
 			if (games.length > 0) {

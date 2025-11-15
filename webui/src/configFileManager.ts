@@ -1,3 +1,4 @@
+import { parse as parseTOML, stringify as stringifyTOML } from "smol-toml";
 import { PATHS } from "./constants";
 import { getTranslation } from "./i18n";
 import { exec, toast } from "./utils";
@@ -28,46 +29,22 @@ export class ConfigFileManager {
 	async loadGpuConfig() {
 		const { errno, stdout } = await exec(`cat ${PATHS.CONFIG_PATH}`);
 		if (errno === 0 && stdout.trim()) {
-			const content = stdout.trim();
-			const gpuConfigs: GpuConfig[] = [];
-			let hasConfig = false;
-			const arrayRegex = /freq_table\s*=\s*\[([\s\S]*?)\]/;
-			const arrayMatch = arrayRegex.exec(content);
-			if (arrayMatch) {
-				const arrayContent = arrayMatch[1];
-				const itemRegex = /\{\s*freq\s*=\s*(\d+),\s*volt\s*=\s*(\d+),\s*ddr_opp\s*=\s*(\d+)\s*\}/g;
-				let itemMatch: RegExpExecArray | null;
-				itemMatch = itemRegex.exec(arrayContent);
-				while (itemMatch !== null) {
-					const freq = parseInt(itemMatch[1], 10);
-					const volt = parseInt(itemMatch[2], 10);
-					const ddr = parseInt(itemMatch[3], 10);
-					if (!Number.isNaN(freq) && !Number.isNaN(volt) && !Number.isNaN(ddr)) {
-						gpuConfigs.push({ freq, volt, ddr });
-						hasConfig = true;
-					}
-					itemMatch = itemRegex.exec(arrayContent);
+			try {
+				const config = parseTOML(stdout) as any;
+				if (config.freq_table && Array.isArray(config.freq_table)) {
+					const gpuConfigs: GpuConfig[] = config.freq_table.map((item: any) => ({
+						freq: Number(item.freq),
+						volt: Number(item.volt),
+						ddr: Number(item.ddr_opp),
+					}));
+					gpuConfigs.sort((a, b) => a.freq - b.freq);
+					return { success: true, data: gpuConfigs };
 				}
-			}
-			if (!hasConfig) {
-				const freqTableRegex =
-					/\[\[freq_table\]\][\s\S]*?freq\s*=\s*(\d+)[\s\S]*?volt\s*=\s*(\d+)[\s\S]*?ddr_opp\s*=\s*(\d+)/g;
-				let match: RegExpExecArray | null;
-				match = freqTableRegex.exec(content);
-				while (match !== null) {
-					const freq = parseInt(match[1], 10);
-					const volt = parseInt(match[2], 10);
-					const ddr = parseInt(match[3], 10);
-					if (!Number.isNaN(freq) && !Number.isNaN(volt) && !Number.isNaN(ddr)) {
-						gpuConfigs.push({ freq, volt, ddr });
-						hasConfig = true;
-					}
-					match = freqTableRegex.exec(content);
-				}
-			}
-			if (hasConfig) {
-				gpuConfigs.sort((a, b) => a.freq - b.freq);
-				return { success: true, data: gpuConfigs };
+			} catch (error) {
+				toast(
+					getTranslation("toast_config_parse_error", { error: String(error) }, this.currentLanguage)
+				);
+				return { success: false, error: "parse_error" };
 			}
 		}
 		return { success: false, error: "config_not_found" };
@@ -78,12 +55,15 @@ export class ConfigFileManager {
 			return { success: false, error: "empty_config" };
 		}
 		const sortedConfigs = [...gpuConfigs].sort((a, b) => a.freq - b.freq);
-		let content = "# GPU 频率表\n# freq 单位: kHz\n# volt 单位: uV\n# ddr_opp: DDR OPP 档位\n\n";
-		content += "freq_table = [\n";
-		sortedConfigs.forEach((c, i) => {
-			content += `    { freq = ${c.freq}, volt = ${c.volt}, ddr_opp = ${c.ddr} }${i < sortedConfigs.length - 1 ? "," : ""}\n`;
-		});
-		content += "]\n";
+		const config = {
+			freq_table: sortedConfigs.map((c) => ({
+				freq: c.freq,
+				volt: c.volt,
+				ddr_opp: c.ddr,
+			})),
+		};
+		const header = "# GPU 频率表\n# freq 单位: kHz\n# volt 单位: uV\n# ddr_opp: DDR OPP 档位\n\n";
+		const content = header + stringifyTOML(config);
 		const result = await this.writeFileAtomically(PATHS.CONFIG_PATH, content);
 		if (result.errno === 0) {
 			toast(getTranslation("toast_config_saved", {}, this.currentLanguage));
@@ -96,9 +76,21 @@ export class ConfigFileManager {
 	async loadCustomConfig() {
 		const { errno, stdout } = await exec(`cat ${PATHS.CUSTOM_CONFIG_PATH}`);
 		if (errno === 0 && stdout.trim()) {
-			const content = stdout.trim();
-			const customConfig = this.parseCustomConfig(content);
-			return { success: true, data: customConfig };
+			try {
+				const config = parseTOML(stdout) as any;
+				const customConfig: CustomConfig = {};
+				if (config.global) customConfig.global = config.global;
+				const modes = ["powersave", "balance", "performance", "fast"];
+				modes.forEach((mode) => {
+					if (config[mode]) customConfig[mode] = config[mode];
+				});
+				return { success: true, data: customConfig };
+			} catch (error) {
+				toast(
+					getTranslation("toast_config_parse_error", { error: String(error) }, this.currentLanguage)
+				);
+				return { success: false, error: "parse_error" };
+			}
 		}
 		return { success: false, error: "config_not_found" };
 	}
@@ -112,78 +104,15 @@ export class ConfigFileManager {
 		toast(getTranslation("toast_config_save_fail", {}, this.currentLanguage));
 		return { success: false, error: "save_failed" };
 	}
-	parseCustomConfig(content: string): CustomConfig {
-		const customConfig: CustomConfig = {};
-		const globalMatch = /\[global\]([\s\S]*?)(?=\n\[|$)/.exec(content);
-		if (globalMatch) customConfig.global = this.parseSection(globalMatch[1]);
-		const modes = ["powersave", "balance", "performance", "fast"];
-		modes.forEach((mode) => {
-			const modeMatch = new RegExp(`\\[${mode}\\]([\\s\\S]*?)(?=\\n\\[|$)`).exec(content);
-			if (modeMatch) customConfig[mode] = this.parseSection(modeMatch[1]);
-		});
-		return customConfig;
-	}
-	parseSection(sectionContent: string): ModeConfig {
-		const config: ModeConfig = {};
-		const lines = sectionContent.split("\n");
-		lines.forEach((line) => {
-			const t = line.trim();
-			if (t && !t.startsWith("#")) {
-				const [key, value] = t.split("=");
-				if (key && value) {
-					const ck = key.trim();
-					const cv = value.trim().replace(/["']/g, "");
-					if (cv === "true") config[ck] = true;
-					else if (cv === "false") config[ck] = false;
-					else if (!Number.isNaN(Number(cv))) config[ck] = Number(cv);
-					else config[ck] = cv;
-				}
-			}
-		});
-		return config;
-	}
 	generateCustomConfigContent(customConfig: CustomConfig) {
-		let content = "# GPU调速器配置文件\n\n";
-		content += "[global]\n";
-		content += "# 全局模式设置: powersave, balance, performance, fast\n";
-		content += `mode = "${customConfig.global?.mode || "balance"}"\n`;
-		content += "# 空闲阈值（百分比）\n";
-		content += `idle_threshold = ${customConfig.global?.idle_threshold ?? 5}\n\n`;
+		const header = "# GPU调速器配置文件\n\n";
+		const tomlConfig: any = {};
+		if (customConfig.global) tomlConfig.global = customConfig.global;
 		const modes = ["powersave", "balance", "performance", "fast"];
-		const modeNames: Record<string, string> = {
-			powersave: "省电模式 - 更高的升频阈值，更激进的降频",
-			balance: "平衡模式 - 默认设置",
-			performance: "性能模式 - 更低的升频阈值，更保守的降频",
-			fast: "极速模式 - 最低的升频阈值，最保守的降频",
-		};
 		modes.forEach((mode) => {
-			content += `# ${modeNames[mode]}\n`;
-			content += `[${mode}]\n`;
-			content += this.generateModeConfigContent(customConfig[mode] || {});
+			if (customConfig[mode]) tomlConfig[mode] = customConfig[mode];
 		});
-		return content;
-	}
-	generateModeConfigContent(config: ModeConfig) {
-		let c = "";
-		c += "# 余量\n";
-		c += `margin = ${config.margin ?? 10}\n`;
-		c += "# 是否使用激进降频策略\n";
-		c += `aggressive_down = ${config.aggressive_down ? "true" : "false"}\n`;
-		c += "# 采样间隔（毫秒）\n";
-		c += `sampling_interval = ${config.sampling_interval ?? 16}\n`;
-		c += "# 游戏优化 - 启用游戏特殊内存优化\n";
-		c += `gaming_mode = ${config.gaming_mode ? "true" : "false"}\n`;
-		c += "# 自适应采样\n";
-		c += `adaptive_sampling = ${config.adaptive_sampling ? "true" : "false"}\n`;
-		c += "# 自适应采样最小间隔（毫秒）\n";
-		c += `min_adaptive_interval = ${config.min_adaptive_interval ?? 4}\n`;
-		c += "# 自适应采样最大间隔（毫秒）\n";
-		c += `max_adaptive_interval = ${config.max_adaptive_interval ?? 20}\n`;
-		c += "# 升频延迟（毫秒）\n";
-		c += `up_rate_delay = ${config.up_rate_delay ?? 1000}\n`;
-		c += "# 降频延迟（毫秒）\n";
-		c += `down_rate_delay = ${config.down_rate_delay ?? 5000}\n\n`;
-		return c;
+		return header + stringifyTOML(tomlConfig);
 	}
 	private async writeFileAtomically(path: string, content: string) {
 		const tempPath = `${path}.tmp`;
