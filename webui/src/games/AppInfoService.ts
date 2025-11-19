@@ -3,6 +3,8 @@
  * 负责获取应用名称和图标
  */
 
+import { getPackagesInfo } from "kernelsu-alt";
+import fallbackIcon from "../../icon.png";
 import type { WindowWithWebUIX } from "../types/games";
 import { exec } from "../utils";
 
@@ -11,6 +13,15 @@ declare const window: WindowWithWebUIX;
 export class AppInfoService {
 	// 缓存应用名称，避免重复获取
 	private static appNameCache: Map<string, string> = new Map();
+
+	/**
+	 * 验证应用名称是否有效
+	 */
+	private static isValidAppName(name: string | null | undefined): name is string {
+		if (!name) return false;
+		const trimmed = name.trim();
+		return trimmed.length > 0 && trimmed.toLowerCase() !== "null";
+	}
 
 	/**
 	 * 获取应用名称
@@ -22,28 +33,56 @@ export class AppInfoService {
 		}
 
 		try {
-			// 优先使用 WebUI-X API
-			if (typeof window.$packageManager !== "undefined") {
-				const info = window.$packageManager.getApplicationInfo(packageName, 0, 0);
-				if (info?.getLabel?.()) {
-					const appName = info.getLabel();
-					AppInfoService.appNameCache.set(packageName, appName);
-					return appName;
+			// 1. 优先使用 Native KernelSU API
+			if (typeof (globalThis as any).ksu?.getPackagesInfo === "function") {
+				try {
+					const info = await (globalThis as any).ksu.getPackagesInfo(packageName);
+					if (AppInfoService.isValidAppName(info.appLabel)) {
+						AppInfoService.appNameCache.set(packageName, info.appLabel);
+						return info.appLabel;
+					}
+				} catch (_e) {
+					// ignore
 				}
 			}
 
-			// 回退到 shell 命令方法
+			// 2. KernelSU-Next package manager API (via kernelsu-alt)
+			try {
+				const info = await getPackagesInfo(packageName);
+				if (AppInfoService.isValidAppName(info.appLabel)) {
+					AppInfoService.appNameCache.set(packageName, info.appLabel);
+					return info.appLabel;
+				}
+			} catch (_e) {
+				// ignore
+			}
+
+			// 3. WebUI-X API
+			if (typeof window.$packageManager !== "undefined") {
+				try {
+					const info = window.$packageManager.getApplicationInfo(packageName, 0, 0);
+					const appName = info?.getLabel?.();
+					if (AppInfoService.isValidAppName(appName)) {
+						AppInfoService.appNameCache.set(packageName, appName);
+						return appName;
+					}
+				} catch (_e) {
+					// ignore
+				}
+			}
+
+			// 4. 回退到 shell 命令方法
 			const { errno, stdout } = await exec(
 				`pm dump ${packageName} 2>/dev/null | grep "label=" | head -1 | sed 's/.*label=//' | cut -d' ' -f1`
 			);
 
-			if (errno === 0 && stdout.trim() && stdout.trim() !== "null") {
+			if (errno === 0 && AppInfoService.isValidAppName(stdout)) {
 				const appName = stdout.trim();
 				AppInfoService.appNameCache.set(packageName, appName);
 				return appName;
 			}
 
-			// 再尝试从 APK 获取
+			// 5. 再尝试从 APK 获取
 			const { errno: pathErrno, stdout: pathStdout } = await exec(
 				`pm path ${packageName} 2>/dev/null | head -1 | cut -d':' -f2`
 			);
@@ -54,7 +93,7 @@ export class AppInfoService {
 					`aapt dump badging "${apkPath}" 2>/dev/null | grep "application-label:" | head -1 | sed "s/.*application-label:'\\([^']*\\)'.*/\\1/"`
 				);
 
-				if (aaptErrno === 0 && aaptStdout.trim()) {
+				if (aaptErrno === 0 && AppInfoService.isValidAppName(aaptStdout)) {
 					const appName = aaptStdout.trim();
 					AppInfoService.appNameCache.set(packageName, appName);
 					return appName;
@@ -103,7 +142,30 @@ export class AppInfoService {
 		placeholder: HTMLElement
 	): Promise<void> {
 		try {
-			// 优先使用 WebUI-X API
+			// 优先使用新的 KSU API (KernelSU v2.1.2+)
+			if (typeof globalThis.ksu?.getPackagesInfo === "function") {
+				const img = document.createElement("img");
+				img.className = "game-icon-loaded";
+				img.alt = packageName;
+
+				img.onload = () => {
+					placeholder.style.display = "none";
+					img.style.opacity = "1";
+					iconContainer.innerHTML = "";
+					iconContainer.appendChild(img);
+				};
+
+				img.onerror = () => {
+					img.src = fallbackIcon;
+					placeholder.style.display = "none";
+					img.style.opacity = "1";
+				};
+
+				img.src = "ksu://icon/" + packageName;
+				return;
+			}
+
+			// 回退到 WebUI-X API
 			if (typeof window.$packageManager !== "undefined") {
 				try {
 					const stream = window.$packageManager.getApplicationIcon(packageName, 0, 0);
@@ -125,7 +187,9 @@ export class AppInfoService {
 				} catch (_apiError) {
 					// API 失败，继续回退到 shell 命令方法
 				}
-			} // 回退到 shell 命令方法
+			}
+
+			// 回退到 shell 命令方法
 			const base64Data = await AppInfoService.extractIconFromApk(packageName);
 			if (base64Data) {
 				const img = AppInfoService.createIconImage(packageName, base64Data);
@@ -217,7 +281,9 @@ export class AppInfoService {
 		};
 
 		img.onerror = () => {
-			// 图标加载失败
+			img.src = fallbackIcon;
+			placeholder.style.display = "none";
+			img.style.opacity = "1";
 		};
 	}
 

@@ -35,3 +35,7 @@ declare module "kernelsu" {
 	export function toast(message: string): void;
 	export function fullScreen(isFullScreen: boolean): void;
 }
+
+declare module "kernelsu-alt" {
+	export function getPackagesInfo(packageName: string): Promise<{ appLabel: string }>;
+}
