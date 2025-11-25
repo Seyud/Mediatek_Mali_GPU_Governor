@@ -17,8 +17,11 @@
 	outline: none;
 	position: relative;
 	overflow: hidden;
-	min-height: 48px; /* 增大触摸区域 */
+	min-height: 48px;
+	/* 增大触摸区域 */
 	min-width: 48px;
+	white-space: nowrap;
+	/* 防止文字换行 */
 	/* GPU 加速优化 */
 	transform: translateZ(0);
 	backface-visibility: hidden;

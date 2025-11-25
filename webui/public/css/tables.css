@@ -75,7 +75,8 @@ tbody tr:last-child td {
 .config-actions,
 .margin-actions {
 	display: flex;
-	justify-content: space-between;
+	justify-content: flex-end;
+	gap: 12px;
 	margin-top: 16px;
 }
 

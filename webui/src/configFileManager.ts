@@ -66,10 +66,10 @@ export class ConfigFileManager {
 		const content = header + stringifyTOML(config);
 		const result = await this.writeFileAtomically(PATHS.CONFIG_PATH, content);
 		if (result.errno === 0) {
-			toast(getTranslation("toast_config_saved", {}, this.currentLanguage));
+			toast(getTranslation("toast_freq_table_saved", {}, this.currentLanguage));
 			return { success: true };
 		}
-		toast(getTranslation("toast_config_save_fail", {}, this.currentLanguage));
+		toast(getTranslation("toast_freq_table_save_fail", {}, this.currentLanguage));
 		return { success: false, error: "save_failed" };
 	}
 
