@@ -194,54 +194,77 @@ show_status() {
 
 # 处理日志等级设置
 handle_log_level() {
-    # 显示当前日志等级和可用选项
-    local current_level=$(cat "$LOG_LEVEL_FILE")
-    echo "$(log_prefix) $(translate "当前日志等级: $current_level" "Current log level: $current_level")"
-    echo "$(log_prefix) $(translate "可用的日志等级选项: debug, info, warn, error" "Available log level options: debug, info, warn, error")"
-
-    # 等待用户选择
-    echo "$(translate "请选择日志等级" "Please select a log level"):"
-    echo "1. debug ($(translate "调试" "Debug"))"
-    echo "2. info ($(translate "信息" "Information"))"
-    echo "3. warn ($(translate "警告" "Warning"))"
-    echo "4. error ($(translate "错误" "Error"))"
-
-    echo "$(translate "请使用音量键选择：" "Please use volume keys to select:")"
-    echo "$(translate "[音量+] 下一选项  [音量-] 确认选择" "[Volume+] Next option  [Volume-] Confirm selection")"
-
-    local log_selection=0 # 初始化为0，表示未选择
+    local log_selection=1  # 默认选择 info (选项2)
     local log_confirmed=0
 
-    while [ $log_confirmed -eq 0 ]; do
-        # 获取按键
-        local key_event=$(getevent -qlc 1 2> /dev/null |
-            awk 'BEGIN{FS=" "} /KEY_VOLUMEUP/{print "UP"; exit} /KEY_VOLUMEDOWN/{print "DOWN"; exit}')
+    while true; do
+        # 显示当前日志等级和可用选项
+        local current_level=$(cat "$LOG_LEVEL_FILE")
+        
+        clear
+        echo "=========================================="
+        echo "       $(translate "设置日志等级" "Set Log Level")           "
+        echo "=========================================="
+        echo "$(log_prefix) $(translate "当前日志等级: $current_level" "Current log level: $current_level")"
+        echo ""
+        echo "$(translate "请选择日志等级" "Please select a log level"):"
+        
+        # 显示带箭头的选项
+        if [ $log_selection -eq 1 ]; then
+            echo "  ▶ 1. debug ($(translate "调试" "Debug"))"
+        else
+            echo "    1. debug ($(translate "调试" "Debug"))"
+        fi
+        
+        if [ $log_selection -eq 2 ]; then
+            echo "  ▶ 2. info ($(translate "信息" "Information"))"
+        else
+            echo "    2. info ($(translate "信息" "Information"))"
+        fi
+        
+        if [ $log_selection -eq 3 ]; then
+            echo "  ▶ 3. warn ($(translate "警告" "Warning"))"
+        else
+            echo "    3. warn ($(translate "警告" "Warning"))"
+        fi
+        
+        if [ $log_selection -eq 4 ]; then
+            echo "  ▶ 4. error ($(translate "错误" "Error"))"
+        else
+            echo "    4. error ($(translate "错误" "Error"))"
+        fi
 
-        case "$key_event" in
-            "UP")
-                # 音量上键 - 下一选项
-                log_selection=$((log_selection + 1))
-                [ $log_selection -gt 4 ] && log_selection=1
-                # 显示当前选择
-                case $log_selection in
-                    1) echo "$(translate "当前选择" "Current selection"): debug" ;;
-                    2) echo "$(translate "当前选择" "Current selection"): info" ;;
-                    3) echo "$(translate "当前选择" "Current selection"): warn" ;;
-                    4) echo "$(translate "当前选择" "Current selection"): error" ;;
-                esac
-                ;;
-            "DOWN")
-                # 音量下键 - 确认选择
-                if [ $log_selection -eq 0 ]; then
-                    echo "$(translate "请先选择一个日志等级" "Please select a log level first")"
-                    continue
-                fi
-                log_confirmed=1
-                ;;
-        esac
+        echo ""
+        echo "$(translate "请使用音量键选择：" "Please use volume keys to select:")"
+        echo "$(translate "[音量+] 确认选择  [音量-] 下一选项" "[Volume+] Confirm selection  [Volume-] Next option")"
+        echo "=========================================="
 
-        # 短暂延迟，避免按键检测过快
-        [ $log_confirmed -eq 0 ] && sleep 0.3
+        log_confirmed=0
+
+        while [ $log_confirmed -eq 0 ]; do
+            # 短暂延迟，避免按键检测过快
+            sleep 0.2
+            
+            # 获取按键（只响应按下事件，忽略松开事件）
+            case "$(getevent -qlc 1 2>/dev/null)" in
+                *KEY_VOLUMEUP*DOWN*)
+                    # 音量上键 - 确认选择
+                    log_confirmed=1
+                    ;;
+                *KEY_VOLUMEDOWN*DOWN*)
+                    # 音量下键 - 下一选项
+                    log_selection=$((log_selection + 1))
+                    [ $log_selection -gt 4 ] && log_selection=1
+                    # 重新绘制菜单
+                    break
+                    ;;
+            esac
+        done
+        
+        # 如果确认选择，则处理
+        if [ $log_confirmed -eq 1 ]; then
+            break
+        fi
     done
 
     # 根据选择设置日志等级
@@ -259,70 +282,96 @@ handle_log_level() {
     return 0
 }
 
-# 显示主菜单并处理选择
-show_menu() {
-    # 显示欢迎信息
-    echo "=========================================="
-    echo "       $(translate "天玑GPU调速器 - 控制菜单" "Mediatek GPU Governor - Control Menu")           "
-    echo "=========================================="
-    echo "$(log_prefix) $(translate "欢迎使用天玑GPU调速器控制菜单" "Welcome to the Mediatek GPU Governor control menu")"
-    echo "----------------------------------------"
-
-    # 显示当前状态
-    show_status
-
-    local governor_status=$(check_governor_status)
-    local governor_action=$(translate "启动" "Start")
-    [ "$governor_status" = $(translate "运行中" "Running") ] && governor_action=$(translate "停止" "Stop")
-
-    echo "=========================================="
-    echo "$(translate "请选择操作：" "Please select an operation:")"
-    echo "1. ${governor_action}$(translate "调速器服务" " Governor Service") ($(translate "当前" "Current"): $governor_status)"
-    echo "2. $(translate "设置日志等级" "Set Log Level") ($(translate "当前" "Current"): $(cat "$LOG_LEVEL_FILE"))"
-    echo "0. $(translate "退出" "Exit")"
-    echo "=========================================="
-    echo "$(translate "请使用音量键选择操作：" "Please use volume keys to select:")"
-    echo "$(translate "[音量+] 下一选项  [音量-] 确认选择" "[Volume+] Next option  [Volume-] Confirm selection")"
-    echo "----------------------------------------"
-
+# 主菜单逻辑 - 使用固定菜单界面
+main_menu() {
     local selection=1
     local confirmed=0
-    local timeout=30
-    local start_time=$(date +%s)
+    
+    while true; do
+        # 获取当前状态
+        local governor_status=$(check_governor_status)
+        local governor_action=$(translate "启动" "Start")
+        [ "$governor_status" = $(translate "运行中" "Running") ] && governor_action=$(translate "停止" "Stop")
+        local current_log_level=$(cat "$LOG_LEVEL_FILE")
 
-    while [ $confirmed -eq 0 ]; do
-        # 显示当前选择
-        case $selection in
-            1) echo "$(translate "当前选择" "Current selection"): 1. ${governor_action}$(translate "调速器服务" " Governor Service")" ;;
-            2) echo "$(translate "当前选择" "Current selection"): 2. $(translate "设置日志等级" "Set Log Level")" ;;
-            0) echo "$(translate "当前选择" "Current selection"): 0. $(translate "退出" "Exit")" ;;
-        esac
+        # 构建菜单选项文本
+        local option1="${governor_action}$(translate "调速器服务" " Governor Service") ($(translate "当前" "Current"): $governor_status)"
+        local option2="$(translate "设置日志等级" "Set Log Level") ($(translate "当前" "Current"): $current_log_level)"
+        local option0="$(translate "退出" "Exit")"
 
-        # 检查超时
-        local current_time=$(date +%s)
-        if [ $((current_time - start_time)) -ge $timeout ]; then
-            echo "$(log_prefix) $(translate "选择超时，自动退出" "Selection timeout, automatically exiting")"
-            return
+        # 清屏并显示菜单
+        clear
+        echo "=========================================="
+        echo "       $(translate "天玑GPU调速器 - 控制菜单" "Mediatek GPU Governor - Control Menu")           "
+        echo "=========================================="
+
+        # 显示当前状态
+        show_status
+
+        echo "=========================================="
+        echo "$(translate "请选择操作：" "Please select an operation:")"
+        
+        # 显示带箭头的选项
+        if [ $selection -eq 1 ]; then
+            echo "  ▶ 1. $option1"
+        else
+            echo "    1. $option1"
         fi
+        
+        if [ $selection -eq 2 ]; then
+            echo "  ▶ 2. $option2"
+        else
+            echo "    2. $option2"
+        fi
+        
+        if [ $selection -eq 0 ]; then
+            echo "  ▶ 0. $option0"
+        else
+            echo "    0. $option0"
+        fi
+        
+        echo "=========================================="
+        echo "$(translate "请使用音量键选择操作：" "Please use volume keys to select:")"
+        echo "$(translate "[音量+] 确认选择  [音量-] 下一选项" "[Volume+] Confirm selection  [Volume-] Next option")"
+        echo "----------------------------------------"
 
-        # 获取按键
-        local key_event=$(getevent -qlc 1 2> /dev/null |
-            awk 'BEGIN{FS=" "} /KEY_VOLUMEUP/{print "UP"; exit} /KEY_VOLUMEDOWN/{print "DOWN"; exit}')
+        # 重置超时计时器
+        local timeout=30
+        local start_time=$(date +%s)
+        confirmed=0
 
-        case "$key_event" in
-            "UP")
-                # 音量上键 - 下一选项
-                selection=$((selection + 1))
-                [ $selection -gt 2 ] && selection=0
-                ;;
-            "DOWN")
-                # 音量下键 - 确认选择
-                confirmed=1
-                ;;
-        esac
+        while [ $confirmed -eq 0 ]; do
+            # 检查超时
+            local current_time=$(date +%s)
+            if [ $((current_time - start_time)) -ge $timeout ]; then
+                clear
+                echo "$(log_prefix) $(translate "选择超时，自动退出" "Selection timeout, automatically exiting")"
+                return
+            fi
 
-        # 短暂延迟，避免按键检测过快
-        [ $confirmed -eq 0 ] && sleep 0.3
+            # 短暂延迟，避免按键检测过快
+            sleep 0.2
+            
+            # 获取按键（只响应按下事件，忽略松开事件）
+            case "$(getevent -qlc 1 2>/dev/null)" in
+                *KEY_VOLUMEUP*DOWN*)
+                    # 音量上键 - 确认选择
+                    confirmed=1
+                    ;;
+                *KEY_VOLUMEDOWN*DOWN*)
+                    # 音量下键 - 下一选项
+                    selection=$((selection + 1))
+                    [ $selection -gt 2 ] && selection=0
+                    # 重新绘制菜单
+                    break
+                    ;;
+            esac
+        done
+        
+        # 如果确认选择，则处理
+        if [ $confirmed -eq 1 ]; then
+            break
+        fi
     done
 
     echo "$(log_prefix) $(translate "已选择选项" "Selected option") $selection"
@@ -330,10 +379,13 @@ show_menu() {
     # 处理选择
     case $selection in
         0)
+            clear
             echo "$(log_prefix) $(translate "退出菜单" "Exiting menu")"
             return
             ;;
         1)
+            # 需要重新获取状态，因为可能已经改变
+            governor_status=$(check_governor_status)
             if [ "$governor_status" = $(translate "运行中" "Running") ]; then
                 echo "$(log_prefix) $(translate "停止调速器服务" "Stopping governor service")"
                 stop_governor
@@ -341,23 +393,23 @@ show_menu() {
                 echo "$(log_prefix) $(translate "启动调速器服务" "Starting governor service")"
                 start_governor
             fi
-            # 显示新状态并返回主菜单
-            sleep 1
-            show_menu
+            # 等待用户查看结果
+            sleep 2
+            # 重新显示菜单
+            main_menu
             ;;
         2)
             echo "$(log_prefix) $(translate "设置日志等级" "Setting log level")"
-            echo "$(translate "可用的日志等级" "Available log levels"): debug, info, warn, error"
-            echo "$(translate "当前日志等级" "Current log level"): $(cat "$LOG_LEVEL_FILE")"
 
             handle_log_level
 
-            # 返回主菜单
-            sleep 1
-            show_menu
+            # 等待用户查看结果
+            sleep 2
+            # 重新显示菜单
+            main_menu
             ;;
     esac
 }
 
 # 显示交互式菜单
-show_menu
+main_menu
