@@ -24,15 +24,31 @@ export interface CustomConfig {
 	[key: string]: ModeConfig | undefined;
 }
 
+interface RawGpuConfigItem {
+	freq: number | string;
+	volt: number | string;
+	ddr_opp: number | string;
+}
+
+interface RawConfig {
+	freq_table?: RawGpuConfigItem[];
+	global?: ModeConfig;
+	powersave?: ModeConfig;
+	balance?: ModeConfig;
+	performance?: ModeConfig;
+	fast?: ModeConfig;
+	[key: string]: unknown;
+}
+
 export class ConfigFileManager {
 	currentLanguage: Lang = "zh";
 	async loadGpuConfig() {
 		const { errno, stdout } = await exec(`cat ${PATHS.CONFIG_PATH}`);
 		if (errno === 0 && stdout.trim()) {
 			try {
-				const config = parseTOML(stdout) as any;
+				const config = parseTOML(stdout) as RawConfig;
 				if (config.freq_table && Array.isArray(config.freq_table)) {
-					const gpuConfigs: GpuConfig[] = config.freq_table.map((item: any) => ({
+					const gpuConfigs: GpuConfig[] = config.freq_table.map((item) => ({
 						freq: Number(item.freq),
 						volt: Number(item.volt),
 						ddr: Number(item.ddr_opp),
@@ -77,7 +93,7 @@ export class ConfigFileManager {
 		const { errno, stdout } = await exec(`cat ${PATHS.CUSTOM_CONFIG_PATH}`);
 		if (errno === 0 && stdout.trim()) {
 			try {
-				const config = parseTOML(stdout) as any;
+				const config = parseTOML(stdout) as RawConfig;
 				const customConfig: CustomConfig = {};
 				if (config.global) customConfig.global = config.global;
 				const modes = ["powersave", "balance", "performance", "fast"];
@@ -106,7 +122,7 @@ export class ConfigFileManager {
 	}
 	generateCustomConfigContent(customConfig: CustomConfig) {
 		const header = "# GPU调速器配置文件\n\n";
-		const tomlConfig: any = {};
+		const tomlConfig: Record<string, ModeConfig> = {};
 		if (customConfig.global) tomlConfig.global = customConfig.global;
 		const modes = ["powersave", "balance", "performance", "fast"];
 		modes.forEach((mode) => {

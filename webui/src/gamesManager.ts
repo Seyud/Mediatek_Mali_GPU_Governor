@@ -36,7 +36,7 @@ export class GamesManager {
 			(index) => this.editGameItem(index),
 			(index) => this.deleteGameItem(index)
 		);
-		this.modal = new GameModal(this.currentLanguage);
+		this.modal = new GameModal();
 	}
 
 	/**
@@ -166,23 +166,6 @@ export class GamesManager {
 				}
 			}
 		});
-	}
-
-	/**
-	 * 批量加载应用名称（并行加载以提升性能）
-	 * @deprecated 使用 loadAppNamesAsync 替代
-	 */
-	private async loadAppNames(): Promise<void> {
-		// 并行加载所有应用名称，而不是逐个串行加载
-		const promises = this.gamesListData
-			.filter((game) => game.package && !game.name)
-			.map(async (game) => {
-				if (game.package) {
-					game.name = await AppInfoService.fetchAppName(game.package);
-				}
-			});
-
-		await Promise.all(promises);
 	}
 
 	/**

@@ -16,10 +16,8 @@ export class GameModal {
 	private gameModeContainer: HTMLElement | null;
 	private selectedGameMode: HTMLElement | null;
 	private gameModeOptions: HTMLElement | null;
-	private currentLanguage: Lang;
 
-	constructor(currentLanguage: Lang) {
-		this.currentLanguage = currentLanguage;
+	constructor() {
 		this.editGameModal = document.getElementById("editGameModal");
 		this.closeGameModalBtn = document.querySelector(".close-game-modal");
 		this.packageNameInput = document.getElementById("packageNameInput") as HTMLInputElement | null;
@@ -169,8 +167,6 @@ export class GameModal {
 	 * 设置语言
 	 */
 	setLanguage(language: Lang): void {
-		this.currentLanguage = language;
-
 		if (this.gameModeSelect) {
 			const options = this.gameModeSelect.options;
 			for (let i = 0; i < options.length; i++) {

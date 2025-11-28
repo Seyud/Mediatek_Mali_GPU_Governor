@@ -24,6 +24,10 @@ export interface TranslationsType {
 }
 
 // WebUI-X 类型定义
+export interface KsuApi {
+	getPackagesInfo(packageName: string): Promise<{ appLabel: string }>;
+}
+
 export interface WindowWithWebUIX extends Window {
 	$packageManager?: {
 		getApplicationInfo(
@@ -36,6 +40,7 @@ export interface WindowWithWebUIX extends Window {
 		getApplicationIcon(packageName: string, flags: number, userId: number): unknown;
 	};
 	wrapInputStream?: (stream: unknown) => Promise<Response>;
+	ksu?: KsuApi;
 }
 
 declare const window: WindowWithWebUIX;

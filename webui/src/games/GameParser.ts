@@ -5,37 +5,51 @@
 import { parse as parseTOML, stringify as stringifyTOML } from "smol-toml";
 import type { GameConfig } from "../types/games";
 
-export class GameParser {
-	/**
-	 * 解析 TOML 格式的游戏列表
-	 */
-	static parseTomlGames(tomlString: string): GameConfig[] {
-		try {
-			const config = parseTOML(tomlString) as any;
-			if (config.games && Array.isArray(config.games)) {
-				return config.games.map((game: any) => ({
-					package: game.package || "",
-					mode: game.mode || "balance",
-				}));
-			}
-			return [];
-		} catch (error) {
-			// 解析失败时返回空数组，由调用方处理错误提示
-			return [];
-		}
-	}
+interface RawGameItem {
+	package?: string;
+	mode?: string;
+	[key: string]: unknown;
+}
 
-	/**
-	 * 将游戏列表序列化为 TOML 格式
-	 */
-	static serializeTomlGames(games: GameConfig[]): string {
-		const header = "# GPU调速器游戏列表配置文件\n\n";
-		const config = {
-			games: games.map((game) => ({
-				package: game.package,
+interface RawGameConfig {
+	games?: RawGameItem[];
+	[key: string]: unknown;
+}
+
+/**
+ * 解析 TOML 格式的游戏列表
+ */
+function parseTomlGames(tomlString: string): GameConfig[] {
+	try {
+		const config = parseTOML(tomlString) as RawGameConfig;
+		if (config.games && Array.isArray(config.games)) {
+			return config.games.map((game) => ({
+				package: game.package || "",
 				mode: game.mode || "balance",
-			})),
-		};
-		return header + stringifyTOML(config);
+			}));
+		}
+		return [];
+	} catch (_error) {
+		// 解析失败时返回空数组，由调用方处理错误提示
+		return [];
 	}
 }
+
+/**
+ * 将游戏列表序列化为 TOML 格式
+ */
+function serializeTomlGames(games: GameConfig[]): string {
+	const header = "# GPU调速器游戏列表配置文件\n\n";
+	const config = {
+		games: games.map((game) => ({
+			package: game.package,
+			mode: game.mode || "balance",
+		})),
+	};
+	return header + stringifyTOML(config);
+}
+
+export const GameParser = {
+	parseTomlGames,
+	serializeTomlGames,
+};
