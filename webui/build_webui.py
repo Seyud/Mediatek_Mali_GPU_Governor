@@ -139,19 +139,19 @@ def biome_check(pm: str, verbose: bool=False) -> None:
     if not biome_exe:
         # 如果找不到本地 biome，尝试使用包管理器执行
         if pm == 'yarn':
-            cmd = [exe, 'dlx', '@biomejs/biome', 'check', '.']
+            cmd = [exe, 'dlx', '@biomejs/biome', 'check', '.', '--error-on-warnings']
         elif pm == 'pnpm':
-            cmd = [exe, 'dlx', '@biomejs/biome', 'check', '.']
+            cmd = [exe, 'dlx', '@biomejs/biome', 'check', '.', '--error-on-warnings']
         else:  # npm - 尝试通过 npm exec
             npx = which('npx') or which('npx.cmd')
             if npx:
-                cmd = [npx, '@biomejs/biome', 'check', '.']
+                cmd = [npx, '@biomejs/biome', 'check', '.', '--error-on-warnings']
             else:
                 print(c('警告: 无法找到 biome 可执行文件或 npx，尝试使用 npm exec', 'yellow'))
-                cmd = [exe, 'exec', '--', '@biomejs/biome', 'check', '.']
+                cmd = [exe, 'exec', '--', '@biomejs/biome', 'check', '.', '--error-on-warnings']
     else:
         # 使用本地安装的 biome
-        cmd = [biome_exe, 'check', '.']
+        cmd = [biome_exe, 'check', '.', '--error-on-warnings']
     
     base_cmd = cmd[:]
 
@@ -167,10 +167,20 @@ def biome_check(pm: str, verbose: bool=False) -> None:
             run(base_cmd, ROOT, verbose=verbose)
             print(c('✓ Biome 检查通过（自动修复后）', 'green'))
             return
-        except subprocess.CalledProcessError:
-            print(c('自动修复失败', 'red'))
-            print(c('✗ Biome 检查仍存在问题，请手动处理', 'red'))
-            raise
+        except subprocess.CalledProcessError as e:
+            print(c('', 'red'))
+            print(c('╔══════════════════════════════════════════════════════════════╗', 'red'))
+            print(c('║  ✗ 自动修复后 Biome 检查仍存在问题（警告或错误）             ║', 'red'))
+            print(c('╠══════════════════════════════════════════════════════════════╣', 'red'))
+            print(c('║  构建已停止，请先手动修复代码问题后再重新构建。              ║', 'red'))
+            print(c('║                                                              ║', 'red'))
+            print(c('║  修复建议:                                                   ║', 'red'))
+            print(c('║    1. 查看上方的 Biome 检查输出，了解具体问题                 ║', 'red'))
+            print(c('║    2. 手动修复代码中的问题                                    ║', 'red'))
+            print(c('║    3. 修复后重新运行此构建脚本                                ║', 'red'))
+            print(c('╚══════════════════════════════════════════════════════════════╝', 'red'))
+            print(c('', 'red'))
+            raise RuntimeError('Biome 代码检查未通过，构建已终止') from e
 
 
 def build(pm: str, verbose: bool=False) -> None:
