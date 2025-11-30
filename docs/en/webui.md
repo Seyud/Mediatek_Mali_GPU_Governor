@@ -17,6 +17,10 @@ WebUI supports configuration file hot-reload, real-time log viewing, visual edit
 
 - **Log Viewing**: Real-time viewing of module running logs, supporting selection of different log files and log levels
 
+- **WebUI-X API Support**: Game list supports fetching app icons and names via WebUI-X API, enhancing user experience
+
+- **Multi-level App Information Retrieval**: Priority use of KernelSU API for app information retrieval, improving accuracy and efficiency
+
 ### UI Features
 
 - **Dark Mode Support**: Automatically adapts to system dark/light mode, can also be manually switched
@@ -26,8 +30,6 @@ WebUI supports configuration file hot-reload, real-time log viewing, visual edit
 - **Voltage Adjuster**: Supports using rotary selector for voltage adjustment, long press for continuous adjustment (±625 units each time)
 
 - **Real-time Updates**: Detects game mode status changes every second and updates the interface
-
-- **Toast Notifications**: Operation feedback and status tips
 
 ## UI Layout
 

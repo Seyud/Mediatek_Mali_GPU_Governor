@@ -73,6 +73,8 @@ The module provides multiple preset configuration files:
 - `config/mtd1000.toml` - Dimensity 1000 series
 - `config/mtd1100.toml` - Dimensity 1100 series
 - `config/mtd1200.toml` - Dimensity 1200 series
+- `config/mtd6080.toml` - Dimensity 6080 series
+- `config/mtd7300.toml` - Dimensity 7300 series
 - `config/mtd8100.toml` - Dimensity 8100 series
 - `config/mtd8200.toml` - Dimensity 8200 series
 - `config/mtd9000.toml` - Dimensity 9000 series

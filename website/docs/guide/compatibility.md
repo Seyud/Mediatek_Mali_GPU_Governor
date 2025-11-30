@@ -6,7 +6,7 @@
 
 支持大多数搭载 Mali GPU 的联发科处理器：
 
-- Dimensity 系列（如 D1x00/D8x00/D9000，0 ≤ x ≤ 2）
+- Dimensity 系列（如 D1x00/D6080/D7300/D8x00/D9000，0 ≤ x ≤ 3）
 
 模块会自动检测设备型号并应用适合的配置。
 如果您的设备不在适配列表中，模块会使用默认配置。
@@ -18,6 +18,8 @@
 - `config/mtd1000.toml` - Dimensity 1000 系列
 - `config/mtd1100.toml` - Dimensity 1100 系列
 - `config/mtd1200.toml` - Dimensity 1200 系列
+- `config/mtd6080.toml` - Dimensity 6080 系列
+- `config/mtd7300.toml` - Dimensity 7300 系列
 - `config/mtd8100.toml` - Dimensity 8100 系列
 - `config/mtd8200.toml` - Dimensity 8200 系列
 - `config/mtd9000.toml` - Dimensity 9000 系列

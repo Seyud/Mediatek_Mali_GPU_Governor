@@ -6,7 +6,7 @@
 
 Supports most MediaTek processors with Mali GPU:
 
-- Dimensity series (e.g. D1x00/D8x00/D9000, etc.) 0 ≤ x ≤ 2
+- Dimensity series (e.g. D1x00/D6080/D7300/D8x00/D9000, etc.) 0 ≤ x ≤ 3
 
 The module will automatically detect the device model and apply the appropriate configuration.
 If your device is not in the adaptation list, the module will use the default configuration.
@@ -18,6 +18,8 @@ The module provides dedicated preset configuration files for the following proce
 - `config/mtd1000.toml` - Dimensity 1000 series
 - `config/mtd1100.toml` - Dimensity 1100 series
 - `config/mtd1200.toml` - Dimensity 1200 series
+- `config/mtd6080.toml` - Dimensity 6080 series
+- `config/mtd7300.toml` - Dimensity 7300 series
 - `config/mtd8100.toml` - Dimensity 8100 series
 - `config/mtd8200.toml` - Dimensity 8200 series
 - `config/mtd9000.toml` - Dimensity 9000 series

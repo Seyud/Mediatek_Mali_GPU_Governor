@@ -1,5 +1,58 @@
 # 📝 CHANGELOG
 
+## ⬆️ v2.10.3 → v2.11.0 (November 30, 2025)
+
+> ⚠️ **Important Notice**
+> 
+> In the frequency tables of processors that do not support voltage reduction, the voltage field is only a placeholder for alignment with other frequency tables, and the actual voltage reduction function does not take effect.
+
+### ✨ New Features
+
+- **Add Dimensity 6080 frequency table** 📱
+  - Added support for Dimensity 6080 chip, expanding device compatibility.
+- **Add Dimensity 7300 frequency table** 📱
+  - Added support for Dimensity 7300 chip, further expanding device compatibility.
+- **WebUI add WebUI-X API support** 🌐
+  - Game list supports fetching app icons and names via WebUI-X API, enhancing user experience.
+- **WebUI implement multi-level app information retrieval strategy** 🔍
+  - Priority use of KernelSU API for app information retrieval, improving accuracy and efficiency.
+
+### 🔧 Improvements
+
+- **Optimize path existence check during initialization** ⚡
+  - Improved path checking logic during initialization, enhancing startup efficiency.
+- **Optimize file judgment logic** 📁
+  - Improved file existence and type judgment logic, enhancing system stability.
+- **Format code** 💻
+  - Unified code formatting, improving code readability and maintainability.
+- **Optimize configuration monitoring and mode writing logic** 🔄
+  - Improved configuration monitoring mechanism and mode writing process, enhancing system response speed.
+- **Refactor event handling and enhance file monitoring functionality** 📊
+  - Redesigned event handling system, enhanced file monitoring capabilities, improving system reliability.
+- **Update core dependencies** 📚
+  - Fully upgraded core dependency libraries to ensure security and performance.
+- **Optimize WebUI styles** 🎨
+  - Improved WebUI visual effects, enhancing user experience.
+- **Optimize WebUI performance** ⚡
+  - Enhanced WebUI loading speed and response performance.
+- **Add frosted glass effect to WebUI navigation bar** 🔮
+  - Enhanced WebUI visual hierarchy and modern feel.
+- **Adjust margin values for performance mode and extreme mode** ⚙️
+  - Optimized margin settings for different modes, improving performance.
+- **Refactor WebUI toml file parsing** 🔧
+  - Improved WebUI's toml file parsing logic, enhancing configuration processing efficiency.
+- **Improve action.sh menu interaction interface and navigation logic** 📋
+  - Optimized command line menu interaction experience and navigation flow, enhancing user operation convenience.
+
+### 🐛 Bug Fixes
+
+- **Fix handling logic when foreground app package name doesn't change** 🎮
+  - Resolved abnormal handling when foreground app package name remains unchanged, ensuring normal app detection.
+- **Fix global mode recovery logic when switching from game mode** 🔄
+  - Resolved recovery issue when switching from game mode to global mode, ensuring normal mode switching.
+- **Fix some processor identification anomalies** 🔧
+  - Resolved identification errors for some processor models, improving device compatibility.
+
 ## ⬆️ v2.10.0 → v2.10.3 (October 17, 2025)
 
 ### ⚠️ Experimental Adaptation Notice
