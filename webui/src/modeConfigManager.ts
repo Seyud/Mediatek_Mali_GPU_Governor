@@ -199,7 +199,7 @@ export class ModeConfigManager {
 		return "balance";
 	}
 	getIdleThreshold() {
-		return this.idleThresholdInput ? this.idleThresholdInput.value || 5 : 5;
+		return this.idleThresholdInput ? Number(this.idleThresholdInput.value) || 5 : 5;
 	}
 	getModeConfig(inputs: ModeInputs | null): ModeConfig {
 		if (!inputs) return {};
