@@ -1,6 +1,6 @@
 {
   "name": "mediatek-mali-gpu-governor-website",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "Mediatek Mali GPU Governor official website",
   "main": "index.js",
   "repository": "https://github.com/Seyud/Mediatek_Mali_GPU_Governor",
