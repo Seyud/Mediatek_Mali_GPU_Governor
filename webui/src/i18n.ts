@@ -269,7 +269,7 @@ export const translations = {
 		toast_log_level_fail: "Failed to save log level, please check permissions",
 		toast_language_changed: "Language changed to {language}",
 		toast_language_follow_system: "Language set to follow system",
-		copyright_text: "Mediatek Mali GPU Governor © 2025 Coolapk@Walika = Github@Seyud",
+		copyright_text: "Mediatek Mali GPU Governor © 2025 Github@Seyud",
 		config_games_not_found: "No games found",
 		config_games_list_not_found: "No games list found",
 	},

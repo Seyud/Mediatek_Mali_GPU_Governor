@@ -68,7 +68,7 @@ Dimensity GPU Governor (Mediatek Mali GPU Governor) is an advanced GPU governor 
 
 ## Acknowledgements 🙏
 
-- **Developers**: WaliKa @CoolApk = Seyud @GitHub, Tools-cx-app @GitHub
+- **Developers**: Seyud @GitHub, Tools-cx-app @GitHub
 
 - **Special Thanks**: HamJin @CoolApk, asto18089 @CoolApk, helloklf @GitHub
 
