@@ -57,8 +57,8 @@ localize_module_prop() {
     local name_en="Mediatek_Mali_GPU_Governor"
     local desc_zh="适用于Mediatek_Mali_GPU的GPU动态调速器，优化高负载场景下的功耗与性能平衡"
     local desc_en="GPU dynamic governor for Mediatek_Mali_GPU to balance performance and power under heavy load"
-    local author_zh="酷安@瓦力喀"
-    local author_en="Seyud @GitHub"
+    local author_zh="酷安@瓦力喀/GitHub@Seyud, Tools-cx-app"
+    local author_en="Seyud @GitHub, Tools-cx-app @GitHub"
 
     if [ "$language" = "en" ]; then
         _update_module_prop_entry "name" "$name_en"
