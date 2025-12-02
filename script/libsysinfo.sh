@@ -88,6 +88,7 @@ get_config_name() {
         "mt6895") echo "mtd8100" ;;
         "mt6896") echo "mtd8200" ;;
         "mt6897") echo "mtd8300" ;;
+        "mt6899") echo "mtd8400" ;; # Dimensity 8400
         "mt6983") echo "mtd9000" ;;
         "mt6985") echo "mtd9200" ;;
         "mt6989") echo "mtd9300" ;; # Dimensity 9300
