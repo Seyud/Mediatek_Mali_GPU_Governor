@@ -4,7 +4,6 @@
  */
 
 import { getPackagesInfo } from "kernelsu-alt";
-import fallbackIcon from "../../icon.png";
 import type { WindowWithWebUIX } from "../types/games";
 
 declare const window: WindowWithWebUIX;
@@ -76,12 +75,6 @@ function applyIconTransition(
 				img.style.opacity = "1";
 			});
 		}, 300);
-	};
-
-	img.onerror = () => {
-		img.src = fallbackIcon;
-		placeholder.style.display = "none";
-		img.style.opacity = "1";
 	};
 }
 
@@ -195,12 +188,6 @@ async function loadAppIcon(
 				img.style.opacity = "1";
 				iconContainer.innerHTML = "";
 				iconContainer.appendChild(img);
-			};
-
-			img.onerror = () => {
-				img.src = fallbackIcon;
-				placeholder.style.display = "none";
-				img.style.opacity = "1";
 			};
 
 			img.src = `ksu://icon/${packageName}`;
