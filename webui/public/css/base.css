@@ -50,7 +50,13 @@ body {
 	transition:
 		background-color 0.3s,
 		color 0.3s;
-	padding-bottom: 90px;
+	/* Header 已 fixed，需要为其留出空间：安全区 + header高度(约56px) */
+	padding-top: calc(var(--window-inset-top, 0px) + 60px);
+	/* 底部导航栏空间：安全区 + 导航栏高度(80px) */
+	padding-bottom: calc(var(--window-inset-bottom, 0px) + 90px);
+	/* 左右 insets 不需要了，因为 header 和 nav 已处理 */
+	padding-left: var(--window-inset-left, 0px);
+	padding-right: var(--window-inset-right, 0px);
 	/* 移动端优化 */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

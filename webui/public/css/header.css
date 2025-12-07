@@ -1,9 +1,16 @@
 @import url("./variables.css");
 
 .app-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
 	background-color: var(--header-background);
 	box-shadow: var(--header-shadow);
-	padding: 16px 20px;
+	/* 内容区域使用正常 padding，顶部额外加上安全区 */
+	padding: calc(var(--window-inset-top, 0px) + 16px) calc(var(--window-inset-right, 0px) + 20px)
+		16px calc(var(--window-inset-left, 0px) + 20px);
 	border-bottom: 1px solid var(--border-color);
 }
 
@@ -30,6 +37,8 @@
 [data-theme="dark"] .app-header {
 	background: linear-gradient(135deg, var(--header-background) 0%, rgba(13, 132, 255, 0.02) 100%);
 	border-bottom-color: rgba(13, 132, 255, 0.2);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 }
 
 [data-theme="dark"] .header-content h1 {
