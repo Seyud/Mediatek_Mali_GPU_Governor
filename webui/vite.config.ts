@@ -4,4 +4,7 @@ export default defineConfig({
 	publicDir: "public",
 	build: { outDir: "../webroot", emptyOutDir: true },
 	server: { port: 5173, host: true },
+	define: {
+		global: "globalThis",
+	},
 });

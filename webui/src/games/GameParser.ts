@@ -2,7 +2,7 @@
  * TOML 游戏配置解析器
  */
 
-import { parse as parseTOML, stringify as stringifyTOML } from "smol-toml";
+import { parse as parseTOML, stringify as stringifyTOML } from "@iarna/toml";
 import type { GameConfig } from "../types/games";
 
 interface RawGameItem {

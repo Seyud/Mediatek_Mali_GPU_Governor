@@ -1,4 +1,4 @@
-import { parse as parseTOML, stringify as stringifyTOML } from "smol-toml";
+import { parse as parseTOML, stringify as stringifyTOML } from "@iarna/toml";
 import { PATHS } from "./constants";
 import { getTranslation } from "./i18n";
 import { exec, toast } from "./utils";

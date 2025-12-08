@@ -17,9 +17,9 @@
 		"vite": "^7.2.2"
 	},
 	"dependencies": {
+		"@iarna/toml": "^2.2.5",
 		"kernelsu": "^2.1.1",
 		"kernelsu-alt": "^2.1.2",
-		"marked": "^17.0.1",
-		"smol-toml": "^1.4.2"
+		"marked": "^17.0.1"
 	}
 }
