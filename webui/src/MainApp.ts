@@ -1,5 +1,6 @@
 import { ConfigManager } from "./configManager";
 import { PATHS } from "./constants";
+import { DocsManager } from "./docsManager";
 import { GamesManager } from "./gamesManager";
 import { getTranslation, type Language, translations } from "./i18n";
 import { LogManager } from "./logManager";
@@ -52,6 +53,7 @@ export class MainApp {
 	gamesManager: GamesManager;
 	logManager: LogManager;
 	settingsManager: SettingsManager;
+	docsManager: DocsManager;
 
 	constructor() {
 		this.app = document.getElementById("app");
@@ -69,6 +71,7 @@ export class MainApp {
 		this.gamesManager = new GamesManager();
 		this.logManager = new LogManager();
 		this.settingsManager = new SettingsManager();
+		this.docsManager = new DocsManager();
 	}
 
 	async init() {
@@ -82,6 +85,7 @@ export class MainApp {
 		this.gamesManager.init();
 		this.logManager.init();
 		this.settingsManager.init();
+		this.docsManager.init();
 
 		// 初始化语言（可能需要检测系统语言）
 		await this.initLanguage();
@@ -162,6 +166,7 @@ export class MainApp {
 			this.gamesManager.setLanguage(this.currentLanguage);
 			this.logManager.setLanguage(this.currentLanguage);
 			this.settingsManager.setLanguage(this.currentLanguage);
+			this.docsManager.setLanguage(this.currentLanguage);
 			this.applyTranslations();
 			// 重新加载状态信息以确保正确的翻译
 			this.loadModuleVersion();
@@ -187,6 +192,7 @@ export class MainApp {
 		this.gamesManager.setLanguage(this.currentLanguage);
 		this.logManager.setLanguage(this.currentLanguage);
 		this.settingsManager.setLanguage(this.currentLanguage);
+		this.docsManager.setLanguage(this.currentLanguage);
 		this.applyTranslations();
 		this.updateSelectedLanguageText(savedLanguageSetting || "system");
 		this.setupLanguageEvents();

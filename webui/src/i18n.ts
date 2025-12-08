@@ -134,6 +134,11 @@ export const translations = {
 		copyright_text: "天玑GPU调速器 © 2025 酷安@瓦力喀 = Github@Seyud",
 		config_games_not_found: "未找到游戏",
 		config_games_list_not_found: "未找到游戏列表",
+		settings_docs: "帮助文档:",
+		settings_docs_loading: "正在加载文档列表...",
+		settings_docs_empty: "未找到文档",
+		docs_modal_title: "文档",
+		docs_load_fail: "加载文档失败",
 	},
 	en: {
 		title: "Mediatek Mali GPU Governor",
@@ -272,6 +277,11 @@ export const translations = {
 		copyright_text: "Mediatek Mali GPU Governor © 2025 Github@Seyud",
 		config_games_not_found: "No games found",
 		config_games_list_not_found: "No games list found",
+		settings_docs: "Help Documents:",
+		settings_docs_loading: "Loading documents list...",
+		settings_docs_empty: "No documents found",
+		docs_modal_title: "Document",
+		docs_load_fail: "Failed to load document",
 	},
 } as const;
 

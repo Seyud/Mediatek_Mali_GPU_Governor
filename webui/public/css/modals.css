@@ -63,7 +63,8 @@
 	right: 20px;
 	font-size: 28px;
 	font-weight: bold;
-	width: 44px; /* 增大触摸区域 */
+	width: 44px;
+	/* 增大触摸区域 */
 	height: 44px;
 	display: flex;
 	align-items: center;
@@ -85,6 +86,17 @@
 	height: 50px;
 	top: 12px;
 	right: 16px;
+}
+
+/* 文档查看对话框的关闭按钮 - 最大触摸区域 */
+.close-docs-modal {
+	font-size: 36px;
+	width: 60px;
+	height: 60px;
+	top: 8px;
+	right: 12px;
+	background: rgba(0, 0, 0, 0.05);
+	/* 轻微背景增加可见点击范围感知 */
 }
 
 /* 触摸反馈 - 替代 hover */

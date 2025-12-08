@@ -9,13 +9,15 @@
 @import url("./logs.css");
 @import url("./modals.css");
 @import url("./game-cards.css");
+@import url("./markdown.css");
 
 /* SVG图标通用样式 */
 svg {
 	vertical-align: middle;
 	color: inherit;
 	fill: currentColor;
-	pointer-events: none; /* 防止触摸事件干扰 */
+	pointer-events: none;
+	/* 防止触摸事件干扰 */
 }
 
 /* 确保SVG图标在不同主题下都能正确显示 */

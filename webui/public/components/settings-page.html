@@ -34,8 +34,7 @@
                 <span data-i18n="settings_language">语言设置:</span>
             </div>
             <div class="settings-tabs-grid language-tabs-grid" id="languageContainer">
-                <button class="settings-tab-btn active" data-value="system"
-                    data-i18n="settings_language_follow">
+                <button class="settings-tab-btn active" data-value="system" data-i18n="settings_language_follow">
                     <span class="tab-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path
@@ -69,11 +68,18 @@
             </div>
 
             <div class="status-item">
+                <span data-i18n="settings_docs">帮助文档:</span>
+            </div>
+            <div id="docsList" class="settings-list"
+                style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+                <span data-i18n="settings_docs_loading" class="loading-text">正在加载文档列表...</span>
+            </div>
+
+            <div class="status-item">
                 <span data-i18n="settings_log_level">主日志等级:</span>
             </div>
             <div class="settings-tabs-grid log-level-tabs-grid" id="logLevelContainer">
-                <button class="settings-tab-btn" data-value="debug"
-                    data-i18n="settings_log_level_debug">
+                <button class="settings-tab-btn" data-value="debug" data-i18n="settings_log_level_debug">
                     <span class="tab-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path
@@ -82,8 +88,7 @@
                     </span>
                     <span class="tab-text">Debug</span>
                 </button>
-                <button class="settings-tab-btn active" data-value="info"
-                    data-i18n="settings_log_level_info">
+                <button class="settings-tab-btn active" data-value="info" data-i18n="settings_log_level_info">
                     <span class="tab-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path
@@ -100,8 +105,7 @@
                     </span>
                     <span class="tab-text">Warn</span>
                 </button>
-                <button class="settings-tab-btn" data-value="error"
-                    data-i18n="settings_log_level_error">
+                <button class="settings-tab-btn" data-value="error" data-i18n="settings_log_level_error">
                     <span class="tab-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path

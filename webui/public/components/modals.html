@@ -1,3 +1,12 @@
+<!-- 查看文档对话框 -->
+<div id="docsModal" class="modal">
+    <div class="modal-content modal-large">
+        <span class="close-modal close-docs-modal">&times;</span>
+        <h3 id="docsTitle" data-i18n="docs_modal_title">文档</h3>
+        <div id="docsContent" class="markdown-body" style="overflow-y: auto; max-height: 70vh; padding: 10px;"></div>
+    </div>
+</div>
+
 <!-- 编辑配置对话框 -->
 <div id="editConfigModal" class="modal">
     <div class="modal-content">
@@ -5,8 +14,8 @@
         <h3 data-i18n="edit_config_title">编辑GPU频率表</h3>
         <div class="form-group">
             <label for="freqInput" data-i18n="edit_config_freq">频率 (MHz):</label>
-            <input type="number" id="freqInput" min="100000" max="1000000" step="1000"
-                placeholder="例如: 350000 (KHz)" data-i18n-placeholder="edit_config_freq_example">
+            <input type="number" id="freqInput" min="100000" max="1000000" step="1000" placeholder="例如: 350000 (KHz)"
+                data-i18n-placeholder="edit_config_freq_example">
             <small class="input-hint" data-i18n="edit_config_freq_hint">请输入KHz值，表格中显示为MHz</small>
         </div>
         <div class="form-group">
@@ -50,7 +59,8 @@
         <h3 data-i18n="edit_game_title">编辑游戏列表</h3>
         <div class="form-group">
             <label for="packageNameInput" data-i18n="edit_game_package">应用包名:</label>
-            <input type="text" id="packageNameInput" placeholder="例如: com.tencent.tmgp.sgame" data-i18n-placeholder="edit_game_package_example">
+            <input type="text" id="packageNameInput" placeholder="例如: com.tencent.tmgp.sgame"
+                data-i18n-placeholder="edit_game_package_example">
         </div>
         <div class="form-group">
             <label for="gameModeSelect" data-i18n="edit_game_mode">对应模式:</label>

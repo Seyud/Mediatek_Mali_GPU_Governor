@@ -19,6 +19,7 @@
 	"dependencies": {
 		"kernelsu": "^2.1.1",
 		"kernelsu-alt": "^2.1.2",
+		"marked": "^17.0.1",
 		"smol-toml": "^1.4.2"
 	}
 }

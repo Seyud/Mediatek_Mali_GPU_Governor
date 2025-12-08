@@ -1,0 +1,145 @@
+.markdown-body {
+	font-size: 15px;
+	line-height: 1.6;
+	color: var(--text-color);
+}
+
+.markdown-body > *:first-child {
+	margin-top: 0;
+}
+
+.markdown-body > *:last-child {
+	margin-bottom: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+	margin-top: 24px;
+	margin-bottom: 16px;
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--text-color);
+}
+
+.markdown-body h1 {
+	font-size: 2em;
+	padding-bottom: 0.3em;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.markdown-body h2 {
+	font-size: 1.5em;
+	padding-bottom: 0.3em;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.markdown-body h3 {
+	font-size: 1.25em;
+}
+
+.markdown-body p {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+	margin: 0 0 16px;
+	padding: 0 1em;
+	color: var(--secondary-text-color);
+	border-left: 0.25em solid var(--border-color);
+}
+
+.markdown-body ul,
+.markdown-body ol {
+	margin-top: 0;
+	margin-bottom: 16px;
+	padding-left: 2em;
+}
+
+.markdown-body li {
+	word-wrap: break-word;
+}
+
+.markdown-body code {
+	padding: 0.2em 0.4em;
+	margin: 0;
+	font-size: 85%;
+	font-family:
+		ui-monospace,
+		SFMono-Regular,
+		SF Mono,
+		Menlo,
+		Consolas,
+		Liberation Mono,
+		monospace;
+	background-color: var(--input-background);
+	border-radius: 6px;
+}
+
+.markdown-body pre {
+	margin-top: 0;
+	margin-bottom: 16px;
+	padding: 16px;
+	overflow: auto;
+	font-size: 85%;
+	line-height: 1.45;
+	background-color: var(--input-background);
+	border-radius: 6px;
+}
+
+.markdown-body pre code {
+	background-color: transparent;
+	padding: 0;
+	margin: 0;
+	font-size: 100%;
+}
+
+.markdown-body hr {
+	height: 0.25em;
+	padding: 0;
+	margin: 24px 0;
+	background-color: var(--border-color);
+	border: 0;
+}
+
+.markdown-body a {
+	color: var(--accent-color);
+	text-decoration: none;
+}
+
+.markdown-body a:hover {
+	text-decoration: underline;
+}
+
+.markdown-body table {
+	border-spacing: 0;
+	border-collapse: collapse;
+	margin-top: 0;
+	margin-bottom: 16px;
+	width: 100%;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+	padding: 6px 13px;
+	border: 1px solid var(--border-color);
+}
+
+.markdown-body table th {
+	font-weight: 600;
+	background-color: var(--card-background);
+}
+
+.markdown-body table tr:nth-child(2n) {
+	background-color: var(--background-color);
+}
+
+.markdown-body img {
+	max-width: 100%;
+	box-sizing: content-box;
+	background-color: var(--card-background);
+}
