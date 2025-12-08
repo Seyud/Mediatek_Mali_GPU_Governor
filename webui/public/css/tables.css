@@ -80,12 +80,22 @@ tbody tr:last-child td {
 	margin-top: 16px;
 }
 
+/* 英文模式下按钮垂直排列以防止文字截断 */
+:lang(en) .config-actions {
+	flex-direction: column;
+}
+
+:lang(en) .config-actions button {
+	width: 100%;
+}
+
 /* Miuix风格编辑和删除按钮 - 安卓触摸优化 */
 .edit-btn,
 .delete-btn {
 	background: transparent;
 	border: 2px solid transparent;
-	padding: 10px; /* 增大触摸区域 */
+	padding: 10px;
+	/* 增大触摸区域 */
 	min-width: 44px;
 	min-height: 44px;
 	border-radius: 10px;
@@ -116,7 +126,8 @@ tbody tr:last-child td {
 
 .edit-btn svg,
 .delete-btn svg {
-	width: 20px; /* 增大图标尺寸 */
+	width: 20px;
+	/* 增大图标尺寸 */
 	height: 20px;
 	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	position: relative;
@@ -195,7 +206,8 @@ tbody tr:last-child td {
 }
 
 .games-list li {
-	padding: 16px; /* 增大触摸区域 */
+	padding: 16px;
+	/* 增大触摸区域 */
 	min-height: 52px;
 	border-bottom: 1px solid rgba(var(--accent-color-rgb, 13, 132, 255), 0.08);
 	border-radius: 8px;

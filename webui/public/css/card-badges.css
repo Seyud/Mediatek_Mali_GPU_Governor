@@ -19,6 +19,7 @@
 	overflow: hidden;
 	transform: translateZ(0);
 	/* 启用硬件加速 */
+	flex-shrink: 0;
 }
 
 .status-badge::before {
@@ -84,7 +85,8 @@
 }
 
 .version-badge {
-	padding: 6px 16px 6px 20px; /* 左侧增加padding为红点留出空间 */
+	padding: 6px 16px 6px 20px;
+	/* 左侧增加padding为红点留出空间 */
 	border-radius: 16px;
 	font-size: 13px;
 	font-weight: 600;
@@ -98,6 +100,7 @@
 	position: relative;
 	overflow: hidden;
 	transform: translateZ(0);
+	flex-shrink: 0;
 }
 
 .version-badge::before {
@@ -137,7 +140,8 @@
 
 /* 当前模式显示样式 */
 .mode-badge {
-	padding: 6px 16px 6px 20px; /* 左侧增加padding为红点留出空间 */
+	padding: 6px 16px 6px 20px;
+	/* 左侧增加padding为红点留出空间 */
 	border-radius: 16px;
 	font-size: 13px;
 	font-weight: 600;
@@ -151,6 +155,7 @@
 	position: relative;
 	overflow: hidden;
 	transform: translateZ(0);
+	flex-shrink: 0;
 }
 
 .mode-badge.powersave {
@@ -223,23 +228,28 @@
 
 /* 为不同模式设置不同的小圆点颜色，使用更浅的色调 */
 .mode-badge.powersave::after {
-	background-color: rgba(129, 199, 132, 0.8); /* 浅绿色 */
+	background-color: rgba(129, 199, 132, 0.8);
+	/* 浅绿色 */
 }
 
 .mode-badge.balance::after {
-	background-color: rgba(79, 195, 247, 0.8); /* 浅蓝色 */
+	background-color: rgba(79, 195, 247, 0.8);
+	/* 浅蓝色 */
 }
 
 .mode-badge.performance::after {
-	background-color: rgba(255, 183, 77, 0.8); /* 浅橙色 */
+	background-color: rgba(255, 183, 77, 0.8);
+	/* 浅橙色 */
 }
 
 .mode-badge.fast::after {
-	background-color: rgba(239, 154, 154, 0.8); /* 浅红色 */
+	background-color: rgba(239, 154, 154, 0.8);
+	/* 浅红色 */
 }
 
 .mode-badge.default::after {
-	background-color: rgba(189, 189, 189, 0.8); /* 浅灰色 */
+	background-color: rgba(189, 189, 189, 0.8);
+	/* 浅灰色 */
 }
 
 /* 添加状态切换时的动画效果 */
