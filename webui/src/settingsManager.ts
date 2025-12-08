@@ -1,4 +1,3 @@
-import { PATHS } from "./constants";
 import { getTranslation } from "./i18n";
 import { exec, toast } from "./utils";
 
@@ -6,34 +5,17 @@ type Lang = "zh" | "en";
 
 export class SettingsManager {
 	currentLanguage: Lang = "zh";
-	logLevelContainer: HTMLElement | null;
 	languageContainer: HTMLElement | null;
 
 	constructor() {
-		this.logLevelContainer = document.getElementById("logLevelContainer");
 		this.languageContainer = document.getElementById("languageContainer");
 	}
 
 	init() {
 		this.setupEventListeners();
-		this.loadLogLevel();
 	}
 
 	setupEventListeners() {
-		if (this.logLevelContainer) {
-			const logLevelButtons = this.logLevelContainer.querySelectorAll(".settings-tab-btn");
-			logLevelButtons.forEach((button) => {
-				button.addEventListener("click", (e) => {
-					e.preventDefault();
-					logLevelButtons.forEach((btn) => {
-						btn.classList.remove("active");
-					});
-					button.classList.add("active");
-					this.saveLogLevel();
-				});
-			});
-		}
-
 		if (this.languageContainer) {
 			const languageButtons = this.languageContainer.querySelectorAll(".settings-tab-btn");
 			languageButtons.forEach((button) => {
@@ -74,41 +56,7 @@ export class SettingsManager {
 		}
 	}
 
-	async loadLogLevel() {
-		const { errno, stdout } = await exec(`cat ${PATHS.LOG_LEVEL_PATH} 2>/dev/null || echo "info"`);
-		let logLevel: string = "info";
-		if (errno === 0) {
-			const level = stdout.trim().toLowerCase();
-			if (["debug", "info", "warn", "error"].includes(level)) logLevel = level;
-		}
-		if (this.logLevelContainer) {
-			const logLevelButtons = this.logLevelContainer.querySelectorAll(".settings-tab-btn");
-			logLevelButtons.forEach((button) => {
-				if (button.getAttribute("data-value") === logLevel) button.classList.add("active");
-				else button.classList.remove("active");
-			});
-		}
-	}
-
-	async saveLogLevel() {
-		if (!this.logLevelContainer) return;
-		const selectedButton = this.logLevelContainer.querySelector(".settings-tab-btn.active");
-		if (!selectedButton) return;
-		const selectedLevel = selectedButton.getAttribute("data-value");
-		const { errno } = await exec(`echo "${selectedLevel}" > ${PATHS.LOG_LEVEL_PATH}`);
-		if (errno === 0) {
-			if (selectedLevel === "debug")
-				toast(getTranslation("toast_log_level_debug", {}, this.currentLanguage));
-			else
-				toast(
-					getTranslation(
-						"toast_log_level_set",
-						{ level: selectedLevel || "" },
-						this.currentLanguage
-					)
-				);
-		} else toast(getTranslation("toast_log_level_fail", {}, this.currentLanguage));
-	}
+	/* Removed loadLogLevel and saveLogLevel methods */
 
 	setLanguage(language: Lang) {
 		this.currentLanguage = language;

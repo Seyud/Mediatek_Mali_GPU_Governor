@@ -1,6 +1,6 @@
 import { PATHS } from "./constants";
 import { getTranslation } from "./i18n";
-import { exec } from "./utils";
+import { exec, toast } from "./utils";
 
 type Lang = "zh" | "en";
 
@@ -8,15 +8,18 @@ export class LogManager {
 	currentLanguage: Lang = "zh";
 	logContent: HTMLElement | null;
 	refreshLogBtn: HTMLElement | null;
+	logLevelContainer: HTMLElement | null;
 
 	constructor() {
 		this.logContent = document.getElementById("logContent");
 		this.refreshLogBtn = document.getElementById("refreshLogBtn");
+		this.logLevelContainer = document.getElementById("logLevelContainer");
 	}
 
 	init() {
 		this.setupEventListeners();
 		this.initLogFileSelect();
+		this.loadLogLevel();
 	}
 
 	setupEventListeners() {
@@ -42,6 +45,20 @@ export class LogManager {
 				}, 100);
 			});
 		});
+
+		if (this.logLevelContainer) {
+			const logLevelButtons = this.logLevelContainer.querySelectorAll(".settings-tab-btn");
+			logLevelButtons.forEach((button) => {
+				button.addEventListener("click", (e) => {
+					e.preventDefault();
+					logLevelButtons.forEach((btn) => {
+						btn.classList.remove("active");
+					});
+					button.classList.add("active");
+					this.saveLogLevel();
+				});
+			});
+		}
 	}
 
 	initLogFileSelect() {
@@ -76,6 +93,42 @@ export class LogManager {
 			if (this.logContent) this.logContent.scrollTop = this.logContent.scrollHeight;
 		} else if (this.logContent)
 			this.logContent.textContent = getTranslation("log_not_found", {}, this.currentLanguage);
+	}
+
+	async loadLogLevel() {
+		const { errno, stdout } = await exec(`cat ${PATHS.LOG_LEVEL_PATH} 2>/dev/null || echo "info"`);
+		let logLevel: string = "info";
+		if (errno === 0) {
+			const level = stdout.trim().toLowerCase();
+			if (["debug", "info", "warn", "error"].includes(level)) logLevel = level;
+		}
+		if (this.logLevelContainer) {
+			const logLevelButtons = this.logLevelContainer.querySelectorAll(".settings-tab-btn");
+			logLevelButtons.forEach((button) => {
+				if (button.getAttribute("data-value") === logLevel) button.classList.add("active");
+				else button.classList.remove("active");
+			});
+		}
+	}
+
+	async saveLogLevel() {
+		if (!this.logLevelContainer) return;
+		const selectedButton = this.logLevelContainer.querySelector(".settings-tab-btn.active");
+		if (!selectedButton) return;
+		const selectedLevel = selectedButton.getAttribute("data-value");
+		const { errno } = await exec(`echo "${selectedLevel}" > ${PATHS.LOG_LEVEL_PATH}`);
+		if (errno === 0) {
+			if (selectedLevel === "debug")
+				toast(getTranslation("toast_log_level_debug", {}, this.currentLanguage));
+			else
+				toast(
+					getTranslation(
+						"toast_log_level_set",
+						{ level: selectedLevel || "" },
+						this.currentLanguage
+					)
+				);
+		} else toast(getTranslation("toast_log_level_fail", {}, this.currentLanguage));
 	}
 
 	setLanguage(language: Lang) {

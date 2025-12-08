@@ -216,7 +216,7 @@ export const translations = {
 		settings_language_desc1: "Language changes take effect immediately",
 		settings_language_desc2: "Follow System will detect system language settings",
 		settings_log_level: "Main Log Level:",
-		settings_log_level_debug: "Debug (Detailed)",
+		settings_log_level_debug: "Debug",
 		settings_log_level_info: "Info",
 		settings_log_level_warn: "Warn",
 		settings_log_level_error: "Error",
