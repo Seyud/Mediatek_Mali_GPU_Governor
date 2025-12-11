@@ -2,7 +2,7 @@
  * TOML 游戏配置解析器
  */
 
-import { parse as parseTOML, stringify as stringifyTOML } from "@iarna/toml";
+import * as toml from "@ltd/j-toml";
 import type { GameConfig } from "../types/games";
 
 interface RawGameItem {
@@ -21,7 +21,7 @@ interface RawGameConfig {
  */
 function parseTomlGames(tomlString: string): GameConfig[] {
 	try {
-		const config = parseTOML(tomlString) as RawGameConfig;
+		const config = toml.parse(tomlString) as RawGameConfig;
 		if (config.games && Array.isArray(config.games)) {
 			return config.games.map((game) => ({
 				package: game.package || "",
@@ -46,7 +46,7 @@ function serializeTomlGames(games: GameConfig[]): string {
 			mode: game.mode || "balance",
 		})),
 	};
-	return header + stringifyTOML(config);
+	return header + toml.stringify(config);
 }
 
 export const GameParser = {

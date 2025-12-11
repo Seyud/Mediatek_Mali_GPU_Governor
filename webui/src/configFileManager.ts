@@ -1,4 +1,4 @@
-import { parse as parseTOML, stringify as stringifyTOML } from "@iarna/toml";
+import * as toml from "@ltd/j-toml";
 import { PATHS } from "./constants";
 import { getTranslation } from "./i18n";
 import { exec, toast } from "./utils";
@@ -46,7 +46,7 @@ export class ConfigFileManager {
 		const { errno, stdout } = await exec(`cat ${PATHS.CONFIG_PATH}`);
 		if (errno === 0 && stdout.trim()) {
 			try {
-				const config = parseTOML(stdout) as RawConfig;
+				const config = toml.parse(stdout) as RawConfig;
 				if (config.freq_table && Array.isArray(config.freq_table)) {
 					const gpuConfigs: GpuConfig[] = config.freq_table.map((item) => ({
 						freq: Number(item.freq),
@@ -79,7 +79,7 @@ export class ConfigFileManager {
 			})),
 		};
 		const header = "# GPU 频率表\n# freq 单位: kHz\n# volt 单位: uV\n# ddr_opp: DDR OPP 档位\n\n";
-		const content = header + stringifyTOML(config);
+		const content = header + toml.stringify(config);
 		const result = await this.writeFileAtomically(PATHS.CONFIG_PATH, content);
 		if (result.errno === 0) {
 			toast(getTranslation("toast_freq_table_saved", {}, this.currentLanguage));
@@ -93,7 +93,7 @@ export class ConfigFileManager {
 		const { errno, stdout } = await exec(`cat ${PATHS.CUSTOM_CONFIG_PATH}`);
 		if (errno === 0 && stdout.trim()) {
 			try {
-				const config = parseTOML(stdout) as RawConfig;
+				const config = toml.parse(stdout) as RawConfig;
 				const customConfig: CustomConfig = {};
 				if (config.global) customConfig.global = config.global;
 				const modes = ["powersave", "balance", "performance", "fast"];
@@ -128,7 +128,7 @@ export class ConfigFileManager {
 		modes.forEach((mode) => {
 			if (customConfig[mode]) tomlConfig[mode] = customConfig[mode];
 		});
-		return header + stringifyTOML(tomlConfig);
+		return header + toml.stringify(tomlConfig);
 	}
 	private async writeFileAtomically(path: string, content: string) {
 		const tempPath = `${path}.tmp`;
