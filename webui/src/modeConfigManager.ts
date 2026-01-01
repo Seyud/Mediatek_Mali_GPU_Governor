@@ -10,6 +10,8 @@ interface ModeInputs {
 export class ModeConfigManager {
 	currentLanguage: Lang = "zh";
 	customConfig: CustomConfig = {};
+	// 添加内部状态来跟踪当前选中的全局模式
+	private currentGlobalModeValue = "balance";
 	globalModeSelect: HTMLSelectElement | null;
 	globalModeContainer: HTMLElement | null;
 	selectedGlobalMode: HTMLElement | null;
@@ -64,9 +66,14 @@ export class ModeConfigManager {
 					spanElement.textContent = text || "";
 					spanElement.setAttribute("data-i18n", option.getAttribute("data-i18n") || "");
 				}
-				if (this.globalModeSelect && value) {
-					this.globalModeSelect.value = value;
-					this.globalModeSelect.dispatchEvent(new Event("change"));
+				if (value) {
+					// 更新内部状态
+					this.currentGlobalModeValue = value;
+					// 同时更新隐藏的 select（虽然它是空的，但保持一致性）
+					if (this.globalModeSelect) {
+						this.globalModeSelect.value = value;
+						this.globalModeSelect.dispatchEvent(new Event("change"));
+					}
 				}
 				this.globalModeContainer?.classList.remove("open");
 			});
@@ -96,7 +103,7 @@ export class ModeConfigManager {
 		});
 		if (this.globalModeSelect) {
 			this.globalModeSelect.addEventListener("change", () => {
-				const value = this.globalModeSelect?.value;
+				const value = this.globalModeSelect?.value || this.currentGlobalModeValue;
 				if (value) {
 					this.syncModeTabsWithGlobalMode(value);
 				}
@@ -118,10 +125,11 @@ export class ModeConfigManager {
 	populateCustomConfigForm(customConfig: CustomConfig) {
 		this.customConfig = customConfig || {};
 		if (this.customConfig.global) {
-			if (this.globalModeSelect && this.customConfig.global.mode)
-				this.globalModeSelect.value = String(this.customConfig.global.mode);
-			if (this.selectedGlobalMode && this.customConfig.global.mode)
-				this.updateGlobalModeDisplay(String(this.customConfig.global.mode));
+			const mode = String(this.customConfig.global.mode || "balance");
+			// 更新内部状态
+			this.currentGlobalModeValue = mode;
+			if (this.globalModeSelect) this.globalModeSelect.value = mode;
+			if (this.selectedGlobalMode) this.updateGlobalModeDisplay(mode);
 			if (this.idleThresholdInput && this.customConfig.global.idle_threshold !== undefined)
 				this.idleThresholdInput.value = String(this.customConfig.global.idle_threshold);
 		}
@@ -185,14 +193,22 @@ export class ModeConfigManager {
 		};
 	}
 	getGlobalMode() {
+		// 优先使用内部状态
+		if (this.currentGlobalModeValue) {
+			return this.currentGlobalModeValue;
+		}
+		// 回退：尝试从select获取
 		if (this.globalModeSelect?.value) return this.globalModeSelect.value;
+		// 最后回退：尝试从span文本匹配
 		if (this.selectedGlobalMode) {
 			const span = this.selectedGlobalMode.querySelector("span");
 			if (span) {
 				const t = span.textContent || "";
-				if (t.includes("省电") || t.includes("Power Save")) return "powersave";
-				if (t.includes("性能") || t.includes("Performance")) return "performance";
-				if (t.includes("极速") || t.includes("Fast")) return "fast";
+				if (t.includes("省电") || t.includes("Power") || t.includes("powersave"))
+					return "powersave";
+				if (t.includes("性能") || t.includes("Performance") || t.includes("performance"))
+					return "performance";
+				if (t.includes("极速") || t.includes("Fast") || t.includes("fast")) return "fast";
 				return "balance";
 			}
 		}

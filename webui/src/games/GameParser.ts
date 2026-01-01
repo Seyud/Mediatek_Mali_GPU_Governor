@@ -36,17 +36,33 @@ function parseTomlGames(tomlString: string): GameConfig[] {
 }
 
 /**
+ * 转义 TOML 字符串中的特殊字符
+ */
+function escapeTomlString(str: string): string {
+	return str
+		.replace(/\\/g, "\\\\")
+		.replace(/"/g, '\\"')
+		.replace(/\n/g, "\\n")
+		.replace(/\r/g, "\\r")
+		.replace(/\t/g, "\\t");
+}
+
+/**
  * 将游戏列表序列化为 TOML 格式
+ * 使用数组表格格式 [[games]] 而不是内联数组格式
+ * 以确保与 Rust toml 库的兼容性
  */
 function serializeTomlGames(games: GameConfig[]): string {
-	const header = "# GPU调速器游戏列表配置文件\n\n";
-	const config = {
-		games: games.map((game) => ({
-			package: game.package,
-			mode: game.mode || "balance",
-		})),
-	};
-	return header + toml.stringify(config);
+	const lines: string[] = ["# GPU调速器游戏列表配置文件", ""];
+
+	for (const game of games) {
+		lines.push("[[games]]");
+		lines.push(`package = "${escapeTomlString(game.package || "")}"`);
+		lines.push(`mode = "${escapeTomlString(game.mode || "balance")}"`);
+		lines.push("");
+	}
+
+	return lines.join("\n");
 }
 
 export const GameParser = {
