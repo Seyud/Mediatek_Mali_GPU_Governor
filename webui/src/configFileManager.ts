@@ -79,7 +79,7 @@ export class ConfigFileManager {
 			})),
 		};
 		const header = "# GPU 频率表\n# freq 单位: kHz\n# volt 单位: uV\n# ddr_opp: DDR OPP 档位\n\n";
-		const content = header + toml.stringify(config);
+		const content = header + toml.stringify(config, { newline: "\n", newlineAround: "section" });
 		const result = await this.writeFileAtomically(PATHS.CONFIG_PATH, content);
 		if (result.errno === 0) {
 			toast(getTranslation("toast_freq_table_saved", {}, this.currentLanguage));
@@ -128,7 +128,7 @@ export class ConfigFileManager {
 		modes.forEach((mode) => {
 			if (customConfig[mode]) tomlConfig[mode] = customConfig[mode];
 		});
-		return header + toml.stringify(tomlConfig);
+		return header + toml.stringify(tomlConfig, { newline: "\n", newlineAround: "section" });
 	}
 	private async writeFileAtomically(path: string, content: string) {
 		const tempPath = `${path}.tmp`;
