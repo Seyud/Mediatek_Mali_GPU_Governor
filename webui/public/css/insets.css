@@ -11,4 +11,20 @@
  * - Navigation bars  
  * - Display cutouts (notches)
  */
-@import url("https://mui.kernelsu.org/internal/insets.css");
+
+@import url("/internal/insets.css");
+
+:root {
+	--safe-area-inset-top: env(safe-area-inset-top, 0px);
+	--safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+	--safe-area-inset-left: env(safe-area-inset-left, 0px);
+	--safe-area-inset-right: env(safe-area-inset-right, 0px);
+	--window-inset-top: var(--safe-area-inset-top, 0px);
+	--window-inset-bottom: var(--safe-area-inset-bottom, 0px);
+	--window-inset-left: var(--safe-area-inset-left, 0px);
+	--window-inset-right: var(--safe-area-inset-right, 0px);
+	--f7-safe-area-top: var(--window-inset-top, 0px);
+	--f7-safe-area-bottom: var(--window-inset-bottom, 0px);
+	--f7-safe-area-left: var(--window-inset-left, 0px);
+	--f7-safe-area-right: var(--window-inset-right, 0px);
+}

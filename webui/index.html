@@ -7,6 +7,12 @@
   <title>天玑GPU调速器</title>
   <meta name="description" content="Mediatek Mali GPU Governor 控制面板" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script>
+    // 尽早启用 KSU Insets，避免首屏出现底部悬空再下移的跳动
+    (() => {
+      try { window.ksu?.enableInsets?.(true); } catch { /* 非 KSU 环境忽略 */ }
+    })();
+  </script>
   <!-- 统一入口样式：main.css 内部使用 @import 链接其余模块 -->
   <link rel="stylesheet" href="/css/main.css" />
   <script>

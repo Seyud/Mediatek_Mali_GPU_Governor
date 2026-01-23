@@ -11,6 +11,12 @@ async function loadComponent(url: string, containerId: string) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+	const ksu = (window as unknown as { ksu?: { enableInsets?: (enable?: boolean) => void } }).ksu;
+	try {
+		ksu?.enableInsets?.(true);
+	} catch {
+		// 忽略非 KSU 环境
+	}
 	const isDev = Boolean(import.meta?.env?.DEV);
 	if (isDev) {
 		await loadComponent("components/header.html", "header-container");
