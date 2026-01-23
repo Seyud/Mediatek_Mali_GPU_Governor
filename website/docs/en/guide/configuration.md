@@ -2,7 +2,7 @@
 
 ## Configuration File Structure
 
-Dimensity GPU Governor uses multiple configuration files to control its behavior:
+Mediatek Mali GPU Governor uses multiple configuration files to control its behavior:
 
 - `/data/adb/gpu_governor/config/config.toml` - Custom configuration
 - `/data/adb/gpu_governor/config/gpu_freq_table.toml` - GPU frequency table configuration
