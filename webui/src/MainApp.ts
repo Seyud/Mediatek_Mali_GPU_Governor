@@ -343,8 +343,7 @@ export class MainApp {
 			case "page-settings":
 				if (!this.settingsPageLoaded) {
 					this.settingsPageLoaded = true;
-					// 设置页数据加载
-					this.settingsManager.loadLogLevel().catch(() => {});
+					this.logManager.loadLogLevel().catch(() => {});
 				}
 				break;
 		}
