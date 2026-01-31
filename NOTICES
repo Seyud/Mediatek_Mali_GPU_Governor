@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 This project contains and depends on the following open-source component:
 
 GPU-Governor-Core
-Copyright (c) 2025 Seyud
+Copyright (c) 2026 Seyud
 Source: https://github.com/Seyud/GPU-Governor-Core
 
 The 'GPU-Governor-Core' component is free software: you can redistribute it and/or modify
