@@ -26,6 +26,18 @@ The module provides dedicated preset configuration files for the following proce
 
 Different processor series have different frequency ranges and voltage configurations. The module will automatically select the matching frequency table configuration based on the device model.
 
+## Voltage Undervolting Support ⚡
+
+Voltage undervolting is only supported on the following chip models:
+
+- **Dimensity 1000 / 1100 / 1200**
+- **Dimensity 8100 / 8200**
+- **Dimensity 9000**
+
+> **Note**: For processors that do not support undervolting, the voltage fields in the frequency table are for placeholder purposes only, used to maintain format alignment with other frequency tables. The actual undervolting function will not take effect.
+
+The undervolting function is implemented through the `volt` parameter in the frequency table. The module will automatically detect the chip model and apply the corresponding undervolting configuration.
+
 ## Technical Compatibility
 
 ### GPUFreq Driver Support
