@@ -1,7 +1,7 @@
 id=Mediatek_Mali_GPU_Governor
 name=天玑GPU调速器
-version=v2.11.0
-versionCode=20251130
+version=v2.12.0
+versionCode=20260201
 author=酷安@瓦力喀/GitHub@Seyud, Tools-cx-app
 description=适用于Mediatek_Mali_GPU的GPU动态调速器，优化高负载场景下的功耗与性能平衡
 updateJson=https://gitee.com/Seyud/MMGG_deploy/raw/master/Update.json
