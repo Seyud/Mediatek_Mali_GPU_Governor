@@ -22,7 +22,12 @@
 - `config/mtd7300.toml` - Dimensity 7300 系列
 - `config/mtd8100.toml` - Dimensity 8100 系列
 - `config/mtd8200.toml` - Dimensity 8200 系列
+- `config/mtd8300.toml` - Dimensity 8300 系列
+- `config/mtd8400.toml` - Dimensity 8400 系列
 - `config/mtd9000.toml` - Dimensity 9000 系列
+- `config/mtd9200.toml` - Dimensity 9200 系列
+- `config/mtd9300.toml` - Dimensity 9300 系列
+- `config/mtd9400.toml` - Dimensity 9400 系列
 
 不同处理器系列具有不同的频率范围和电压配置，模块会根据设备型号自动选择匹配的频率表配置。
 

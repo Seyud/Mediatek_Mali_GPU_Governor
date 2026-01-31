@@ -22,7 +22,12 @@ The module provides dedicated preset configuration files for the following proce
 - `config/mtd7300.toml` - Dimensity 7300 series
 - `config/mtd8100.toml` - Dimensity 8100 series
 - `config/mtd8200.toml` - Dimensity 8200 series
+- `config/mtd8300.toml` - Dimensity 8300 series
+- `config/mtd8400.toml` - Dimensity 8400 series
 - `config/mtd9000.toml` - Dimensity 9000 series
+- `config/mtd9200.toml` - Dimensity 9200 series
+- `config/mtd9300.toml` - Dimensity 9300 series
+- `config/mtd9400.toml` - Dimensity 9400 series
 
 Different processor series have different frequency ranges and voltage configurations. The module will automatically select the matching frequency table configuration based on the device model.
 
