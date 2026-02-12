@@ -215,7 +215,10 @@ export class ModeConfigManager {
 		return "balance";
 	}
 	getIdleThreshold() {
-		return this.idleThresholdInput ? Number(this.idleThresholdInput.value) || 5 : 5;
+		if (!this.idleThresholdInput) return 5;
+		const value = Number(this.idleThresholdInput.value);
+		if (!Number.isFinite(value)) return 5;
+		return Math.trunc(value);
 	}
 	getModeConfig(inputs: ModeInputs | null): ModeConfig {
 		if (!inputs) return {};
@@ -227,7 +230,7 @@ export class ModeConfigManager {
 					config[key] = (element as HTMLInputElement).checked;
 				else
 					config[key] = (element as HTMLInputElement).value
-						? Number((element as HTMLInputElement).value)
+						? Math.trunc(Number((element as HTMLInputElement).value))
 						: 0;
 			}
 		});

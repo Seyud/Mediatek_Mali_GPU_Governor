@@ -62,12 +62,13 @@ export class ModalManager {
 	}
 
 	setupDdrSelector() {
-		if (!this.ddrContainer) return;
-		this.ddrContainer.addEventListener("click", () => {
-			this.ddrContainer?.classList.toggle("open");
-			if (this.ddrContainer?.classList.contains("open")) {
+		const ddrContainer = this.ddrContainer;
+		if (!ddrContainer) return;
+		ddrContainer.addEventListener("click", () => {
+			ddrContainer.classList.toggle("open");
+			if (ddrContainer.classList.contains("open")) {
 				setTimeout(() => {
-					const options = this.ddrContainer?.querySelectorAll(".option");
+					const options = ddrContainer.querySelectorAll(".option");
 					options.forEach((option, index) => {
 						setTimeout(() => {
 							(option as HTMLElement).style.opacity = "1";
@@ -76,13 +77,13 @@ export class ModalManager {
 					});
 				}, 10);
 			} else {
-				const options = this.ddrContainer?.querySelectorAll(".option");
+				const options = ddrContainer.querySelectorAll(".option");
 				options.forEach((option) => {
 					(option as HTMLElement).style.opacity = "0";
 					(option as HTMLElement).style.transform = "translateY(-10px)";
 				});
 				setTimeout(() => {
-					this.ddrContainer?.classList.remove("open");
+					ddrContainer.classList.remove("open");
 				}, 150);
 			}
 		});
@@ -95,13 +96,13 @@ export class ModalManager {
 				});
 				option.classList.add("selected");
 				if (this.selectedDdr) this.selectedDdr.textContent = option.textContent;
-				const options = this.ddrContainer?.querySelectorAll(".option");
+				const options = ddrContainer.querySelectorAll(".option");
 				options.forEach((o) => {
 					(o as HTMLElement).style.opacity = "0";
 					(o as HTMLElement).style.transform = "translateY(-10px)";
 				});
 				setTimeout(() => {
-					this.ddrContainer?.classList.remove("open");
+					ddrContainer.classList.remove("open");
 				}, 150);
 				setTimeout(() => {
 					options.forEach((o) => {

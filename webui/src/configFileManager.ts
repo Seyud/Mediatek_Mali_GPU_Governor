@@ -40,6 +40,23 @@ interface RawConfig {
 	[key: string]: unknown;
 }
 
+const normalizePrimitive = (value: unknown): string | number | boolean | undefined => {
+	if (typeof value === "string" || typeof value === "boolean") return value;
+	if (typeof value === "number") return Number.isFinite(value) ? Math.trunc(value) : undefined;
+	if (typeof value === "bigint") return Number(value);
+	return undefined;
+};
+
+const normalizeModeConfig = (value: unknown): ModeConfig | undefined => {
+	if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+	const normalized: ModeConfig = {};
+	Object.entries(value as Record<string, unknown>).forEach(([key, raw]) => {
+		const normalizedValue = normalizePrimitive(raw);
+		if (normalizedValue !== undefined) normalized[key] = normalizedValue;
+	});
+	return Object.keys(normalized).length > 0 ? normalized : undefined;
+};
+
 export class ConfigFileManager {
 	currentLanguage: Lang = "zh";
 	async loadGpuConfig() {
@@ -71,15 +88,30 @@ export class ConfigFileManager {
 			return { success: false, error: "empty_config" };
 		}
 		const sortedConfigs = [...gpuConfigs].sort((a, b) => a.freq - b.freq);
-		const config = {
-			freq_table: sortedConfigs.map((c) => ({
-				freq: c.freq,
-				volt: c.volt,
-				ddr_opp: c.ddr,
-			})),
+		const toInt = (value: number) => {
+			if (!Number.isFinite(value)) throw new Error(`Invalid number: ${value}`);
+			if (!Number.isInteger(value)) throw new Error(`Value must be an integer: ${value}`);
+			return value;
 		};
-		const header = "# GPU 频率表\n# freq 单位: kHz\n# volt 单位: uV\n# ddr_opp: DDR OPP 档位\n\n";
-		const content = header + toml.stringify(config, { newline: "\n", newlineAround: "section" });
+		let content = "";
+		try {
+			const header = "# GPU 频率表\n# freq 单位: kHz\n# volt 单位: uV\n# ddr_opp: DDR OPP 档位\n\n";
+			const lines = [
+				"freq_table = [",
+				...sortedConfigs.map((c, i) => {
+					const suffix = i === sortedConfigs.length - 1 ? "" : ",";
+					return `    { freq = ${toInt(c.freq)}, volt = ${toInt(c.volt)}, ddr_opp = ${toInt(c.ddr)} }${suffix}`;
+				}),
+				"]",
+				"",
+			];
+			content = header + lines.join("\n");
+		} catch (error) {
+			toast(
+				getTranslation("toast_config_parse_error", { error: String(error) }, this.currentLanguage)
+			);
+			return { success: false, error: "invalid_number" };
+		}
 		const result = await this.writeFileAtomically(PATHS.CONFIG_PATH, content);
 		if (result.errno === 0) {
 			toast(getTranslation("toast_freq_table_saved", {}, this.currentLanguage));
@@ -95,10 +127,12 @@ export class ConfigFileManager {
 			try {
 				const config = toml.parse(stdout) as RawConfig;
 				const customConfig: CustomConfig = {};
-				if (config.global) customConfig.global = config.global;
-				const modes = ["powersave", "balance", "performance", "fast"];
+				const globalConfig = normalizeModeConfig(config.global);
+				if (globalConfig) customConfig.global = globalConfig;
+				const modes = ["powersave", "balance", "performance", "fast"] as const;
 				modes.forEach((mode) => {
-					if (config[mode]) customConfig[mode] = config[mode];
+					const modeConfig = normalizeModeConfig(config[mode]);
+					if (modeConfig) customConfig[mode] = modeConfig;
 				});
 				return { success: true, data: customConfig };
 			} catch (error) {

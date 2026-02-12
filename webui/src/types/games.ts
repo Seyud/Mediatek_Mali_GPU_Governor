@@ -28,7 +28,7 @@ export interface KsuApi {
 	getPackagesInfo(packageName: string): Promise<{ appLabel: string }>;
 }
 
-export interface WindowWithWebUIX extends Window {
+export interface WindowWithWebUIX {
 	$packageManager?: {
 		getApplicationInfo(
 			packageName: string,
