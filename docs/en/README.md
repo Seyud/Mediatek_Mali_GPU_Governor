@@ -11,6 +11,10 @@ Mediatek Mali GPU Governor is an advanced GPU governor designed specifically for
 [![Language](https://img.shields.io/badge/language-Rust-orange?logo=rust&logoColor=orange)](https://www.rust-lang.org/)
 [![Telegram](https://img.shields.io/badge/channel-Telegram-2CA5E0?logo=telegram&logoColor=87CEEB)](https://t.me/Mediatek_Mali_GPU_Governor)
 
+## Official Website 🌐
+
+[![Official Website](https://img.shields.io/badge/Official%20Website-Visit-2ea44f?style=for-the-badge&logo=google-chrome&logoColor=white)](https://seyud.github.io/Mediatek_Mali_GPU_Governor/)
+
 ## Related Open Source Projects 📦
 
 **Core Source Code Repository**: [GPU-Governor-Core](https://github.com/Seyud/GPU-Governor-Core)
