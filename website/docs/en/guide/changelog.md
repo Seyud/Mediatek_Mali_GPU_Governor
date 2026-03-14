@@ -4,6 +4,45 @@ layout: doc
 
 # 📝 CHANGELOG
 
+## ⬆️ v2.12.0 → v2.12.3 (March 15, 2026)
+
+### 🔧 Improvements
+
+- **Improve frequency table parsing stability** ⚡
+  - Enhanced the robustness of frequency table parsing logic, reducing parsing errors and exceptions.
+
+- **Optimize WebUI data type and value validation** 🌐
+  - Improved WebUI data type checking and value range validation, enhancing data processing accuracy.
+
+- **Optimize WebUI performance** ⚡
+  - Enhanced WebUI loading speed and response performance, improving user experience.
+
+## ⬆️ v2.11.0 → v2.12.0 (February 1, 2026)
+
+> ⚠️ **Important Notice**
+> 
+> In the frequency tables of processors that do not support voltage reduction, the voltage field is only a placeholder for alignment with other frequency tables, and the actual voltage reduction function does not take effect.
+
+### ✨ New Features
+
+- **Add Dimensity 8400 chip configuration support** 📱
+  - Added frequency table and configuration support for Dimensity 8400 processor, expanding device compatibility.
+- **WebUI adds KSU Insets support** 🌐
+  - Implemented KernelSU Insets adaptation to optimize WebUI display in KSU environment.
+- **WebUI adds help documentation viewer** 📚
+  - Integrated help documentation viewer in WebUI for quick access to user guides.
+
+### 🔧 Improvements
+
+- **Simplify global mode detection logic** ⚡
+  - Optimized the code logic for global mode detection, improving execution efficiency and maintainability.
+- **Update project dependencies** 📦
+  - Upgraded related dependencies to the latest versions for improved security and stability.
+- **WebUI optimizes UI component styles and layout** 🎨
+  - Improved visual styles and page layout of WebUI interface components for better user experience.
+- **WebUI optimizes TOML parsing library** 🔧
+  - Upgraded and optimized TOML parsing library for better configuration file parsing performance and compatibility.
+
 ## ⬆️ v2.10.3 → v2.11.0 (November 30, 2025)
 
 > ⚠️ **Important Notice**

@@ -1,16 +1,16 @@
 {
   "name": "mediatek-mali-gpu-governor-website",
-  "version": "2.12.0",
+  "version": "2.12.3",
   "description": "Mediatek Mali GPU Governor official website",
   "main": "index.js",
   "repository": "https://github.com/Seyud/Mediatek_Mali_GPU_Governor",
   "author": "Seyud",
   "license": "GPL-3.0",
   "devDependencies": {
-    "@types/node": "^24.5.2",
+    "@types/node": "^25.5.0",
     "markdown-it-include": "^2.0.0",
     "vitepress": "^2.0.0-alpha.12",
-    "vue": "^3.5.21"
+    "vue": "^3.5.30"
   },
   "scripts": {
     "docs:dev": "vitepress dev docs",

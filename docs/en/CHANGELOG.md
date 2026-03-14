@@ -1,5 +1,18 @@
 # 📝 CHANGELOG
 
+## ⬆️ v2.12.0 → v2.12.3 (March 15, 2026)
+
+### 🔧 Improvements
+
+- **Improve frequency table parsing stability** ⚡
+  - Enhanced the robustness of frequency table parsing logic, reducing parsing errors and exceptions.
+
+- **Optimize WebUI data type and value validation** 🌐
+  - Improved WebUI data type checking and value range validation, enhancing data processing accuracy.
+
+- **Optimize WebUI performance** ⚡
+  - Enhanced WebUI loading speed and response performance, improving user experience.
+
 ## ⬆️ v2.11.0 → v2.12.0 (February 1, 2026)
 
 > ⚠️ **Important Notice**
