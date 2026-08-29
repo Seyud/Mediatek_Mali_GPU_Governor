@@ -10,6 +10,7 @@ export default defineConfig( {
     title: 'Mediatek Mali GPU Governor',
     base: '/Mediatek_Mali_GPU_Governor/',
     locales: locales.locales,
+    srcExclude: ['**/_includes/**'],
     head: [
         ['link', { rel: 'icon', href: '/logo.png' }],
         ['meta', { name: 'theme-color', content: '#0d84ff' }],
@@ -33,9 +34,18 @@ export default defineConfig( {
           --vp-button-brand-hover-bg: #3a9bff;
         }
         `],
+        // Cloudflare Web Analytics
+        [
+            'script',
+            {
+                type: 'module',
+                src: 'https://static.cloudflareinsights.com/beacon.min.js',
+                'data-cf-beacon': JSON.stringify({ token: '7a60b306ee8f46f38f2699681b26453e' })
+            }
+        ],
     ],
     sitemap: {
-        hostname: 'https://seyud.github.io/Mediatek_Mali_GPU_Governor'
+        hostname: 'https://seyud.github.io/Mediatek_Mali_GPU_Governor/'
     },
     markdown: {
         config: (md) => {
