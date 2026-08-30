@@ -12,7 +12,7 @@ export default defineConfig( {
     locales: locales.locales,
     srcExclude: ['**/_includes/**'],
     head: [
-        ['link', { rel: 'icon', href: '/logo.png' }],
+        ['link', { rel: 'icon', href: '/Mediatek_Mali_GPU_Governor/logo.png' }],
         ['meta', { name: 'theme-color', content: '#0d84ff' }],
         ['style', {}, `
         :root {

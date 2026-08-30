@@ -2,12 +2,20 @@
 layout: home
 title: 首页
 
+head:
+  # LCP 优化：高优先级预载 Hero 图（head 里的 URL 不会自动补 base，需手写前缀）
+  - - link
+    - rel: preload
+      as: image
+      href: /Mediatek_Mali_GPU_Governor/logo.webp
+      fetchpriority: high
+
 hero:
   name: 天玑 GPU 调速器
   text: 专为联发科处理器设计的先进 GPU 调速器
   tagline: "基于 Rust 的智能 GPU 频率调节，实现性能与功耗的完美平衡"
   image:
-    src: /logo.png
+    src: /logo.webp
     alt: 天玑 GPU 调速器
   actions:
     - theme: brand
