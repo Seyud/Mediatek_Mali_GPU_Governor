@@ -43,18 +43,28 @@ export default defineConfig( {
                 'data-cf-beacon': JSON.stringify({ token: '7a60b306ee8f46f38f2699681b26453e' })
             }
         ],
-        // 语言分流：非中文浏览器进中文页自动跳英文；切到与浏览器不符的语言时记忆，切回一致时恢复自动检测
+        // 语言分流：有记忆时按记忆语言主动跳转对应版本；无记忆时非中文浏览器自动跳英文
         [
             'script',
             {},
             `            ;(() => {
-              try { if (localStorage.getItem('lang-pref:/Mediatek_Mali_GPU_Governor/')) return } catch (e) {}
               const base = '/Mediatek_Mali_GPU_Governor/'
               const path = location.pathname
               if (!path.startsWith(base)) return
               const sub = path.slice(base.length)
-              if (sub.startsWith('en/') || sub === 'en') return
-              if (!(navigator.language || '').toLowerCase().startsWith('zh')) {
+              const cur = sub.startsWith('en/') || sub === 'en'
+              let pref = null
+              try { pref = localStorage.getItem('lang-pref:/Mediatek_Mali_GPU_Governor/') } catch (e) {}
+              if (pref === 'zh' || pref === 'en') {
+                if (pref === 'en' && !cur) {
+                  location.replace(base + 'en/' + sub + location.search + location.hash)
+                } else if (pref === 'zh' && cur) {
+                  let rest = sub === 'en' ? '' : sub.slice(3)
+                  location.replace(base + rest + location.search + location.hash)
+                }
+                return
+              }
+              if (!cur && !(navigator.language || '').toLowerCase().startsWith('zh')) {
                 location.replace(base + 'en/' + sub + location.search + location.hash)
               }
             })()
