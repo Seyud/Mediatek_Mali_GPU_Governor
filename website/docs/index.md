@@ -1,21 +1,15 @@
 ---
 layout: home
 title: 首页
-
-head:
-  # LCP 优化：高优先级预载 Hero 图（head 里的 URL 不会自动补 base，需手写前缀）
-  - - link
-    - rel: preload
-      as: image
-      href: /Mediatek_Mali_GPU_Governor/logo.webp
-      fetchpriority: high
+description: 专为联发科处理器设计的先进 GPU 调速器。
 
 hero:
   name: 天玑 GPU 调速器
   text: 专为联发科处理器设计的先进 GPU 调速器
-  tagline: "基于 Rust 的智能 GPU 频率调节，实现性能与功耗的完美平衡"
+  tagline: 基于 Rust 的智能 GPU 频率调节，实现性能与功耗的完美平衡
+  # 构建时由 transformPageData 把 /logo.svg 替换为内联 data URI，消除图片网络请求
   image:
-    src: /logo.webp
+    src: /logo.svg
     alt: 天玑 GPU 调速器
   actions:
     - theme: brand
@@ -43,4 +37,4 @@ features:
     details: 基于 KernelSU API 的 Miuix 风格图形化管理界面，支持深色/浅色主题和多语言界面。
   - title: ⚙️ 高度可定制
     details: 灵活的配置系统，支持自定义 GPU 频率表、电压设置和四种不同的性能模式。
-
+---

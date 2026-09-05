@@ -6,6 +6,17 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// LCP 优化：hero logo 在构建/开发时内联为 data URI，消除图片网络请求（源文件 docs/public/logo.svg）
+const logoDataUri = (() => {
+    try {
+        const svg = fs.readFileSync(path.join(__dirname, '../public/logo.svg'), 'utf-8')
+        return 'data:image/svg+xml;base64,' + Buffer.from(svg, 'utf-8').toString('base64')
+    } catch (e) {
+        console.warn('[config] 读取 logo.svg 失败：', e)
+        return ''
+    }
+})()
+
 export default defineConfig( {
     title: 'Mediatek Mali GPU Governor',
     base: '/Mediatek_Mali_GPU_Governor/',
@@ -130,6 +141,15 @@ export default defineConfig( {
     ],
     sitemap: {
         hostname: 'https://seyud.github.io/Mediatek_Mali_GPU_Governor/'
+    },
+    transformPageData(pageData) {
+        // 首页 hero 图内联：构建/开发时把 frontmatter 里的 /logo.svg 替换为 data URI，
+        // 图片随 HTML 同连接到达，消除单独的图片网络请求（withBase 对 data: 原样放行）
+        const fm = pageData.frontmatter as any
+        const img = fm?.hero?.image
+        if (fm?.layout === 'home' && img?.src === '/logo.svg') {
+            img.src = logoDataUri
+        }
     },
     markdown: {
         config: (md) => {

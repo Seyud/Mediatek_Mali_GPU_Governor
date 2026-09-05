@@ -1,13 +1,15 @@
 ---
 layout: home
 title: Home
+description: Advanced GPU governor designed specifically for MediaTek processors.
 
 hero:
   name: Mediatek Mali GPU Governor
   text: Advanced GPU governor for MediaTek processors
-  tagline: "Intelligent GPU frequency scaling with Rust-powered performance"
+  tagline: Intelligent GPU frequency scaling with Rust-powered performance
+  # Inlined as a data URI at build time by transformPageData to eliminate the image request
   image:
-    src: /logo.png
+    src: /logo.svg
     alt: Mediatek Mali GPU Governor
   actions:
     - theme: brand
@@ -32,3 +34,4 @@ features:
     details: Miuix-styled graphical management interface based on KernelSU API with dark/light theme support and multi-language interface.
   - title: ⚙️ Highly Customizable
     details: Flexible configuration system supporting custom GPU frequency tables, voltage settings, and four different performance modes.
+---

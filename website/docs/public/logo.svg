@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 背景圆角方形 -->
+  <rect x="54" y="54" width="402" height="402" rx="62" fill="#23486F"/>
+  <!-- 引脚（左 4 / 上 3 / 下 3） -->
+  <g stroke="#6FB3D4" stroke-width="10" stroke-linecap="round">
+    <line x1="84" y1="186" x2="138" y2="186"/>
+    <line x1="84" y1="234" x2="138" y2="234"/>
+    <line x1="98" y1="284" x2="114" y2="284"/>
+    <line x1="84" y1="332" x2="138" y2="332"/>
+    <line x1="166" y1="100" x2="166" y2="142"/>
+    <line x1="210" y1="100" x2="210" y2="142"/>
+    <line x1="254" y1="100" x2="254" y2="142"/>
+    <line x1="166" y1="380" x2="166" y2="410"/>
+    <line x1="210" y1="380" x2="210" y2="410"/>
+    <line x1="254" y1="380" x2="254" y2="410"/>
+  </g>
+  <!-- GPU 芯片（浅色外沿 + 主体） -->
+  <rect x="138" y="166" width="200" height="190" rx="16" fill="#FABB60"/>
+  <rect x="146" y="174" width="184" height="174" rx="12" fill="#F6AC3C"/>
+  <!-- GPU 文字（暖白） -->
+  <text x="238" y="284" text-anchor="middle" font-family="Arial, 'Helvetica Neue', 'PingFang SC', sans-serif" font-size="62" font-weight="800" fill="#FFF3D8">GPU</text>
+  <!-- 右侧电路走线 -->
+  <g stroke="#6FB3D4" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <line x1="352" y1="268" x2="424" y2="268"/>
+    <line x1="344" y1="324" x2="362" y2="324"/>
+    <polyline points="299,372 299,396 374,396"/>
+  </g>
+  <circle cx="371" cy="324" r="7" fill="none" stroke="#6FB3D4" stroke-width="6"/>
+  <circle cx="373" cy="398" r="10" fill="none" stroke="#6FB3D4" stroke-width="6"/>
+  <!-- 右上角仪表盘（三层盘面 + 白色刻度 + 琥珀弧 + 指针） -->
+  <g transform="translate(374,176)">
+    <circle r="70" fill="#223750"/>
+    <circle r="56" fill="#28415B"/>
+    <path d="M -54.6,-31.5 A 63,63 0 0 1 0,-63" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 0,-63 A 63,63 0 0 1 63,0" fill="none" stroke="#EEAA40" stroke-width="9" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="57" y2="-33" stroke="#EEAA40" stroke-width="7" stroke-linecap="round"/>
+    <circle r="10" fill="#EEAA40"/>
+  </g>
+</svg>
