@@ -162,7 +162,17 @@ export class ConfigFileManager {
 		modes.forEach((mode) => {
 			if (customConfig[mode]) tomlConfig[mode] = customConfig[mode];
 		});
-		return header + toml.stringify(tomlConfig, { newline: "\n", newlineAround: "section" });
+		// @ltd/j-toml 默认不把 number 当作 TOML 整数（asInteger 恒为 false），
+		// 会把 0 写成 0.0；而核心侧这些字段是 i64/u64，浮点字面量会导致整份配置解析失败。
+		// 必须显式声明整数上限来开启整数序列化。
+		return (
+			header +
+			toml.stringify(tomlConfig, {
+				newline: "\n",
+				newlineAround: "section",
+				integer: Number.MAX_SAFE_INTEGER,
+			})
+		);
 	}
 	private async writeFileAtomically(path: string, content: string) {
 		const tempPath = `${path}.tmp`;
