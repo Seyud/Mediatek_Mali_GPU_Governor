@@ -4,6 +4,21 @@ layout: doc
 
 # 📝 CHANGELOG
 
+## ⬆️ v2.12.3 → v2.12.5 (October 12, 2026)
+
+### 🔧 Improvements
+
+- **Remove deprecated macros and eliminate unsafe code** 🦀
+  - Cleaned up deprecated macros and removed unsafe code for better safety.
+
+### 🐛 Bug Fixes
+
+- **Fix integer-valued floats being unreadable during config parsing** ⚙️
+  - Values such as `1.0` in `config.toml` are no longer ignored, so those parameters now take effect.
+
+- **Fix integer fields being serialized as floats when saving from the WebUI** 🌐
+  - Saved configuration no longer contains values like `40.0`, matching the result of editing the file by hand.
+
 ## ⬆️ v2.12.0 → v2.12.3 (March 15, 2026)
 
 ### 🔧 Improvements
